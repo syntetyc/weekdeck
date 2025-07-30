@@ -1,0 +1,153 @@
+/* Tema azul - WeekDeck */
+
+:root {
+  /* Colores principales */
+  --primary-color: #1e40af;
+  --secondary-color: #ffffff;
+  --accent-color: #3b82f6;
+  --highlight-color: #3b82f6;
+  
+  /* Colores de fondo */
+  --bg-primary: #eff6ff;
+  --bg-secondary: #ffffff;
+  --bg-header: #1e40af;
+  --bg-modal: #ffffff;
+  
+  /* Colores de texto */
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --text-white: #ffffff;
+  
+  /* Colores de bordes */
+  --border-primary: #dbeafe;
+  --border-secondary: #bfdbfe;
+  --border-focus: #1e40af;
+  
+  /* Colores de estado */
+  --success-color: #059669;
+  --warning-color: #d97706;
+  --error-color: #dc2626;
+  --info-color: #2563eb;
+  
+  /* Colores de hover */
+  --hover-primary: #2563eb;
+  --hover-secondary: #f1f5f9;
+  
+  /* Sombras */
+  --shadow-sm: 0 1px 2px 0 rgba(30, 64, 175, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(30, 64, 175, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(30, 64, 175, 0.1);
+  
+  /* Transiciones */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow: 0.3s ease;
+  
+  /* Variables para drag and drop en blue theme */
+  --drag-drop-border: #1e40af;
+  --drag-drop-border-width: 1px;
+  --drag-drop-border-style: dashed;
+  --drag-drop-opacity: 0.95;
+}
+
+/* Aplicación de variables CSS */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.weekdeck-wrapper {
+  background-color: var(--bg-primary);
+}
+
+header {
+  background-color: var(--bg-header);
+  color: var(--text-white);
+}
+
+.bg-white {
+  background-color: var(--bg-secondary) !important;
+}
+
+.border-gray-200 {
+  border-color: var(--border-primary) !important;
+}
+
+.text-black {
+  color: var(--text-primary) !important;
+}
+
+.text-gray-400 {
+  color: var(--text-secondary) !important;
+}
+
+.text-gray-500 {
+  color: var(--text-muted) !important;
+}
+
+.hover\:text-gray-300:hover {
+  color: var(--text-muted) !important;
+}
+
+.hover\:text-\[#155dfc\]:hover {
+  color: var(--hover-primary) !important;
+}
+
+.hover\:bg-gray-100:hover {
+  background-color: var(--hover-secondary) !important;
+}
+
+.hover\:bg-gray-200:hover {
+  background-color: var(--hover-secondary) !important;
+}
+
+.focus\:border-black:focus {
+  border-color: var(--border-focus) !important;
+}
+
+/* Borde sutil por defecto para las columnas en blue theme */
+.bg-white.border.border-gray-200.rounded-lg.flex.flex-col.min-h-\[70vh\].h-full.transition-all.duration-150.relative {
+  border: 1px solid var(--border-primary) !important;
+}
+
+/* Borde por defecto para elementos bg-white en blue theme */
+div[class*="bg-white"] {
+  border: var(--drag-drop-border-width) var(--drag-drop-border-style) var(--border-primary) !important;
+}
+
+/* Tooltip */
+.tooltip {
+  background: rgba(30, 64, 175, 0.9);
+  color: var(--text-white);
+}
+
+/* Modal */
+.modal-bg {
+  background-color: rgba(30, 64, 175, 0.4);
+}
+
+.modal-content {
+  background-color: var(--bg-modal);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Botones */
+.btn-primary {
+  background-color: var(--primary-color);
+  color: var(--text-white);
+}
+
+.btn-primary:hover {
+  background-color: var(--hover-primary);
+}
+
+.btn-secondary {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-primary);
+}
+
+.btn-secondary:hover {
+  background-color: var(--hover-secondary);
+} 

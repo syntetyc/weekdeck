@@ -19,11 +19,14 @@ function weekdeckApp() {
     },
     modalOpen: false,
     modalTask: { title: '', desc: '', day: '', idx: null },
+    // Variables básicas para drag and drop
     dragData: null,
     dragOverDay: null,
     dragOverIdx: null,
     dragOverColumn: null,
     isDragging: false,
+
+    
     // --- INIT ---
     init() {
       const saved = localStorage.getItem('weekdeck-tasks');
@@ -48,6 +51,9 @@ function weekdeckApp() {
       
       // Event listeners para pantalla completa
       this.setupFullscreenListeners();
+      
+      // Configurar menús contextuales
+      this.setupContextMenus();
     },
     
     // Configurar event listeners para pantalla completa
@@ -68,6 +74,42 @@ function weekdeckApp() {
       setTimeout(() => {
         this.isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
       }, 100);
+    },
+    
+    // Configurar menús contextuales
+    setupContextMenus() {
+      // Menú de temas
+      const themeOptions = [
+        {
+          text: 'Default Theme',
+          icon: 'light_mode',
+          action: () => window.changeTheme('default'),
+          selected: () => window.getCurrentTheme() === 'default'
+        },
+        {
+          text: 'Dark Theme',
+          icon: 'dark_mode',
+          action: () => window.changeTheme('dark'),
+          selected: () => window.getCurrentTheme() === 'dark'
+        },
+        {
+          text: 'Blue Theme',
+          icon: 'palette',
+          action: () => window.changeTheme('blue'),
+          selected: () => window.getCurrentTheme() === 'blue'
+        }
+      ];
+      
+      // Registrar menú de temas
+      window.registerContextMenu('theme-menu', themeOptions);
+    },
+    
+    // Mostrar menú de temas
+    showThemeMenu(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      
+      window.showContextMenu('theme-menu', event.target.closest('button'), 'bottom-right');
     },
     
     // Agregar elementos tutoriales
@@ -267,80 +309,141 @@ function weekdeckApp() {
     onDragStart(day, idx, event) {
       this.dragData = { fromDay: day, fromIdx: idx };
       this.isDragging = true;
+      
+      const draggedElement = event.target.closest('.group');
+      if (draggedElement) {
+        draggedElement.classList.add('dragging');
+      }
+      
       event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/plain', '');
     },
+    
     onDragOver(day, idx, event) {
       event.preventDefault();
       event.dataTransfer.dropEffect = 'move';
+      
       if (!this.dragData || (this.dragData.fromDay === day && this.dragData.fromIdx === idx)) {
-        this.dragOverDay = null;
-        this.dragOverIdx = null;
         return;
       }
+      
+      const targetElement = event.target.closest('.group');
+      if (!targetElement || targetElement.classList.contains('dragging')) {
+        return;
+      }
+      
+      // Limpiar indicador anterior
+      if (this.dragOverDay !== null || this.dragOverIdx !== null) {
+        const prevElement = document.querySelector(`[data-day="${this.dragOverDay}"][data-idx="${this.dragOverIdx}"]`);
+        if (prevElement) {
+          prevElement.classList.remove('drop-indicator');
+        }
+      }
+      
       this.dragOverDay = day;
       this.dragOverIdx = idx;
-      this.dragOverColumn = null;
+      
+      // Añadir clase al elemento actual
+      targetElement.classList.add('drop-indicator');
     },
+    
     onDragLeave(day, idx, event) {
-      if (this.dragOverDay === day && this.dragOverIdx === idx) {
-        this.dragOverDay = null;
-        this.dragOverIdx = null;
+      const relatedTarget = event.relatedTarget;
+      const currentElement = event.target.closest('.group');
+      
+      if (!relatedTarget || !currentElement.contains(relatedTarget)) {
+        if (currentElement) {
+          currentElement.classList.remove('drop-indicator');
+        }
       }
     },
+    
     onDrop(day, idx, event) {
       event.preventDefault();
       if (!this.dragData) return;
+      
       const { fromDay, fromIdx } = this.dragData;
       if (fromDay === day && fromIdx === idx) return;
+      
       const task = this.tasks[fromDay][fromIdx];
       this.tasks[fromDay].splice(fromIdx, 1);
+      
       if (typeof idx === 'number' && idx >= 0) {
         this.tasks[day].splice(idx, 0, task);
       } else {
         this.tasks[day].push(task);
       }
-      this.dragData = null;
-      this.dragOverDay = null;
-      this.dragOverIdx = null;
-      this.dragOverColumn = null;
-      this.isDragging = false;
+      
+      this.resetDragState();
     },
+    
     onDragEnd() {
-      this.dragData = null;
-      this.dragOverDay = null;
-      this.dragOverIdx = null;
-      this.dragOverColumn = null;
-      this.isDragging = false;
+      this.resetDragState();
     },
+    
     // --- DRAG & DROP EN COLUMNA ---
     onColumnDragOver(day, event) {
       event.preventDefault();
+      
       if (!this.dragData || this.dragData.fromDay === day) {
-        this.dragOverColumn = null;
         return;
       }
+      
+      const column = event.target.closest('div[class*="bg-white"]');
+      if (!column) return;
+      
+      // Limpiar columna anterior
+      if (this.dragOverColumn !== null) {
+        const prevColumn = document.querySelector(`[data-day="${this.dragOverColumn}"]`);
+        if (prevColumn) {
+          prevColumn.classList.remove('drag-over', 'drop-zone');
+        }
+      }
+      
       this.dragOverColumn = day;
-      this.dragOverDay = null;
-      this.dragOverIdx = null;
+      
+      // Añadir clase a la columna actual
+      column.classList.add('drag-over', 'drop-zone');
     },
+    
     onColumnDragLeave(day, event) {
-      if (this.dragOverColumn === day) {
-        this.dragOverColumn = null;
+      const relatedTarget = event.relatedTarget;
+      const currentColumn = event.target.closest('div[class*="bg-white"]');
+      
+      if (!relatedTarget || !currentColumn.contains(relatedTarget)) {
+        if (currentColumn) {
+          currentColumn.classList.remove('drag-over', 'drop-zone');
+        }
       }
     },
+    
     onColumnDrop(day, event) {
       event.preventDefault();
       if (!this.dragData) return;
+      
       const { fromDay, fromIdx } = this.dragData;
       if (fromDay === day) return;
+      
       const task = this.tasks[fromDay][fromIdx];
       this.tasks[fromDay].splice(fromIdx, 1);
       this.tasks[day].push(task);
+      
+      this.resetDragState();
+    },
+    
+    // Función para resetear el estado de drag
+    resetDragState() {
       this.dragData = null;
-      this.dragOverColumn = null;
       this.dragOverDay = null;
       this.dragOverIdx = null;
+      this.dragOverColumn = null;
       this.isDragging = false;
+      
+      // Limpieza simple
+      const elements = document.querySelectorAll('.dragging, .drag-over, .drop-zone, .drop-indicator');
+      elements.forEach(el => {
+        el.classList.remove('dragging', 'drag-over', 'drop-zone', 'drop-indicator');
+      });
     },
     // --- CLICK EN ZONA LIBRE ---
     onColumnClick(day, event) {

@@ -1,0 +1,208 @@
+/* Tema oscuro - WeekDeck */
+
+:root {
+  /* Colores principales */
+  --primary-color: #ffffff;
+  --secondary-color: #222;
+  --accent-color: #fff;
+  --highlight-color: #fff;
+  
+  /* Colores de fondo */
+  --bg-primary: #111;
+  --bg-secondary: #181818;
+  --bg-header: #000;
+  --bg-modal: #181818;
+  --bg-day-header: #181818;
+  --bg-gradient-bottom: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.9) 20%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,0.2) 80%, rgba(0,0,0,0) 100%);
+  
+  /* Variables para menús contextuales dinámicos */
+  --context-menu-bg: #181818;
+  --context-menu-border: #444;
+  --context-menu-border-radius: 0;
+  --context-menu-shadow: none;
+  --context-menu-padding: 12px 0 8px 0;
+  --context-menu-font: 'Space Mono', monospace;
+  --context-menu-font-size: 14px;
+  --context-menu-color: #fff;
+  --context-menu-hover-bg: #000;
+  --context-menu-hover-color: #fff;
+  --context-menu-separator-color: #333;
+  --context-menu-icon-size: 20px;
+  --context-menu-icon-color: #fff;
+  --context-menu-item-padding: 7px 16px;
+  --context-menu-min-width: 180px;
+  --context-menu-z-index: 1000;
+  
+  /* Variables para drag and drop en dark theme */
+  --drag-drop-border: #155dfc;
+  --drag-drop-border-width: 1px;
+  --drag-drop-border-style: dashed;
+  --drag-drop-opacity: 0.95;
+  
+  /* Colores de texto */
+  --text-primary: #fff;
+  --text-secondary: #bbb;
+  --text-muted: #666;
+  --text-white: #fff;
+  
+  /* Colores de bordes */
+  --border-primary: #333;
+  --border-secondary: #444;
+  --border-focus: #fff;
+  --border-hover: #666;
+  
+  /* Colores de estado */
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --error-color: #ef4444;
+  --info-color: #fff;
+  
+  /* Colores de hover */
+  --hover-primary: #222;
+  --hover-secondary: #222;
+  
+  /* Sombras */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.7);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.8);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.8);
+  
+  /* Transiciones */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow: 0.3s ease;
+}
+
+/* Aplicación de variables CSS */
+body {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary);
+}
+
+.weekdeck-wrapper {
+  background-color: var(--bg-primary) !important;
+}
+
+header {
+  background-color: var(--bg-header);
+  color: var(--text-white);
+}
+
+.bg-white {
+  background-color: var(--bg-secondary) !important;
+}
+
+.border-gray-200 {
+  border-color: var(--border-primary) !important;
+}
+
+.text-black {
+  color: var(--text-primary) !important;
+}
+
+.text-gray-400 {
+  color: var(--text-secondary) !important;
+}
+
+.text-gray-500 {
+  color: var(--text-muted) !important;
+}
+
+.hover\:text-gray-300:hover {
+  color: var(--text-muted) !important;
+}
+
+.hover\:text-\[#155dfc\]:hover {
+  color: var(--hover-primary) !important;
+}
+
+.hover\:bg-gray-100:hover {
+  background-color: var(--hover-secondary) !important;
+}
+
+.hover\:bg-gray-200:hover {
+  background-color: var(--hover-secondary) !important;
+}
+
+.focus\:border-black:focus {
+  border-color: var(--border-focus) !important;
+}
+
+/* Tooltip */
+.tooltip {
+  background: rgba(0, 0, 0, 0.9);
+  color: var(--text-white);
+}
+
+/* Modal */
+.modal-bg {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.modal-content {
+  background-color: var(--bg-modal);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Botones */
+.btn-primary {
+  background-color: var(--primary-color);
+  color: var(--bg-primary);
+}
+
+.btn-primary:hover {
+  background-color: var(--hover-primary);
+}
+
+.btn-secondary {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-primary);
+}
+
+.btn-secondary:hover {
+  background-color: var(--hover-secondary);
+} 
+
+/* Cabeceras de los días de la semana en oscuro */
+.bg-white.border.border-gray-200.rounded-lg.flex.flex-col.min-h-\[70vh\].h-full.transition-all.duration-150.relative .px-3.py-2.text-2xl.font-extrabold.tracking-wider.flex.items-center {
+  background: var(--bg-day-header) !important;
+  color: var(--text-primary) !important;
+  border-bottom: 1px solid var(--border-primary) !important;
+}
+
+/* Borde sutil por defecto para las columnas en dark theme */
+.bg-white.border.border-gray-200.rounded-lg.flex.flex-col.min-h-\[70vh\].h-full.transition-all.duration-150.relative {
+  border: 1px solid var(--border-primary) !important;
+}
+
+/* Borde por defecto para elementos bg-white en dark theme */
+div[class*="bg-white"] {
+  border: var(--drag-drop-border-width) var(--drag-drop-border-style) var(--border-primary) !important;
+}
+
+/* Degradado inferior oscuro */
+body::after {
+  background: var(--bg-gradient-bottom) !important;
+} 
+
+/* Botón de menú contextual en dark theme */
+.flex.min-h-\[48px\].px-2.py-1.group:hover .material-symbols-outlined {
+  color: var(--text-secondary) !important;
+}
+
+/* Elementos completados en dark theme */
+.completed-task {
+  color: #444 !important;
+  opacity: 0.7 !important;
+}
+
+/* Menú contextual de elementos en dark theme */
+.task-context-menu .menu-option {
+  color: var(--text-primary) !important;
+}
+
+.task-context-menu .menu-option:hover {
+  color: var(--text-primary) !important;
+}
+
+/* El menú contextual dinámico usará automáticamente las variables CSS del tema */ 

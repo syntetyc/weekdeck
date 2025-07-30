@@ -1,0 +1,137 @@
+/* Tema por defecto - WeekDeck */
+
+:root {
+  /* Colores principales */
+  --primary-color: #000000;
+  --secondary-color: #ffffff;
+  --accent-color: #155dfc;
+  --highlight-color: #155dfc;
+  
+  /* Colores de fondo */
+  --bg-primary: #f9fafb;
+  --bg-secondary: #ffffff;
+  --bg-header: #000000;
+  --bg-modal: #ffffff;
+  
+  /* Colores de texto */
+  --text-primary: #000000;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --text-white: #ffffff;
+  
+  /* Colores de bordes */
+  --border-primary: #e5e7eb;
+  --border-secondary: #d1d5db;
+  --border-focus: #000000;
+  
+  /* Colores de estado */
+  --success-color: #7BE495;
+  --warning-color: #FFD86B;
+  --error-color: #F36B6B;
+  --info-color: #6B9AFF;
+  
+  /* Colores de hover */
+  --hover-primary: #155dfc;
+  --hover-secondary: #f3f4f6;
+  
+  /* Sombras */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  
+  /* Transiciones */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow: 0.3s ease;
+}
+
+/* Aplicación de variables CSS */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.weekdeck-wrapper {
+  background-color: var(--bg-primary);
+}
+
+header {
+  background-color: var(--bg-header);
+  color: var(--text-white);
+}
+
+.bg-white {
+  background-color: var(--bg-secondary) !important;
+}
+
+.border-gray-200 {
+  border-color: var(--border-primary) !important;
+}
+
+.text-black {
+  color: var(--text-primary) !important;
+}
+
+.text-gray-400 {
+  color: var(--text-secondary) !important;
+}
+
+.text-gray-500 {
+  color: var(--text-muted) !important;
+}
+
+.hover\:text-gray-300:hover {
+  color: var(--text-muted) !important;
+}
+
+.hover\:text-\[#155dfc\]:hover {
+  color: var(--hover-primary) !important;
+}
+
+.hover\:bg-gray-100:hover {
+  background-color: var(--hover-secondary) !important;
+}
+
+.hover\:bg-gray-200:hover {
+  background-color: var(--hover-secondary) !important;
+}
+
+.focus\:border-black:focus {
+  border-color: var(--border-focus) !important;
+}
+
+/* Tooltip */
+.tooltip {
+  background: rgba(0, 0, 0, 0.9);
+  color: var(--text-white);
+}
+
+/* Modal */
+.modal-bg {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  background-color: var(--bg-modal);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Botones */
+.btn-primary {
+  background-color: var(--primary-color);
+  color: var(--text-white);
+}
+
+.btn-primary:hover {
+  background-color: var(--hover-primary);
+}
+
+.btn-secondary {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-primary);
+}
+
+.btn-secondary:hover {
+  background-color: var(--hover-secondary);
+} 

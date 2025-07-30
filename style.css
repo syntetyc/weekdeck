@@ -5,6 +5,31 @@
   --error-color: #F97251;
   --hover-color: #155dfc;
   --highlight-color: #155dfc;
+  --border-hover: #000;
+  
+  /* Variables para drag and drop */
+  --drag-drop-border: #155dfc;
+  --drag-drop-border-width: 1px;
+  --drag-drop-border-style: dashed;
+  --drag-drop-opacity: 0.9;
+  
+  /* Variables para menús contextuales dinámicos */
+  --context-menu-bg: #fff;
+  --context-menu-border: #111;
+  --context-menu-border-radius: 0;
+  --context-menu-shadow: none;
+  --context-menu-padding: 12px 0 8px 0;
+  --context-menu-font: 'Space Mono', monospace;
+  --context-menu-font-size: 14px;
+  --context-menu-color: #111;
+  --context-menu-hover-bg: #f5f5f5;
+  --context-menu-hover-color: #111;
+  --context-menu-separator-color: #e5e5e5;
+  --context-menu-icon-size: 20px;
+  --context-menu-icon-color: #111;
+  --context-menu-item-padding: 7px 16px;
+  --context-menu-min-width: 180px;
+  --context-menu-z-index: 1000;
 }
 
 html, body {
@@ -100,6 +125,103 @@ header button:active {
 .tooltip-container {
   position: relative;
   display: inline-block;
+}
+
+/* Sistema dinámico de menús contextuales */
+.context-menu {
+  position: fixed;
+  z-index: var(--context-menu-z-index);
+  background: var(--context-menu-bg);
+  border: 1px solid var(--context-menu-border);
+  border-radius: var(--context-menu-border-radius);
+  box-shadow: var(--context-menu-shadow);
+  min-width: var(--context-menu-min-width);
+  max-width: 280px;
+  opacity: 0;
+  transform: scale(0.95) translateY(-5px);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: var(--context-menu-font);
+  padding: var(--context-menu-padding);
+}
+
+.context-menu.show {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+.context-menu-content {
+  padding: 6px 0;
+}
+
+.context-menu-item {
+  display: flex;
+  align-items: center;
+  padding: var(--context-menu-item-padding);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  font-size: var(--context-menu-font-size);
+  color: var(--context-menu-color);
+  position: relative;
+}
+
+.context-menu-item:hover {
+  background-color: var(--context-menu-hover-bg);
+  color: var(--context-menu-hover-color);
+}
+
+.context-menu-item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.context-menu-item.disabled:hover {
+  background-color: transparent;
+}
+
+.context-menu-item .material-symbols-outlined {
+  font-size: var(--context-menu-icon-size);
+  margin-right: 12px;
+  color: var(--context-menu-icon-color);
+}
+
+.context-menu-item span:not(.material-symbols-outlined) {
+  flex: 1;
+}
+
+.context-menu-subtext {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-left: 8px;
+}
+
+.context-menu-separator {
+  height: 1px;
+  background-color: var(--context-menu-separator-color);
+  margin: 4px 0;
+  padding: 0;
+  cursor: default;
+}
+
+.context-menu-separator:hover {
+  background-color: var(--context-menu-separator-color);
+}
+
+/* Indicador de selección para temas */
+.context-menu-item.selected {
+  background-color: var(--context-menu-hover-bg);
+  color: var(--context-menu-color);
+}
+
+.context-menu-item.selected .material-symbols-outlined {
+  color: var(--context-menu-icon-color);
+}
+
+.context-menu-item.selected::after {
+  content: '✓';
+  position: absolute;
+  right: 16px;
+  color: var(--context-menu-icon-color);
+  font-weight: bold;
 }
 
 .tooltip {
@@ -244,6 +366,8 @@ header button:active {
   overflow: visible;
   position: relative;
   z-index: 1;
+  box-sizing: border-box;
+  border: var(--drag-drop-border-width) var(--drag-drop-border-style) transparent !important;
 }
 
 /* Títulos de días sticky */
@@ -292,7 +416,7 @@ body:has(.flex.min-h-\[48px\].px-2.py-1.group:nth-child(n+6))::after {
 }
 
 .bg-white.border.border-gray-200.rounded-lg.flex.flex-col.min-h-\[70vh\].h-full.transition-all.duration-150.relative:hover {
-  border-color: #000000;
+  border-color: var(--border-hover) !important;
 }
 
 /* Mantener borde superior transparente en el área de listado al hacer hover en la columna */
@@ -789,4 +913,202 @@ body:has(.flex.min-h-\[48px\].px-2.py-1.group:nth-child(n+6))::after {
 }
 .task-menu-btn {
   align-self: flex-start;
+} 
+
+/* Efectos visuales de drag and drop */
+.day-column.drag-over,
+div[class*="bg-white"].drag-over,
+.bg-white.border.border-gray-200.rounded-lg.flex.flex-col.min-h-\[70vh\].h-full.transition-all.duration-150.relative.drag-over {
+  border: var(--drag-drop-border-width) dashed var(--drag-drop-border) !important;
+  opacity: var(--drag-drop-opacity);
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+/* Selector más específico para sobrescribir Tailwind */
+div.bg-white.border.border-gray-200.rounded-lg.flex.flex-col.min-h-\[70vh\].h-full.transition-all.duration-150.relative.drag-over {
+  border: var(--drag-drop-border-width) dashed var(--drag-drop-border) !important;
+  border-color: var(--drag-drop-border) !important;
+}
+
+/* Borde sólido para rollover básico (no drag and drop) */
+.bg-white.border.border-gray-200.rounded-lg.flex.flex-col.min-h-\[70vh\].h-full.transition-all.duration-150.relative:hover {
+  border-color: var(--border-hover) !important;
+  border-style: solid !important;
+}
+
+/* Borde transparente por defecto para evitar saltos */
+div[class*="bg-white"] {
+  box-sizing: border-box;
+}
+
+/* Borde sutil por defecto para las columnas */
+.bg-white.border.border-gray-200.rounded-lg.flex.flex-col.min-h-\[70vh\].h-full.transition-all.duration-150.relative {
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+  height: auto;
+  min-height: calc(100vh - 120px);
+  overflow: visible;
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  border-color: #e5e7eb !important; /* Borde gris claro en reposo */
+  border-style: solid !important;
+}
+
+/* Efecto para elementos individuales durante drag */
+.flex.min-h-\[48px\].px-2.py-1.group.drag-over {
+  transition: all 0.2s ease;
+}
+
+/* Efecto para el elemento que se está arrastrando */
+.flex.min-h-\[48px\].px-2.py-1.group.dragging {
+  opacity: 0.5;
+  transform: rotate(2deg);
+  transition: all 0.2s ease;
+}
+
+/* Indicador de drop entre elementos - VERSIÓN MÁXIMAMENTE SIMPLIFICADA */
+.flex.min-h-\[48px\].px-2.py-1.group.drop-indicator {
+  border-top: 2px solid var(--drag-drop-border);
+  background: transparent !important;
+}
+
+/* Asegurar que no haya fondo azul claro durante drag and drop */
+.flex.min-h-\[48px\].px-2.py-1.group.drag-over,
+.flex.min-h-\[48px\].px-2.py-1.group.drop-indicator,
+.flex.min-h-\[48px\].px-2.py-1.group.dragging {
+  background: transparent !important;
+  border-right: none !important;
+  border-left: none !important;
+  border-bottom: none !important;
+}
+
+/* Asegurar que solo aparezca el borde superior durante drop */
+.flex.min-h-\[48px\].px-2.py-1.group.drop-indicator {
+  border-top: 2px solid var(--drag-drop-border) !important;
+  border-right: none !important;
+  border-left: none !important;
+  border-bottom: none !important;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+/* Efecto sutil para elementos durante drag */
+.flex.min-h-\[48px\].px-2.py-1.group.drag-over {
+  border-top: 2px solid var(--drag-drop-border) !important;
+  border-right: none !important;
+  border-left: none !important;
+  border-bottom: none !important;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+/* Eliminar bordes grises por defecto durante drag - solo en elementos hijos */
+.flex.min-h-\[48px\].px-2.py-1.group.drag-over > *,
+.flex.min-h-\[48px\].px-2.py-1.group.drop-indicator > *,
+.flex.min-h-\[48px\].px-2.py-1.group.dragging > * {
+  border-color: transparent !important;
+}
+
+/* Sobrescribir bordes grises de Tailwind durante drag and drop */
+.flex.min-h-\[48px\].px-2.py-1.group.drag-over,
+.flex.min-h-\[48px\].px-2.py-1.group.drop-indicator,
+.flex.min-h-\[48px\].px-2.py-1.group.dragging {
+  border-color: transparent !important;
+}
+
+/* Eliminar bordes grises de las columnas durante drag */
+.bg-white.border.border-gray-200.rounded-lg.flex.flex-col.min-h-\[70vh\].h-full.transition-all.duration-150.relative.drag-over {
+  border-color: transparent !important;
+}
+
+/* Sobrescribir completamente cualquier borde gris de Tailwind */
+.flex.min-h-\[48px\].px-2.py-1.group.drag-over,
+.flex.min-h-\[48px\].px-2.py-1.group.drop-indicator,
+.flex.min-h-\[48px\].px-2.py-1.group.dragging {
+  border: none !important;
+  border-top: 2px solid var(--drag-drop-border) !important;
+}
+
+/* Asegurar que el borde azul sea visible */
+.flex.min-h-\[48px\].px-2.py-1.group.drag-over {
+  border-top: 2px solid var(--drag-drop-border) !important;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.flex.min-h-\[48px\].px-2.py-1.group.drop-indicator {
+  border-top: 2px solid var(--drag-drop-border) !important;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+/* Cambiar bordes grises a azul en lugar de eliminarlos */
+.flex.min-h-\[48px\].px-2.py-1.group.drag-over,
+.flex.min-h-\[48px\].px-2.py-1.group.drop-indicator,
+.flex.min-h-\[48px\].px-2.py-1.group.dragging {
+  border-color: var(--drag-drop-border) !important;
+}
+
+/* Cambiar bordes grises de elementos hijos a azul */
+.flex.min-h-\[48px\].px-2.py-1.group.drag-over > *,
+.flex.min-h-\[48px\].px-2.py-1.group.drop-indicator > *,
+.flex.min-h-\[48px\].px-2.py-1.group.dragging > * {
+  border-color: var(--drag-drop-border) !important;
+}
+
+/* Cambiar bordes grises de las columnas a azul */
+.bg-white.border.border-gray-200.rounded-lg.flex.flex-col.min-h-\[70vh\].h-full.transition-all.duration-150.relative.drag-over {
+  border-color: var(--drag-drop-border) !important;
+}
+
+/* Eliminar cualquier borde gris que pueda quedar como rastro */
+.flex.min-h-\[48px\].px-2.py-1.group {
+  border-color: transparent !important;
+}
+
+/* Asegurar que solo aparezcan bordes azules durante drag */
+.flex.min-h-\[48px\].px-2.py-1.group.drag-over,
+.flex.min-h-\[48px\].px-2.py-1.group.drop-indicator {
+  border-color: var(--drag-drop-border) !important;
+}
+
+/* Eliminar bordes grises de cualquier elemento que pueda tenerlos */
+.flex.min-h-\[48px\].px-2.py-1.group * {
+  border-color: transparent !important;
+}
+
+/* Aplicar color azul solo a los elementos activos durante drag */
+.flex.min-h-\[48px\].px-2.py-1.group.drag-over *,
+.flex.min-h-\[48px\].px-2.py-1.group.drop-indicator * {
+  border-color: var(--drag-drop-border) !important;
+}
+
+/* Indicador visual cuando se puede hacer drop en una columna */
+.day-column.drop-zone,
+div[class*="bg-white"].drop-zone {
+  position: relative;
+}
+
+.day-column.drop-zone::after,
+div[class*="bg-white"].drop-zone::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 2px dashed var(--drag-drop-border);
+  border-radius: 8px;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 10;
+}
+
+/* Efecto hover para áreas de drop */
+.day-column.drop-zone:hover::after,
+div[class*="bg-white"].drop-zone:hover::after {
+  opacity: 0;
+  border-style: solid;
 } 
