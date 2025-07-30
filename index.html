@@ -153,8 +153,22 @@
         </template>
       </div>
       <!-- Modal Pines UI -->
-      <div x-show="modalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50" style="display: none;">
-        <div class="bg-white p-6 rounded shadow-lg w-full max-w-md">
+      <div x-show="modalOpen" 
+           x-transition:enter="transition ease-out duration-300"
+           x-transition:enter-start="opacity-0"
+           x-transition:enter-end="opacity-100"
+           x-transition:leave="transition ease-in duration-200"
+           x-transition:leave-start="opacity-100"
+           x-transition:leave-end="opacity-0"
+           class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-[999999]" 
+           style="display: none;">
+        <div x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 transform scale-95"
+             x-transition:enter-end="opacity-100 transform scale-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 transform scale-100"
+             x-transition:leave-end="opacity-0 transform scale-95"
+             class="bg-white p-6 rounded shadow-lg w-full max-w-md">
           <h2 class="text-lg font-bold mb-4">Task details</h2>
           <input type="text" class="w-full border-b border-black mb-3 text-base" x-model="modalTask.title" placeholder="Title">
           <textarea class="w-full border-b border-black mb-3 text-base" rows="3" x-model="modalTask.desc" placeholder="Description"></textarea>
