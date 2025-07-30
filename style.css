@@ -1,0 +1,721 @@
+:root {
+  --active-color: #155dfc;
+  --bg-light: #f5f5f5;
+  --text-dark: #333;
+  --error-color: #F97251;
+  --hover-color: #155dfc;
+  --highlight-color: #155dfc;
+}
+
+html, body {
+  height: auto;
+  width: 100vw;
+  min-height: 100vh;
+  min-width: 100vw;
+  margin: 0;
+  padding: 0 0 20px 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.weekdeck-wrapper {
+  height: auto;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+body {
+  background: #f5f5f5;
+  font-family: 'Space Mono', monospace;
+  color: var(--text-dark);
+  margin: 0;
+  height: 100vh;
+  width: 100vw;
+  min-height: 100vh;
+  min-width: 100vw;
+  display: flex;
+  flex-direction: column;
+}
+.weekdeck-header {
+  width: 100%;
+  height: 48px;
+  background: #111;
+  display: flex;
+  align-items: center;
+  padding-left: 24px;
+  box-sizing: border-box;
+  /* position: fixed; */
+  /* top: 0; */
+  /* left: 0; */
+  z-index: 2000;
+}
+.weekdeck-logo {
+  color: #fff;
+  font-family: 'Space Mono', monospace;
+  font-weight: 700;
+  font-size: 1.5em;
+  letter-spacing: 2px;
+  user-select: none;
+}
+
+/* Estilos para el botón de pantalla completa */
+header button {
+  transition: all 0.2s ease;
+}
+
+header button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05);
+}
+
+header button:active {
+  transform: scale(0.95);
+}
+
+/* Asegurar que los iconos de Material Design se muestren */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Fallback para iconos de Material Design */
+.material-symbols-outlined:empty::before {
+  content: "⛶";
+  font-family: monospace;
+}
+.weekdeck-grid-wrapper {
+  display: contents;
+}
+.section, .container, .weekdeck-grid-wrapper {
+  margin: 0 !important;
+  padding: 0 20px 0 20px !important;
+  width: 100vw;
+  min-width: 0;
+  max-width: 100vw;
+  box-sizing: border-box;
+  background: transparent;
+  height: auto;
+  min-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+#week-columns.columns {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  width: 100%;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  gap: 8px;
+  box-sizing: border-box;
+  align-items: stretch;
+  justify-items: stretch;
+  min-height: 0;
+}
+@media (max-width: 1200px) {
+  .section, .container {
+    max-width: 100vw;
+    padding: 0 8px 0 8px !important;
+  }
+  #week-columns.columns {
+    padding: 0;
+  }
+  .section, .container, .weekdeck-grid-wrapper {
+    height: auto;
+    min-height: calc(100vh - 48px);
+  }
+  html, body {
+    padding: 0 0 8px 0;
+  }
+}
+.day-column.column {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 100%;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  min-height: 100%;
+  background: #fff;
+  border-right: 1px solid #ededed;
+  box-sizing: border-box;
+  overflow: visible;
+  min-height: 0;
+}
+.day-column.column:last-child {
+  border-right: none;
+}
+.flex-1.flex.flex-col.relative {
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+  position: relative;
+}
+
+/* Hover effect para toda la columna */
+.bg-white.border.border-gray-200.rounded-lg.flex.flex-col.min-h-\[70vh\].h-full.transition-all.duration-150.relative {
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+  height: auto;
+  min-height: calc(100vh - 120px);
+  overflow: visible;
+  position: relative;
+  z-index: 1;
+}
+
+/* Títulos de días sticky */
+.bg-white.border.border-gray-200.rounded-lg.flex.flex-col.min-h-\[70vh\].h-full.transition-all.duration-150.relative .px-3.py-2.text-2xl.font-extrabold.tracking-wider.flex.items-center {
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 100;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  margin: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+/* Efecto gradiente fijo en la parte inferior del navegador */
+body::after {
+  content: '';
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background: linear-gradient(to top, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.9) 20%, rgba(255, 255, 255, 0.6) 50%, rgba(255, 255, 255, 0.2) 80%, rgba(255, 255, 255, 0) 100%);
+  pointer-events: none;
+  z-index: 99999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Mostrar gradiente cuando hay mucho contenido */
+body:has(.flex.min-h-\[48px\].px-2.py-1.group:nth-child(n+6))::after {
+  opacity: 1;
+}
+
+/* Mostrar gradiente cuando la ventana es pequeña */
+@media (max-height: 700px) {
+  body::after {
+    opacity: 1;
+  }
+}
+.h-full {
+  height: auto !important;
+  min-height: 98% !important;
+}
+
+.bg-white.border.border-gray-200.rounded-lg.flex.flex-col.min-h-\[70vh\].h-full.transition-all.duration-150.relative:hover {
+  border-color: #000000;
+}
+
+/* Mantener borde superior transparente en el área de listado al hacer hover en la columna */
+.bg-white.border.border-gray-200.rounded-lg.flex.flex-col.min-h-\[70vh\].h-full.transition-all.duration-150.relative:hover .flex-1.flex.flex-col.relative {
+  border-top-color: transparent !important;
+}
+
+/* Eliminar borde del área de contenido para que no interfiera con el borde de la tabla */
+.flex-1.flex.flex-col.relative {
+  border: none !important;
+  height: auto;
+  min-height: 0;
+  overflow: visible;
+  position: relative;
+}
+
+/* Eliminar borde del input para que no aparezca línea gris */
+.flex-1.border-0.border-b.border-gray-300.focus\:ring-0.focus\:border-black.bg-transparent.text-base {
+  border-bottom: none !important;
+}
+
+/* Eliminar borde del contenedor del input */
+.flex.items-center.min-h-\[48px\].px-2.transition-all.duration-150 {
+  border-bottom: none !important;
+}
+
+.flex-1.flex.flex-col.relative.clickable-area::after {
+  content: '+ Add task';
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(107, 114, 128, 0.9);
+  color: #f3f4f6;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: 'Space Mono', monospace;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  z-index: 10;
+  text-align: center;
+  white-space: nowrap;
+  width: auto;
+  min-width: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+}
+
+.flex-1.flex.flex-col.relative.clickable-area:hover::after {
+  opacity: 1;
+}
+
+/* Hover effect para las filas de tareas */
+.flex.min-h-\[48px\].px-2.py-1.group {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent !important;
+}
+
+.flex.min-h-\[48px\].px-2.py-1.group:hover {
+  border-left-color: #155dfc !important;
+}
+
+.flex.min-h-\[48px\].px-2.py-1.group:hover .flex-1.min-w-0.break-words.whitespace-pre-line.text-base.overflow-wrap-break-word {
+  color: #155dfc !important;
+}
+
+/* Menú contextual - transparente por defecto, visible al hover del item */
+.flex.min-h-\[48px\].px-2.py-1.group .material-symbols-outlined {
+  color: transparent !important;
+  transition: color 0.2s ease;
+}
+
+/* Mostrar menú contextual al hover del item */
+.flex.min-h-\[48px\].px-2.py-1.group:hover .material-symbols-outlined {
+  color: #000000 !important;
+}
+
+/* Color highlight al hover del botón de menú */
+.flex.min-h-\[48px\].px-2.py-1.group .p-1.hover\:bg-gray-200.rounded-full:hover .material-symbols-outlined {
+  color: #155dfc !important;
+}
+
+/* Animación fade + scale para menús contextuales */
+.menu-fade-scale {
+  opacity: 0;
+  transform: scale(0.95) translateY(-5px);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.menu-fade-scale.show {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+/* Animación fade + slide para menú de colores (izquierda a derecha) */
+.menu-fade-slide {
+  opacity: 0 !important;
+  transform: scale(0.95) translateX(-15px) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.menu-fade-slide.show {
+  opacity: 1 !important;
+  transform: scale(1) translateX(0) !important;
+}
+
+/* Animación de eliminación de items */
+.item-removing {
+  opacity: 0;
+  transform: translateY(-20px) rotateX(-10deg);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+/* Animación de creación de items */
+.flex.min-h-\[48px\].px-2.py-1.group.item-adding {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.flex.min-h-\[48px\].px-2.py-1.group.item-adding.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Quitar background gris del botón de menú al hacer hover */
+.flex.min-h-\[48px\].px-2.py-1.group .p-1.hover\:bg-gray-200.rounded-full:hover {
+  background-color: transparent !important;
+}
+
+/* Eliminar box-shadow para evitar bordes duplicados */
+.flex.min-h-\[48px\].px-2.py-1.group {
+  box-shadow: none !important;
+}
+
+.flex.min-h-\[48px\].px-2.py-1.group:hover {
+  box-shadow: none !important;
+}
+.day-title {
+  font-size: 1.1em;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 0.2em;
+  letter-spacing: 0.04em;
+  text-align: left;
+  text-transform: uppercase;
+  font-family: 'Space Mono', monospace;
+  position: relative;
+  padding-left: 4px;
+  padding-bottom: 2px;
+  width: 100%;
+  box-sizing: border-box;
+  background: #fff;
+  z-index: 1;
+}
+
+/* Estilos para el icono del día actual */
+.material-symbols-outlined.text-red-500 {
+  font-size: 20px;
+  font-weight: bold;
+  color: #155dfc !important;
+  margin-right: 8px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Estilos para elementos tutoriales */
+.flex.min-h-\[48px\].px-2.py-1.group:has(.flex-1.min-w-0.break-words.whitespace-pre-line.text-base.overflow-wrap-break-word:contains('tutorial')) {
+  background: rgba(21, 93, 252, 0.05) !important;
+  border-left: 3px solid #155dfc !important;
+  animation: tutorial-pulse 3s infinite;
+}
+
+/* Estilos específicos para elementos tutoriales por ID */
+.flex.min-h-\[48px\].px-2.py-1.group:has([data-task-id*="tutorial"]) {
+  background: rgba(21, 93, 252, 0.05) !important;
+  border-left: 3px solid #155dfc !important;
+  animation: tutorial-pulse 3s infinite;
+}
+
+@keyframes tutorial-pulse {
+  0% {
+    background: rgba(21, 93, 252, 0.05);
+  }
+  50% {
+    background: rgba(21, 93, 252, 0.1);
+  }
+  100% {
+    background: rgba(21, 93, 252, 0.05);
+  }
+}
+
+.tasks-list {
+  flex: 1 1 auto;
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.task-row {
+  display: block;
+  border-bottom: 1.5px solid #222;
+  background: transparent;
+  box-sizing: border-box;
+  padding: 0;
+  font-family: 'Space Mono', monospace;
+  margin: 0;
+}
+.empty-row {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+.task-title {
+  flex: 1 1 0;
+  min-width: 0;
+  font-size: 15px;
+  line-height: 1.2;
+  font-weight: 400;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-line;
+  color: #111;
+  font-family: 'Space Mono', monospace;
+  text-align: left;
+  padding: 0 8px 0 0;
+}
+.delete-task-btn {
+  opacity: 0;
+  background: none;
+  border: none;
+  color: var(--error-color);
+  font-size: 20px;
+  margin-left: 8px;
+  transition: opacity 0.2s;
+  cursor: pointer;
+  box-shadow: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+.task-row:hover .delete-task-btn {
+  opacity: 1;
+}
+.add-task-input.input {
+  box-sizing: border-box;
+  width: 100%;
+  border: 0;
+  border-bottom: 2px solid #e5e7eb;
+  background: #fff;
+  font-size: 20px;
+  line-height: 28px;
+  padding: 0 8px;
+  margin: 0;
+  align-self: center;
+  color: var(--text-dark);
+  font-family: 'Montserrat', sans-serif;
+  border-radius: 0;
+  transition: border-color 0.2s;
+}
+.add-task-input.input:focus {
+  border-bottom: 2px solid var(--highlight-color);
+  background: #fff;
+  outline: none;
+}
+.add-task-input.input::placeholder {
+  color: #b5b5b5;
+  font-size: 20px;
+  opacity: 0.7;
+  font-family: 'Montserrat', sans-serif;
+}
+.day-column.drag-over .day-box {
+  border: 2px dashed var(--highlight-color);
+  background: #e0f7fa;
+}
+.button.is-success, .button.is-link, .button {
+  border-radius: 15px;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 8px 24px;
+  border: 1.5px solid var(--highlight-color);
+  background: var(--highlight-color);
+  color: #fff;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  box-shadow: none;
+  font-family: 'Montserrat', sans-serif;
+}
+.button.is-success:hover, .button.is-link:hover, .button:hover {
+  background: var(--hover-color);
+  color: #fff;
+  border-color: var(--hover-color);
+}
+.button {
+  box-shadow: none;
+}
+@media (max-width: 1023px) {
+  .section, .container, #week-columns.columns {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+    width: 100vw;
+    min-width: 100vw;
+  }
+  #week-columns.columns {
+    flex-wrap: wrap;
+    overflow-x: auto;
+    height: auto;
+  }
+  .day-column.column {
+    min-width: 320px;
+    max-width: 100vw;
+    width: 100vw;
+    flex: 1 1 100vw;
+    margin-bottom: 8px;
+  }
+  .day-box {
+    min-height: 250px;
+    padding: 0.7em 0.5em 0.5em 0.5em;
+  }
+  .add-task-input.input {
+    font-size: 18px !important;
+  }
+  .task-title {
+    font-size: 18px;
+  }
+} 
+.task-color-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  margin-right: 8px;
+  background: transparent;
+  border: 1.5px solid #ffffff !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.task-color-dot[data-color="red"] { background: #F36B6B; border-color: #ffffff !important; }
+.task-color-dot[data-color="yellow"] { background: #FFD86B; border-color: #ffffff !important; }
+.task-color-dot[data-color="blue"] { background: #6B9AFF; border-color: #ffffff !important; }
+.task-color-dot[data-color="green"] { background: #7BE495; border-color: #ffffff !important; }
+.task-color-dot[data-color="gray"] { background: #bbb; border-color: #ffffff !important; }
+.task-color-dot[data-color="none"] { background: transparent; border-color: #ffffff !important; }
+
+.task-menu-btn {
+  font-size: 18px;
+  color: #111;
+  cursor: pointer;
+  margin-left: 8px;
+  vertical-align: middle;
+  transition: color 0.2s;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.task-menu-btn:hover {
+  color: var(--active-color);
+}
+
+.task-context-menu {
+  position: absolute;
+  top: 36px;
+  right: 0;
+  min-width: 180px;
+  background: #fff;
+  border: 1px solid #111;
+  border-radius: 0;
+  box-shadow: none;
+  z-index: 1000;
+  padding: 12px 0 8px 0;
+  font-family: 'Space Mono', monospace;
+  font-size: 14px;
+  color: #111;
+  animation: fadeInMenu 0.15s;
+}
+@keyframes fadeInMenu {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.task-context-menu .color-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px 8px 16px;
+  margin-bottom: 8px;
+}
+.task-context-menu .color-dot-option {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid #ffffff !important;
+  cursor: pointer;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+.task-context-menu .color-dot-option[data-color="red"] { background: #F36B6B; border-color: #ffffff !important; }
+.task-context-menu .color-dot-option[data-color="yellow"] { background: #FFD86B; border-color: #ffffff !important; }
+.task-context-menu .color-dot-option[data-color="blue"] { background: #6B9AFF; border-color: #ffffff !important; }
+.task-context-menu .color-dot-option[data-color="green"] { background: #7BE495; border-color: #ffffff !important; }
+.task-context-menu .color-dot-option[data-color="gray"] { background: #bbb; border-color: #ffffff !important; }
+.task-context-menu .color-dot-option[data-color="none"] { background: #fff; border-color: #ffffff !important; }
+.task-context-menu .color-dot-option.selected {
+  box-shadow: 0 0 0 2px #111;
+}
+.task-context-menu .menu-option {
+  padding: 7px 16px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  font-size: 14px;
+  color: #111;
+}
+.task-context-menu .menu-option:hover {
+  background: #f5f5f5;
+  color: #111;
+}
+.task-context-menu .close-menu-btn {
+  position: absolute;
+  top: 7px;
+  right: 10px;
+  font-size: 20px;
+  color: #111;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  line-height: 1;
+}
+.task-context-menu .close-menu-btn:hover {
+  color: #F36B6B;
+} 
+.completed-task {
+  text-decoration: line-through;
+  color: #bbb !important;
+  opacity: 0.5;
+} 
+.level {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  padding: 10px;
+  margin: 0;
+}
+.level-left {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+  flex: 1 1 auto;
+}
+.level-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0;
+  margin: 0;
+  flex-shrink: 0;
+} 
+.level, .level-left, .level-right {
+  align-items: flex-start !important;
+  height: 100%;
+}
+.task-menu-btn {
+  align-self: flex-start;
+} 

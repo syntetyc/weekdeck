@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WeekDeck - Vista Semanal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <!-- TailwindCSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Alpine.js -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <!-- Pines UI -->
+  <link rel="stylesheet" href="https://unpkg.com/@thedevdojo/pines@latest/dist/pines.min.css">
+  <script src="https://unpkg.com/@thedevdojo/pines@latest/dist/pines.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+</head>
+<body class="bg-gray-50 min-h-screen font-mono" style="font-family: 'Space Mono', monospace;">
+  <div class="weekdeck-wrapper">
+    <header class="bg-black text-white px-6 py-3 text-2xl font-bold tracking-widest flex justify-between items-center" style="font-family: 'Space Mono', monospace;" x-data="weekdeckApp()" x-init="init()">
+      <span>WEEKDECK</span>
+      <div class="flex items-center gap-3">
+        <!-- Botón de pantalla completa -->
+        <button 
+          @click="toggleFullscreen()" 
+          class="text-white hover:text-[#155dfc] transition-colors duration-200 p-2 rounded"
+          :title="isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'">
+          <span class="material-symbols-outlined text-3xl" x-text="isFullscreen ? 'hide' : 'aspect_ratio'">⛶</span>
+        </button>
+        
+        <!-- Espacio para futuros botones -->
+        <!-- 
+        <button 
+          @click="futureFunction()" 
+          class="text-white hover:text-[#155dfc] transition-colors duration-200 p-2 rounded"
+          title="Future function">
+          <span class="material-symbols-outlined text-3xl">settings</span>
+        </button>
+        -->
+      </div>
+    </header>
+    <main class="w-full px-5 py-4 pb-5 min-h-screen" x-data="weekdeckApp()" x-init="init()">
+      <div class="grid grid-cols-7 gap-3 w-full mx-auto h-full">
+        <template x-for="(day, idx) in days" :key="day">
+                  <div
+          class="bg-white border border-gray-200 rounded-lg flex flex-col min-h-[70vh] h-full transition-all duration-150 relative"
+          :class="dragOverColumn === day ? 'bg-blue-50 border-2 border-blue-400' : ''"
+          @dragover="onColumnDragOver(day, $event)"
+          @dragleave="onColumnDragLeave(day, $event)"
+          @drop="onColumnDrop(day, $event)"
+          @click="onColumnClick(day, $event)"
+          @mouseenter="onColumnMouseEnter(day, $event)"
+          @mouseleave="onColumnMouseLeave(day, $event)"
+          style="overflow: visible;"
+        >
+            <div class="px-3 py-2 text-2xl font-extrabold tracking-wider flex items-center">
+              <span class="material-symbols-outlined text-red-500 mr-2" x-show="currentDay === day">asterisk</span>
+              <span x-text="day"></span>
+              <span class="ml-2 w-2 h-2 bg-black rounded-full inline-block"></span>
+            </div>
+            <div class="flex-1 flex flex-col relative" style="overflow: visible;">
+              <template x-for="(task, tIdx) in tasks[day]" :key="task.id">
+                <div
+                  class="flex min-h-[48px] px-2 py-1 group relative select-none transition-all duration-150"
+                  :class="[
+                    isDragging && dragOverDay === day && dragOverIdx === tIdx ? 'bg-blue-100 border-2 border-blue-400' : '',
+                    isDragging && dragData && dragData.fromDay === day && dragData.fromIdx === tIdx ? 'shadow-lg cursor-grabbing' : '',
+                    'items-center'
+                  ]"
+                  :style="task.bgFill && task.color ? 'background:' + (task.color + '22') : ''"
+                  :data-task-id="task.id"
+                  draggable="true"
+                  @dragstart="onDragStart(day, tIdx, $event)"
+                  @dragend="onDragEnd()"
+                  @dragover="onDragOver(day, tIdx, $event)"
+                  @dragleave="onDragLeave(day, tIdx, $event)"
+                  @drop="onDrop(day, tIdx, $event)"
+                >
+                  <!-- Círculo color -->
+                  <span class="flex items-center justify-center mr-2 self-center relative" x-data="{openColor: false}">
+                    <span class="w-4 h-4 rounded-full cursor-pointer" :class="task.color ? 'border border-white' : 'border border-gray-400'" :style="task.color ? 'background:' + task.color : ''"
+                      @click="openColor = !openColor"
+                    ></span>
+                    <div x-show="openColor" 
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 transform scale-95 -translate-x-3"
+                         x-transition:enter-end="opacity-100 transform scale-100 translate-x-0"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100 transform scale-100 translate-x-0"
+                         x-transition:leave-end="opacity-0 transform scale-95 -translate-x-3"
+                         @click.away="openColor = false" 
+                         class="absolute left-6 top-1/2 -translate-y-1/2 z-50 bg-white border border-black rounded shadow-lg flex gap-2 p-2">
+                      <template x-for="color in colors" :key="color">
+                        <button class="w-5 h-5 rounded-full" :class="color ? 'border border-white' : 'border border-gray-400'" :style="'background:' + (color || '#fff')"
+                          @click.stop="setColor(day, tIdx, color); openColor=false"></button>
+                      </template>
+                    </div>
+                  </span>
+                  <!-- Título -->
+                  <span class="flex-1 min-w-0 break-words whitespace-pre-line text-base overflow-wrap-break-word"
+                    :class="task.completed ? 'line-through text-gray-400' : ''"
+                    x-text="task.title" @click="openModal(day, tIdx)"></span>
+                  <!-- Menú contextual (sin selector de colores) -->
+                  <div class="relative flex items-center ml-2 self-center" x-data="{open: false}" @keydown.escape.window="open=false">
+                    <button @click="open = !open" class="p-1 hover:bg-gray-200 rounded-full">
+                      <span class="material-symbols-outlined">more_vert</span>
+                    </button>
+                    <div x-show="open" 
+                         x-transition:enter="menu-fade-scale"
+                         x-transition:enter-start=""
+                         x-transition:enter-end="show"
+                         x-transition:leave="menu-fade-scale"
+                         x-transition:leave-start="show"
+                         x-transition:leave-end=""
+                         @click.away="open=false" 
+                         class="absolute right-0 top-7 z-[9999] bg-white border border-black rounded shadow-lg w-44 p-2 !text-black">
+                      <button class="block w-full text-left px-2 py-1 hover:bg-gray-100 text-sm"
+                        @click.stop="toggleBgFill(day, tIdx); open=false"
+                        x-text="tasks[day][tIdx].bgFill ? 'Unhighlight' : 'Highlight'"
+                      ></button>
+                      <button class="block w-full text-left px-2 py-1 hover:bg-gray-100 text-sm"
+                        @click.stop="toggleComplete(day, tIdx); open=false"
+                        x-text="tasks[day][tIdx].completed ? 'Unmark as complete' : 'Mark as complete'"
+                      ></button>
+                      <button class="block w-full text-left px-2 py-1 hover:bg-gray-100 text-sm text-red-600"
+                        @click.stop="deleteTask(day, tIdx); open=false">Delete task</button>
+                    </div>
+                  </div>
+                </div>
+              </template>
+              <!-- Fila vacía para añadir tarea y zona de drop al final -->
+              <div
+                class="flex items-center min-h-[48px] px-2 transition-all duration-150"
+                :class="isDragging && dragOverDay === day && dragOverIdx === null ? 'bg-blue-100 border-2 border-blue-400' : ''"
+                @dragover="onDragOver(day, null, $event)"
+                @dragleave="onDragLeave(day, null, $event)"
+                @drop="onDrop(day, null, $event)"
+              >
+                <input type="text" class="flex-1 border-0 border-b border-gray-300 focus:ring-0 focus:border-black bg-transparent text-base" x-model="newTask[day]" @keydown.enter="addTask(day)" @blur="addTask(day)">
+              </div>
+              <!-- Indicador visual si la columna está vacía y es zona de drop -->
+              <template x-if="isDragging && dragOverColumn === day && tasks[day].length === 0">
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <span class="text-blue-500 text-sm font-semibold bg-blue-50 rounded px-3 py-2 border border-blue-300 shadow">Drop here</span>
+                </div>
+              </template>
+            </div>
+          </div>
+        </template>
+      </div>
+      <!-- Modal Pines UI -->
+      <div x-show="modalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50" style="display: none;">
+        <div class="bg-white p-6 rounded shadow-lg w-full max-w-md">
+          <h2 class="text-lg font-bold mb-4">Task details</h2>
+          <input type="text" class="w-full border-b border-black mb-3 text-base" x-model="modalTask.title" placeholder="Title">
+          <textarea class="w-full border-b border-black mb-3 text-base" rows="3" x-model="modalTask.desc" placeholder="Description"></textarea>
+          <div class="flex justify-end gap-2 mt-4">
+            <button class="px-4 py-2 bg-black text-white rounded" @click="saveModalTask">Save</button>
+            <button class="px-4 py-2 border border-black rounded" @click="modalOpen=false">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="main.js"></script>
+</body>
+</html> 
