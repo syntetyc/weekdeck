@@ -157,6 +157,15 @@ function weekdeckApp() {
           action: () => {
             this.toggleWeekend();
           }
+        },
+        { separator: true },
+        {
+          text: 'Clear all',
+          icon: 'delete_forever',
+          action: () => {
+            this.showClearAllConfirmation();
+          },
+          iconClass: 'text-red-600'
         }
       ];
       
@@ -208,6 +217,53 @@ function weekdeckApp() {
       localStorage.setItem('weekdeck-weekend-hidden', this.weekendHidden);
       
       console.log(`Weekend ${this.weekendHidden ? 'hidden' : 'shown'}`);
+    },
+    
+    // Mostrar confirmación para borrar todo
+    showClearAllConfirmation() {
+      const confirmed = confirm(
+        '⚠️ WARNING: This will delete ALL tasks and reset the application to its initial state.\n\n' +
+        'This action cannot be undone.\n\n' +
+        'Are you sure you want to continue?'
+      );
+      
+      if (confirmed) {
+        this.clearAllData();
+      }
+    },
+    
+    // Borrar todos los datos y resetear al estado inicial
+    clearAllData() {
+      console.log('🗑️ Clearing all data...');
+      
+      // Limpiar localStorage
+      localStorage.removeItem('weekdeck-tasks');
+      localStorage.removeItem('weekdeck-weekend-hidden');
+      
+      // Refresh inmediato
+      window.location.reload();
+    },
+    
+    // Mostrar notificación de éxito
+    showSuccessNotification(message) {
+      // Crear notificación temporal
+      const notification = document.createElement('div');
+      notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg z-50 notification';
+      notification.textContent = message;
+      
+      document.body.appendChild(notification);
+      
+      // Remover después de 3 segundos
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.style.animation = 'slideOut 0.3s ease-in';
+          setTimeout(() => {
+            if (notification.parentNode) {
+              notification.parentNode.removeChild(notification);
+            }
+          }, 300);
+        }
+      }, 3000);
     },
     
     // Mostrar menú contextual de tareas
