@@ -20,10 +20,11 @@
   --context-menu-shadow: none;
   --context-menu-padding: 12px 0 8px 0;
   --context-menu-font: 'Space Mono', monospace;
-  --context-menu-font-size: 14px;
+  --context-menu-font-size: 16px;
   --context-menu-color: #111;
   --context-menu-hover-bg: #f5f5f5;
   --context-menu-hover-color: #111;
+--context-menu-color: #111;
   --context-menu-separator-color: #e5e5e5;
   --context-menu-icon-size: 20px;
   --context-menu-icon-color: #111;
@@ -169,7 +170,11 @@ header button:active {
 
 .context-menu-item:hover {
   background-color: var(--context-menu-hover-bg);
-  color: var(--context-menu-hover-color);
+  color: #155dfc !important;
+}
+
+.context-menu-item:hover .material-symbols-outlined {
+  color: #155dfc !important;
 }
 
 .context-menu-item.disabled {
@@ -194,10 +199,11 @@ header button:active {
 
 .context-menu-item span:not(.material-symbols-outlined) {
   flex: 1;
+  font-size: 16px !important;
 }
 
 .context-menu-subtext {
-  font-size: 12px;
+  font-size: 14px;
   color: #9ca3af;
   margin-left: 8px;
 }
@@ -237,6 +243,11 @@ header button:active {
   color: #dc2626 !important;
 }
 
+/* Excepción para iconos con colores específicos en hover */
+.context-menu-item:hover .material-symbols-outlined.text-red-600 {
+  color: #dc2626 !important;
+}
+
 /* Estilos para iconos personalizados en menús contextuales */
 .context-menu-item .w-4.h-4.rounded-full {
   margin-right: 8px;
@@ -253,6 +264,11 @@ header button:active {
 }
 
 .context-menu-item .material-symbols-outlined.text-blue-600 {
+  color: #2563eb !important;
+}
+
+/* Excepción para iconos azules en hover */
+.context-menu-item:hover .material-symbols-outlined.text-blue-600 {
   color: #2563eb !important;
 }
 
@@ -492,6 +508,7 @@ body:has(.flex.min-h-\[48px\].px-2.py-1.group:nth-child(n+6))::after {
 .add-task-input {
   color: transparent;
   transition: color 0.3s ease;
+  font-size: 18px;
 }
 
 .add-task-input::placeholder {
@@ -526,11 +543,17 @@ body:has(.flex.min-h-\[48px\].px-2.py-1.group:nth-child(n+6))::after {
   border-left: 3px solid transparent !important;
 }
 
+/* Tamaño de fuente para el texto de las tareas */
+.flex.min-h-\[48px\].px-2.py-1.group .flex-1.min-w-0.break-words.whitespace-pre-line.text-lg.overflow-wrap-break-word {
+  font-size: 18px;
+  line-height: 1.5;
+}
+
 .flex.min-h-\[48px\].px-2.py-1.group:hover {
   border-left-color: #155dfc !important;
 }
 
-.flex.min-h-\[48px\].px-2.py-1.group:hover .flex-1.min-w-0.break-words.whitespace-pre-line.text-base.overflow-wrap-break-word {
+.flex.min-h-\[48px\].px-2.py-1.group:hover .flex-1.min-w-0.break-words.whitespace-pre-line.text-lg.overflow-wrap-break-word {
   color: #155dfc !important;
 }
 
@@ -540,9 +563,49 @@ body:has(.flex.min-h-\[48px\].px-2.py-1.group:nth-child(n+6))::after {
   transition: color 0.2s ease;
 }
 
+/* Botón de menú del header - transparente por defecto, visible al hover */
+.header-menu-btn .material-symbols-outlined {
+  color: transparent !important;
+  transition: color 0.2s ease;
+}
+
+/* Mostrar botón del header al hover de la tabla */
+.bg-white.border.border-gray-200.rounded-lg.flex.flex-col.min-h-\[70vh\].h-full.transition-all.duration-150.relative:hover .header-menu-btn .material-symbols-outlined {
+  color: var(--context-menu-color) !important;
+}
+
+/* Color highlight al hover del botón de menú del header */
+.header-menu-btn:hover .material-symbols-outlined {
+  color: #155dfc !important;
+}
+
+/* Asegurar que el color azul se aplique incluso con la clase hover:bg-gray-200 */
+.header-menu-btn.hover\:bg-gray-200:hover .material-symbols-outlined {
+  color: #155dfc !important;
+}
+
+/* Regla con máxima especificidad para el color azul del header */
+html body .header-menu-btn:hover .material-symbols-outlined {
+  color: #155dfc !important;
+}
+
+html body .header-menu-btn.hover\:bg-gray-200:hover .material-symbols-outlined {
+  color: #155dfc !important;
+}
+
+/* Quitar background gris del botón de menú del header al hacer hover */
+.header-menu-btn:hover {
+  background-color: transparent !important;
+}
+
+/* Sobrescribir específicamente la clase hover:bg-gray-200 de Tailwind */
+.header-menu-btn.hover\:bg-gray-200:hover {
+  background-color: transparent !important;
+}
+
 /* Mostrar menú contextual al hover del item */
 .flex.min-h-\[48px\].px-2.py-1.group:hover .material-symbols-outlined {
-  color: #000000 !important;
+  color: var(--context-menu-color) !important;
 }
 
 /* Color highlight al hover del botón de menú */
@@ -1011,6 +1074,45 @@ div[class*="bg-white"] {
 .flex.min-h-\[48px\].px-2.py-1.group.drop-indicator {
   border-top: 2px solid var(--drag-drop-border);
   background: transparent !important;
+}
+
+
+
+/* Indicador de drop para la zona al final de la tabla */
+.drop-indicator-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #155dfc;
+  z-index: 1000;
+}
+
+/* Indicador de drop para la zona al final de la tabla */
+.flex.items-center.min-h-\[48px\].px-2.transition-all.duration-150.drop-indicator {
+  border-top: 2px solid var(--drag-drop-border) !important;
+  background: transparent !important;
+  border-right: none !important;
+  border-left: none !important;
+  border-bottom: none !important;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+/* Indicador de drop para tabla completa - solo para marcar el estado */
+.flex-1.flex.flex-col.relative.table-drop-zone {
+  position: relative;
+}
+
+/* Sobrescribir cualquier fondo azul de Tailwind en zonas de drop */
+.flex.items-center.min-h-\[48px\].px-2.transition-all.duration-150.bg-blue-100 {
+  background: transparent !important;
+}
+
+.flex.items-center.min-h-\[48px\].px-2.transition-all.duration-150.border-blue-400 {
+  border-color: transparent !important;
+  border-top-color: var(--drag-drop-border) !important;
 }
 
 /* Asegurar que no haya fondo azul claro durante drag and drop */

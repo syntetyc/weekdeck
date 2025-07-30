@@ -3,7 +3,7 @@
 class ThemeManager {
   constructor() {
     this.currentTheme = 'default';
-    this.availableThemes = ['default', 'dark', 'blue'];
+    this.availableThemes = ['default', 'dark'];
     this.themeLink = null;
     
     this.init();

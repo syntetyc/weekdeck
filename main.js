@@ -81,7 +81,7 @@ function weekdeckApp() {
       // Menú de temas
       const themeOptions = [
         {
-          text: 'Default Theme',
+          text: 'Light Theme',
           icon: 'light_mode',
           action: () => window.changeTheme('default'),
           selected: () => window.getCurrentTheme() === 'default'
@@ -92,12 +92,7 @@ function weekdeckApp() {
           action: () => window.changeTheme('dark'),
           selected: () => window.getCurrentTheme() === 'dark'
         },
-        {
-          text: 'Blue Theme',
-          icon: 'palette',
-          action: () => window.changeTheme('blue'),
-          selected: () => window.getCurrentTheme() === 'blue'
-        }
+
       ];
       
       // Registrar menú de temas
@@ -201,6 +196,40 @@ function weekdeckApp() {
       }
       
       window.showContextMenu('color-menu', event.target, 'bottom-left');
+    },
+    
+    // Mostrar menú contextual del header de la tabla
+    showHeaderContextMenu(event, day) {
+      event.preventDefault();
+      event.stopPropagation();
+      
+      // Crear opciones del menú contextual del header
+      const menuOptions = [
+        {
+          text: 'Clear content',
+          icon: 'delete_sweep',
+          action: () => this.clearDayContent(day),
+          iconClass: 'text-red-600'
+        }
+      ];
+      
+      // Registrar el menú si no existe
+      if (!window.contextMenuManager.menus.has('header-menu')) {
+        window.registerContextMenu('header-menu', menuOptions);
+      } else {
+        // Actualizar opciones si el menú ya existe
+        window.contextMenuManager.menus.get('header-menu').options = menuOptions;
+      }
+      
+      window.showContextMenu('header-menu', event.target, 'bottom-right');
+    },
+    
+    // Borrar todo el contenido de un día
+    clearDayContent(day) {
+      // Confirmar antes de borrar
+      if (confirm(`Are you sure you want to clear all content from ${day}?`)) {
+        this.tasks[day] = [];
+      }
     },
     
     // Agregar elementos tutoriales
@@ -419,6 +448,27 @@ function weekdeckApp() {
         return;
       }
       
+      // Si idx es null, estamos en la zona de drop al final de la tabla
+      if (idx === null) {
+        const dropZone = event.target.closest('.flex.items-center.min-h-\\[48px\\].px-2.transition-all.duration-150');
+        if (!dropZone) return;
+        
+        // Limpiar indicador anterior
+        if (this.dragOverDay !== null || this.dragOverIdx !== null) {
+          const prevElement = document.querySelector(`[data-day="${this.dragOverDay}"][data-idx="${this.dragOverIdx}"]`);
+          if (prevElement) {
+            prevElement.classList.remove('drop-indicator');
+          }
+        }
+        
+        this.dragOverDay = day;
+        this.dragOverIdx = idx;
+        
+        // Añadir clase al elemento actual
+        dropZone.classList.add('drop-indicator');
+        return;
+      }
+      
       const targetElement = event.target.closest('.group');
       if (!targetElement || targetElement.classList.contains('dragging')) {
         return;
@@ -441,6 +491,19 @@ function weekdeckApp() {
     
     onDragLeave(day, idx, event) {
       const relatedTarget = event.relatedTarget;
+      
+      // Si idx es null, estamos en la zona de drop al final de la tabla
+      if (idx === null) {
+        const currentElement = event.target.closest('.flex.items-center.min-h-\\[48px\\].px-2.transition-all.duration-150');
+        
+        if (!relatedTarget || !currentElement.contains(relatedTarget)) {
+          if (currentElement) {
+            currentElement.classList.remove('drop-indicator');
+          }
+        }
+        return;
+      }
+      
       const currentElement = event.target.closest('.group');
       
       if (!relatedTarget || !currentElement.contains(relatedTarget)) {
@@ -471,6 +534,11 @@ function weekdeckApp() {
     
     onDragEnd() {
       this.resetDragState();
+      
+      // Limpiar todos los indicadores de drop
+      document.querySelectorAll('.drop-indicator-line').forEach(indicator => {
+        indicator.style.display = 'none';
+      });
     },
     
     // --- DRAG & DROP EN COLUMNA ---
@@ -523,6 +591,112 @@ function weekdeckApp() {
       this.resetDragState();
     },
     
+
+    
+    // --- NUEVA LÓGICA DE DRAG & DROP SOBRE TABLA ---
+    onTableDragOver(day, event) {
+      event.preventDefault();
+      event.dataTransfer.dropEffect = 'move';
+      
+      console.log('onTableDragOver called for day:', day);
+      
+      if (!this.dragData || this.dragData.fromDay === day) {
+        console.log('Returning early - no dragData or same day');
+        return;
+      }
+      
+      // Verificar si estamos sobre un elemento específico
+      const targetElement = event.target.closest('.group');
+      if (targetElement) {
+        console.log('Returning early - over specific element');
+        return;
+      }
+      
+      console.log('Over table area, not over specific element');
+      
+      // Si estamos sobre la tabla pero no sobre un elemento específico, activar el indicador
+      const tableContainer = event.target.closest('.flex-1.flex.flex-col.relative');
+      console.log('Table container found:', tableContainer);
+      if (tableContainer) {
+        tableContainer.classList.add('table-drag-over');
+        console.log('Added table-drag-over class');
+        
+        // Verificar si existe el último elemento
+        const allGroups = tableContainer.querySelectorAll('.group');
+        const lastElement = allGroups[allGroups.length - 1];
+        if (lastElement) {
+          // Crear un elemento indicador de drop
+          let dropIndicator = lastElement.querySelector('.drop-indicator-line');
+          if (!dropIndicator) {
+            dropIndicator = document.createElement('div');
+            dropIndicator.className = 'drop-indicator-line';
+            dropIndicator.style.cssText = `
+              position: absolute;
+              bottom: 0;
+              left: 0;
+              right: 0;
+              height: 2px;
+              background: #155dfc;
+              z-index: 1000;
+            `;
+            lastElement.style.position = 'relative';
+            lastElement.appendChild(dropIndicator);
+          }
+          dropIndicator.style.display = 'block';
+        }
+      }
+    },
+    
+    onTableDragLeave(day, event) {
+      const relatedTarget = event.relatedTarget;
+      const tableContainer = event.target.closest('.flex-1.flex.flex-col.relative');
+      
+      console.log('onTableDragLeave called for day:', day);
+      
+      if (!relatedTarget || !tableContainer.contains(relatedTarget)) {
+        if (tableContainer) {
+          tableContainer.classList.remove('table-drag-over');
+          
+          // Limpiar los estilos del último elemento
+          const allGroups = tableContainer.querySelectorAll('.group');
+          const lastElement = allGroups[allGroups.length - 1];
+          if (lastElement) {
+            const dropIndicator = lastElement.querySelector('.drop-indicator-line');
+            if (dropIndicator) {
+              dropIndicator.style.display = 'none';
+            }
+          }
+        }
+      }
+    },
+    
+    onTableDrop(day, event) {
+      event.preventDefault();
+      if (!this.dragData) return;
+      
+      const { fromDay, fromIdx } = this.dragData;
+      if (fromDay === day) return;
+      
+      const task = this.tasks[fromDay][fromIdx];
+      this.tasks[fromDay].splice(fromIdx, 1);
+      this.tasks[day].push(task);
+      
+      this.resetDragState();
+      
+      // Limpiar específicamente el indicador de la tabla donde se hizo drop
+      const tableContainer = event.target.closest('.flex-1.flex.flex-col.relative');
+      if (tableContainer) {
+        const allGroups = tableContainer.querySelectorAll('.group');
+        const lastElement = allGroups[allGroups.length - 1];
+        if (lastElement) {
+          const dropIndicator = lastElement.querySelector('.drop-indicator-line');
+          if (dropIndicator) {
+            dropIndicator.style.display = 'none';
+          }
+        }
+      }
+    },
+    
     // Función para resetear el estado de drag
     resetDragState() {
       this.dragData = null;
@@ -535,6 +709,23 @@ function weekdeckApp() {
       const elements = document.querySelectorAll('.dragging, .drag-over, .drop-zone, .drop-indicator');
       elements.forEach(el => {
         el.classList.remove('dragging', 'drag-over', 'drop-zone', 'drop-indicator');
+      });
+      
+      // Limpiar específicamente la zona de drop al final
+      const dropZones = document.querySelectorAll('.flex.items-center.min-h-\\[48px\\].px-2.transition-all.duration-150.drop-indicator');
+      dropZones.forEach(el => {
+        el.classList.remove('drop-indicator');
+      });
+      
+      // Limpiar la zona de drop de tabla completa
+      const tableDragOver = document.querySelectorAll('.table-drag-over');
+      tableDragOver.forEach(el => {
+        el.classList.remove('table-drag-over');
+      });
+      
+      // Limpiar todos los indicadores de drop line
+      document.querySelectorAll('.drop-indicator-line').forEach(indicator => {
+        indicator.style.display = 'none';
       });
     },
     // --- CLICK EN ZONA LIBRE ---

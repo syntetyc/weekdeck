@@ -22,10 +22,11 @@
   --context-menu-shadow: none;
   --context-menu-padding: 12px 0 8px 0;
   --context-menu-font: 'Space Mono', monospace;
-  --context-menu-font-size: 14px;
+  --context-menu-font-size: 16px;
   --context-menu-color: #fff;
   --context-menu-hover-bg: #000;
   --context-menu-hover-color: #fff;
+--context-menu-color: #fff;
   --context-menu-separator-color: #333;
   --context-menu-icon-size: 20px;
   --context-menu-icon-color: #fff;

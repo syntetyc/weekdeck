@@ -64,19 +64,29 @@
           @mouseleave="onColumnMouseLeave(day, $event)"
           style="overflow: visible;"
         >
-            <div class="px-3 py-2 text-2xl font-extrabold tracking-wider flex items-center">
-              <span class="tooltip-container" x-show="currentDay === day">
-                <span class="material-symbols-outlined text-red-500 mr-2">asterisk</span>
-                <span class="tooltip top">today</span>
-              </span>
-              <span x-text="day"></span>
+            <div class="px-3 py-2 text-2xl font-extrabold tracking-wider flex items-center justify-between">
+              <div class="flex items-center">
+                <span class="tooltip-container" x-show="currentDay === day">
+                  <span class="material-symbols-outlined text-red-500 mr-2">asterisk</span>
+                  <span class="tooltip top">today</span>
+                </span>
+                <span x-text="day"></span>
+              </div>
+              <!-- Menú contextual del header -->
+              <div class="relative flex items-center">
+                <button @click="showHeaderContextMenu($event, day)" class="p-1 hover:bg-gray-200 rounded-full header-menu-btn">
+                  <span class="material-symbols-outlined">more_vert</span>
+                </button>
+              </div>
             </div>
-            <div class="flex-1 flex flex-col relative" style="overflow: visible;">
+            <div class="flex-1 flex flex-col relative" style="overflow: visible;"
+                 @dragover="onTableDragOver(day, $event)"
+                 @dragleave="onTableDragLeave(day, $event)"
+                 @drop="onTableDrop(day, $event)">
               <template x-for="(task, tIdx) in tasks[day]" :key="task.id">
                 <div
                   class="flex min-h-[48px] px-2 py-1 group relative select-none transition-all duration-150"
                   :class="[
-                    isDragging && dragOverDay === day && dragOverIdx === tIdx ? 'bg-blue-100 border-2 border-blue-400' : '',
                     isDragging && dragData && dragData.fromDay === day && dragData.fromIdx === tIdx ? 'shadow-lg cursor-grabbing' : '',
                     'items-center'
                   ]"
@@ -98,7 +108,7 @@
                     ></span>
                   </span>
                   <!-- Título -->
-                  <span class="flex-1 min-w-0 break-words whitespace-pre-line text-base overflow-wrap-break-word"
+                  <span class="flex-1 min-w-0 break-words whitespace-pre-line text-lg overflow-wrap-break-word"
                     :class="task.completed ? 'line-through text-gray-400' : ''"
                     x-text="task.title" @click="openModal(day, tIdx)"></span>
                   <!-- Menú contextual usando sistema dinámico -->
@@ -112,12 +122,11 @@
               <!-- Fila vacía para añadir tarea y zona de drop al final -->
               <div
                 class="flex items-center min-h-[48px] px-2 transition-all duration-150"
-                :class="isDragging && dragOverDay === day && dragOverIdx === null ? 'bg-blue-100 border-2 border-blue-400' : ''"
                 @dragover="onDragOver(day, null, $event)"
                 @dragleave="onDragLeave(day, null, $event)"
                 @drop="onDrop(day, null, $event)"
               >
-                <input type="text" class="flex-1 border-0 border-b border-gray-300 focus:ring-0 focus:border-black bg-transparent text-base add-task-input" x-model="newTask[day]" @keydown.enter="addTask(day)" @blur="addTask(day)" placeholder="Add new task...">
+                <input type="text" class="flex-1 border-0 focus:ring-0 bg-transparent text-lg add-task-input" x-model="newTask[day]" @keydown.enter="addTask(day)" @blur="addTask(day)" placeholder="Add new task...">
               </div>
               <!-- Indicador visual si la columna está vacía y es zona de drop -->
               <template x-if="isDragging && dragOverColumn === day && tasks[day].length === 0">
