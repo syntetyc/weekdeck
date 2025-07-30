@@ -21,6 +21,16 @@ class ContextMenuManager {
         this.closeAll();
       }
     });
+    
+    // Cerrar menús al hacer scroll
+    document.addEventListener('scroll', () => {
+      this.closeAll();
+    });
+    
+    // Cerrar menús al cambiar el tamaño de la ventana
+    window.addEventListener('resize', () => {
+      this.closeAll();
+    });
   }
   
   // Registrar un nuevo menú
@@ -89,16 +99,27 @@ class ContextMenuManager {
       return item;
     }
     
-    if (option.icon) {
+    if (option.customIcon) {
+      // Usar icono personalizado (HTML)
+      item.innerHTML = option.customIcon;
+      const text = document.createElement('span');
+      text.textContent = option.text;
+      item.appendChild(text);
+    } else if (option.icon) {
       const icon = document.createElement('span');
       icon.className = `material-symbols-outlined ${option.iconClass || ''}`;
       icon.textContent = option.icon;
       item.appendChild(icon);
+      
+      const text = document.createElement('span');
+      text.textContent = option.text;
+      item.appendChild(text);
+    } else {
+      // Solo texto sin icono
+      const text = document.createElement('span');
+      text.textContent = option.text;
+      item.appendChild(text);
     }
-    
-    const text = document.createElement('span');
-    text.textContent = option.text;
-    item.appendChild(text);
     
     if (option.subtext) {
       const subtext = document.createElement('span');
@@ -110,8 +131,15 @@ class ContextMenuManager {
     if (option.action) {
       item.addEventListener('click', (e) => {
         e.stopPropagation();
-        option.action();
+        e.preventDefault();
+        
+        // Cerrar el menú inmediatamente
         this.closeAll();
+        
+        // Ejecutar la acción después de un breve delay para evitar conflictos
+        setTimeout(() => {
+          option.action();
+        }, 10);
       });
     }
     
@@ -174,13 +202,15 @@ class ContextMenuManager {
   // Cerrar todos los menús
   closeAll() {
     if (this.activeMenu) {
-      this.activeMenu.classList.remove('show');
+      const menuToClose = this.activeMenu;
+      this.activeMenu = null;
+      
+      menuToClose.classList.remove('show');
       setTimeout(() => {
-        if (this.activeMenu && this.activeMenu.parentNode) {
-          this.activeMenu.parentNode.removeChild(this.activeMenu);
+        if (menuToClose && menuToClose.parentNode) {
+          menuToClose.parentNode.removeChild(menuToClose);
         }
       }, 200);
-      this.activeMenu = null;
     }
   }
   
@@ -188,13 +218,15 @@ class ContextMenuManager {
   closeMenu(menuId) {
     const menuConfig = this.menus.get(menuId);
     if (menuConfig && menuConfig.element) {
-      menuConfig.element.classList.remove('show');
+      const menuToClose = menuConfig.element;
+      menuConfig.element = null;
+      
+      menuToClose.classList.remove('show');
       setTimeout(() => {
-        if (menuConfig.element && menuConfig.element.parentNode) {
-          menuConfig.element.parentNode.removeChild(menuConfig.element);
+        if (menuToClose && menuToClose.parentNode) {
+          menuToClose.parentNode.removeChild(menuToClose);
         }
       }, 200);
-      menuConfig.element = null;
     }
   }
 }

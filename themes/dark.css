@@ -205,4 +205,105 @@ body::after {
   color: var(--text-primary) !important;
 }
 
-/* El menú contextual dinámico usará automáticamente las variables CSS del tema */ 
+/* El menú contextual dinámico usará automáticamente las variables CSS del tema */
+
+/* REGLAS ESPECÍFICAS PARA CÍRCULOS DE COLORES EN DARK THEME */
+.w-4.h-4.rounded-full {
+  border: none !important;
+}
+
+.w-4.h-4.rounded-full.border.border-white {
+  border: none !important;
+}
+
+.w-4.h-4.rounded-full.border.border-gray-400 {
+  border: 2px solid var(--border-primary) !important; /* Mismo color que las tablas */
+}
+
+/* Reglas específicas para círculos sin color */
+.w-4.h-4.rounded-full:not([style*="background"]) {
+  border: 2px solid var(--border-primary) !important; /* Mismo color que las tablas */
+}
+
+/* Reglas para círculos con color */
+.w-4.h-4.rounded-full[style*="background"] {
+  border: none !important;
+}
+
+/* REGLAS PARA CÍRCULOS EN MENÚ CONTEXTUAL - DARK THEME */
+.task-context-menu .color-dot-option {
+  border: none !important;
+}
+
+.task-context-menu .color-dot-option[data-color="red"] { 
+  background: #F36B6B !important; 
+  border: none !important; 
+}
+
+.task-context-menu .color-dot-option[data-color="yellow"] { 
+  background: #FFD86B !important; 
+  border: none !important; 
+}
+
+.task-context-menu .color-dot-option[data-color="blue"] { 
+  background: #6B9AFF !important; 
+  border: none !important; 
+}
+
+.task-context-menu .color-dot-option[data-color="green"] { 
+  background: #7BE495 !important; 
+  border: none !important; 
+}
+
+.task-context-menu .color-dot-option[data-color="gray"] { 
+  background: #bbb !important; 
+  border: none !important; 
+}
+
+.task-context-menu .color-dot-option[data-color="none"] { 
+  background: transparent !important; 
+  border: 2px solid var(--border-primary) !important; /* Mismo color que las tablas */
+}
+
+/* Reglas más específicas para el círculo transparente */
+.task-context-menu .color-dot-option:not([data-color="red"]):not([data-color="yellow"]):not([data-color="blue"]):not([data-color="green"]):not([data-color="gray"]) {
+  border: 2px solid var(--border-primary) !important;
+}
+
+/* Regla específica para cualquier círculo sin color de fondo */
+.task-context-menu .color-dot-option[style*="background: transparent"],
+.task-context-menu .color-dot-option[style*="background:transparent"] {
+  border: 2px solid var(--border-primary) !important;
+}
+
+/* REGLAS PARA CÍRCULOS GENERADOS DINÁMICAMENTE POR ALPINE.JS - DARK THEME */
+.w-5.h-5.rounded-full {
+  border: none !important;
+}
+
+.w-5.h-5.rounded-full.border.border-white {
+  border: none !important;
+}
+
+.w-5.h-5.rounded-full.border.border-gray-400 {
+  border: 2px solid var(--border-primary) !important; /* Mismo color que las tablas */
+  background: transparent !important; /* Forzar fondo transparente */
+}
+
+/* Reglas específicas para círculos sin color */
+.w-5.h-5.rounded-full:not([style*="background"]) {
+  border: 2px solid var(--border-primary) !important; /* Mismo color que las tablas */
+  background: transparent !important; /* Forzar fondo transparente */
+}
+
+/* Reglas para círculos con color */
+.w-5.h-5.rounded-full[style*="background"] {
+  border: none !important;
+}
+
+/* Regla específica para el círculo transparente (cuando color es vacío) */
+.w-5.h-5.rounded-full[style*="background: #fff"],
+.w-5.h-5.rounded-full[style*="background:#fff"] {
+  background: transparent !important;
+  border: 2px solid var(--border-primary) !important;
+} 

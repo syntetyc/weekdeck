@@ -82,6 +82,8 @@
                   ]"
                   :style="task.bgFill && task.color ? 'background:' + (task.color + '22') : ''"
                   :data-task-id="task.id"
+                  :data-day="day"
+                  :data-idx="tIdx"
                   draggable="true"
                   @dragstart="onDragStart(day, tIdx, $event)"
                   @dragend="onDragEnd()"
@@ -90,54 +92,20 @@
                   @drop="onDrop(day, tIdx, $event)"
                 >
                   <!-- Círculo color -->
-                  <span class="flex items-center justify-center mr-2 self-center relative" x-data="{openColor: false}">
+                  <span class="flex items-center justify-center mr-2 self-center relative">
                     <span class="w-4 h-4 rounded-full cursor-pointer" :class="task.color ? 'border border-white' : 'border border-gray-400'" :style="task.color ? 'background:' + task.color : ''"
-                      @click="openColor = !openColor"
+                      @click="showColorContextMenu($event, day, tIdx)"
                     ></span>
-                    <div x-show="openColor" 
-                         x-transition:enter="transition ease-out duration-200"
-                         x-transition:enter-start="opacity-0 transform scale-95 -translate-x-3"
-                         x-transition:enter-end="opacity-100 transform scale-100 translate-x-0"
-                         x-transition:leave="transition ease-in duration-150"
-                         x-transition:leave-start="opacity-100 transform scale-100 translate-x-0"
-                         x-transition:leave-end="opacity-0 transform scale-95 -translate-x-3"
-                         @click.away="openColor = false" 
-                         class="absolute left-6 top-1/2 -translate-y-1/2 z-50 bg-white border border-black rounded shadow-lg flex gap-2 p-2">
-                      <template x-for="color in colors" :key="color">
-                        <button class="w-5 h-5 rounded-full" :class="color ? 'border border-white' : 'border border-gray-400'" :style="'background:' + (color || '#fff')"
-                          @click.stop="setColor(day, tIdx, color); openColor=false"></button>
-                      </template>
-                    </div>
                   </span>
                   <!-- Título -->
                   <span class="flex-1 min-w-0 break-words whitespace-pre-line text-base overflow-wrap-break-word"
                     :class="task.completed ? 'line-through text-gray-400' : ''"
                     x-text="task.title" @click="openModal(day, tIdx)"></span>
-                  <!-- Menú contextual (sin selector de colores) -->
-                  <div class="relative flex items-center ml-2 self-center" x-data="{open: false}" @keydown.escape.window="open=false">
-                    <button @click="open = !open" class="p-1 hover:bg-gray-200 rounded-full">
+                  <!-- Menú contextual usando sistema dinámico -->
+                  <div class="relative flex items-center ml-2 self-center">
+                    <button @click="showTaskContextMenu($event, day, tIdx)" class="p-1 hover:bg-gray-200 rounded-full">
                       <span class="material-symbols-outlined">more_vert</span>
                     </button>
-                    <div x-show="open" 
-                         x-transition:enter="menu-fade-scale"
-                         x-transition:enter-start=""
-                         x-transition:enter-end="show"
-                         x-transition:leave="menu-fade-scale"
-                         x-transition:leave-start="show"
-                         x-transition:leave-end=""
-                         @click.away="open=false" 
-                         class="absolute right-0 top-7 z-[9999] bg-white border border-black rounded shadow-lg w-44 p-2 !text-black">
-                      <button class="block w-full text-left px-2 py-1 hover:bg-gray-100 text-sm"
-                        @click.stop="toggleBgFill(day, tIdx); open=false"
-                        x-text="tasks[day][tIdx].bgFill ? 'Unhighlight' : 'Highlight'"
-                      ></button>
-                      <button class="block w-full text-left px-2 py-1 hover:bg-gray-100 text-sm"
-                        @click.stop="toggleComplete(day, tIdx); open=false"
-                        x-text="tasks[day][tIdx].completed ? 'Unmark as complete' : 'Mark as complete'"
-                      ></button>
-                      <button class="block w-full text-left px-2 py-1 hover:bg-gray-100 text-sm text-red-600"
-                        @click.stop="deleteTask(day, tIdx); open=false">Delete task</button>
-                    </div>
                   </div>
                 </div>
               </template>

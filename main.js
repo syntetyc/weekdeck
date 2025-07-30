@@ -112,6 +112,97 @@ function weekdeckApp() {
       window.showContextMenu('theme-menu', event.target.closest('button'), 'bottom-right');
     },
     
+    // Mostrar menú contextual de tareas
+    showTaskContextMenu(event, day, idx) {
+      event.preventDefault();
+      event.stopPropagation();
+      
+      // Crear opciones del menú contextual
+      const task = this.tasks[day][idx];
+      const menuOptions = [
+        {
+          text: task.completed ? 'Unmark as complete' : 'Mark as complete',
+          icon: task.completed ? 'radio_button_unchecked' : 'check_circle',
+          action: () => this.toggleComplete(day, idx)
+        },
+        { separator: true },
+        {
+          text: 'Delete task',
+          icon: 'delete',
+          action: () => this.deleteTask(day, idx),
+          iconClass: 'text-red-600'
+        }
+      ];
+      
+      // Registrar el menú si no existe
+      if (!window.contextMenuManager.menus.has('task-menu')) {
+        window.registerContextMenu('task-menu', menuOptions);
+      } else {
+        // Actualizar opciones si el menú ya existe
+        window.contextMenuManager.menus.get('task-menu').options = menuOptions;
+      }
+      
+      window.showContextMenu('task-menu', event.target.closest('button'), 'bottom-right');
+    },
+    
+    // Mostrar menú contextual de colores
+    showColorContextMenu(event, day, idx) {
+      event.preventDefault();
+      event.stopPropagation();
+      
+      // Crear opciones del menú contextual de colores
+      const task = this.tasks[day][idx];
+      const menuOptions = [];
+      
+      // Agregar opción de highlight (siempre visible, pero disabled si no hay color)
+      menuOptions.push({
+        text: task.bgFill ? 'Unhighlight' : 'Highlight',
+        icon: task.bgFill ? 'highlight_off' : 'highlight',
+        action: () => this.toggleBgFill(day, idx),
+        disabled: !task.color || task.color === ''
+      });
+      
+      // Agregar separador
+      menuOptions.push({ separator: true });
+      
+      // Agregar opción transparente
+      menuOptions.push({
+        text: 'No color',
+        icon: 'radio_button_unchecked',
+        action: () => this.setColor(day, idx, ''),
+        iconClass: task.color === '' ? 'text-blue-600' : '',
+        selected: () => task.color === ''
+      });
+      
+      // Agregar separador
+      menuOptions.push({ separator: true });
+      
+      // Agregar opciones de colores
+      const colorNames = ['Red', 'Yellow', 'Blue', 'Green', 'Gray'];
+      const colorValues = ['#F36B6B', '#FFD86B', '#6B9AFF', '#7BE495', '#BBBBBB'];
+      
+      colorNames.forEach((name, colorIdx) => {
+        const colorValue = colorValues[colorIdx];
+        const isSelected = task.color === colorValue;
+        menuOptions.push({
+          text: name,
+          action: () => this.setColor(day, idx, colorValue),
+          selected: () => isSelected,
+          customIcon: `<span class="w-4 h-4 rounded-full inline-block" style="background: ${colorValue}; border: 1px solid #ccc; border-radius: 50%; width: 16px; height: 16px; aspect-ratio: 1 / 1; min-width: 16px; min-height: 16px; max-width: 16px; max-height: 16px; ${isSelected ? 'border: 2px solid #2563eb;' : ''}"></span>`
+        });
+      });
+      
+      // Registrar el menú si no existe
+      if (!window.contextMenuManager.menus.has('color-menu')) {
+        window.registerContextMenu('color-menu', menuOptions);
+      } else {
+        // Actualizar opciones si el menú ya existe
+        window.contextMenuManager.menus.get('color-menu').options = menuOptions;
+      }
+      
+      window.showContextMenu('color-menu', event.target, 'bottom-left');
+    },
+    
     // Agregar elementos tutoriales
     addTutorialItems() {
       const hasAnyTasks = Object.values(this.tasks).some(dayTasks => dayTasks.length > 0);
@@ -277,8 +368,9 @@ function weekdeckApp() {
       }
     },
       deleteTask(day, idx) {
-    // Encontrar el elemento del item
-    const taskElement = event.target.closest('.group');
+    // Encontrar el elemento del item usando el día y índice
+    const taskElement = document.querySelector(`[data-day="${day}"][data-idx="${idx}"]`);
+    
     if (taskElement) {
       // Añadir clase de animación
       taskElement.classList.add('item-removing');

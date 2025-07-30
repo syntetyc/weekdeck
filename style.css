@@ -30,6 +30,9 @@
   --context-menu-item-padding: 7px 16px;
   --context-menu-min-width: 180px;
   --context-menu-z-index: 1000;
+  
+  /* Variables para bordes de círculos transparentes */
+  --transparent-circle-border: #e5e7eb; /* Gris claro para light theme */
 }
 
 html, body {
@@ -172,10 +175,15 @@ header button:active {
 .context-menu-item.disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  color: #9ca3af !important;
 }
 
 .context-menu-item.disabled:hover {
   background-color: transparent;
+}
+
+.context-menu-item.disabled .material-symbols-outlined {
+  color: #9ca3af !important;
 }
 
 .context-menu-item .material-symbols-outlined {
@@ -222,6 +230,43 @@ header button:active {
   right: 16px;
   color: var(--context-menu-icon-color);
   font-weight: bold;
+}
+
+/* Estilos para iconos con clases adicionales */
+.context-menu-item .material-symbols-outlined.text-red-600 {
+  color: #dc2626 !important;
+}
+
+/* Estilos para iconos personalizados en menús contextuales */
+.context-menu-item .w-4.h-4.rounded-full {
+  margin-right: 8px;
+  vertical-align: middle;
+  border-radius: 50% !important;
+  width: 16px !important;
+  height: 16px !important;
+  display: inline-block;
+  aspect-ratio: 1 / 1 !important;
+  min-width: 16px !important;
+  min-height: 16px !important;
+  max-width: 16px !important;
+  max-height: 16px !important;
+}
+
+.context-menu-item .material-symbols-outlined.text-blue-600 {
+  color: #2563eb !important;
+}
+
+/* Forzar círculos perfectos en menús contextuales */
+.context-menu-item span[style*="border-radius: 50%"] {
+  border-radius: 50% !important;
+  width: 16px !important;
+  height: 16px !important;
+  aspect-ratio: 1 / 1 !important;
+  min-width: 16px !important;
+  min-height: 16px !important;
+  max-width: 16px !important;
+  max-height: 16px !important;
+  display: inline-block !important;
 }
 
 .tooltip {
@@ -782,7 +827,7 @@ body:has(.flex.min-h-\[48px\].px-2.py-1.group:nth-child(n+6))::after {
 .task-color-dot[data-color="blue"] { background: #6B9AFF; border-color: #ffffff !important; }
 .task-color-dot[data-color="green"] { background: #7BE495; border-color: #ffffff !important; }
 .task-color-dot[data-color="gray"] { background: #bbb; border-color: #ffffff !important; }
-.task-color-dot[data-color="none"] { background: transparent; border-color: #ffffff !important; }
+.task-color-dot[data-color="none"] { background: transparent; border: 2px solid #ffffff !important; }
 
 .task-menu-btn {
   font-size: 18px;
@@ -836,12 +881,6 @@ body:has(.flex.min-h-\[48px\].px-2.py-1.group:nth-child(n+6))::after {
   cursor: pointer;
   transition: border 0.2s, box-shadow 0.2s;
 }
-.task-context-menu .color-dot-option[data-color="red"] { background: #F36B6B; border-color: #ffffff !important; }
-.task-context-menu .color-dot-option[data-color="yellow"] { background: #FFD86B; border-color: #ffffff !important; }
-.task-context-menu .color-dot-option[data-color="blue"] { background: #6B9AFF; border-color: #ffffff !important; }
-.task-context-menu .color-dot-option[data-color="green"] { background: #7BE495; border-color: #ffffff !important; }
-.task-context-menu .color-dot-option[data-color="gray"] { background: #bbb; border-color: #ffffff !important; }
-.task-context-menu .color-dot-option[data-color="none"] { background: #fff; border-color: #ffffff !important; }
 .task-context-menu .color-dot-option.selected {
   box-shadow: 0 0 0 2px #111;
 }
@@ -1079,10 +1118,96 @@ div[class*="bg-white"] {
   border-color: transparent !important;
 }
 
-/* Aplicar color azul solo a los elementos activos durante drag */
-.flex.min-h-\[48px\].px-2.py-1.group.drag-over *,
-.flex.min-h-\[48px\].px-2.py-1.group.drop-indicator * {
-  border-color: var(--drag-drop-border) !important;
+/* Excepción para círculos de colores - mantener sus bordes visibles */
+.flex.min-h-\[48px\].px-2.py-1.group .task-color-dot,
+.flex.min-h-\[48px\].px-2.py-1.group .task-color-dot[data-color="red"],
+.flex.min-h-\[48px\].px-2.py-1.group .task-color-dot[data-color="yellow"],
+.flex.min-h-\[48px\].px-2.py-1.group .task-color-dot[data-color="blue"],
+.flex.min-h-\[48px\].px-2.py-1.group .task-color-dot[data-color="green"],
+.flex.min-h-\[48px\].px-2.py-1.group .task-color-dot[data-color="gray"],
+.flex.min-h-\[48px\].px-2.py-1.group .task-color-dot[data-color="none"] {
+  border-color: inherit !important;
+}
+
+/* Regla más específica y directa para círculos de colores */
+.task-color-dot {
+  border: 1.5px solid #ffffff !important;
+}
+
+.task-color-dot[data-color="red"] { 
+  background: #F36B6B !important; 
+  border: 1.5px solid #ffffff !important; 
+}
+
+.task-color-dot[data-color="yellow"] { 
+  background: #FFD86B !important; 
+  border: 1.5px solid #ffffff !important; 
+}
+
+.task-color-dot[data-color="blue"] { 
+  background: #6B9AFF !important; 
+  border: 1.5px solid #ffffff !important; 
+}
+
+.task-color-dot[data-color="green"] { 
+  background: #7BE495 !important; 
+  border: 1.5px solid #ffffff !important; 
+}
+
+.task-color-dot[data-color="gray"] { 
+  background: #bbb !important; 
+  border: 1.5px solid #ffffff !important; 
+}
+
+.task-color-dot[data-color="none"] { 
+  background: transparent !important; 
+  border: 2px solid #ffffff !important; 
+}
+
+/* Reglas específicas para menú contextual */
+.task-context-menu .color-dot-option[data-color="red"] { 
+  background: #F36B6B !important; 
+  border: 1.5px solid #ffffff !important; 
+}
+
+.task-context-menu .color-dot-option[data-color="yellow"] { 
+  background: #FFD86B !important; 
+  border: 1.5px solid #ffffff !important; 
+}
+
+.task-context-menu .color-dot-option[data-color="blue"] { 
+  background: #6B9AFF !important; 
+  border: 1.5px solid #ffffff !important; 
+}
+
+.task-context-menu .color-dot-option[data-color="green"] { 
+  background: #7BE495 !important; 
+  border: 1.5px solid #ffffff !important; 
+}
+
+.task-context-menu .color-dot-option[data-color="gray"] { 
+  background: #bbb !important; 
+  border: 1.5px solid #ffffff !important; 
+}
+
+.task-context-menu .color-dot-option[data-color="none"] { 
+  background: transparent !important; 
+  border: 2px solid #ffffff !important; 
+}
+
+/* Reglas de máxima especificidad para sobrescribir cualquier conflicto */
+.flex.min-h-\[48px\].px-2.py-1.group .task-color-dot,
+.flex.min-h-\[48px\].px-2.py-1.group .task-color-dot[data-color="red"],
+.flex.min-h-\[48px\].px-2.py-1.group .task-color-dot[data-color="yellow"],
+.flex.min-h-\[48px\].px-2.py-1.group .task-color-dot[data-color="blue"],
+.flex.min-h-\[48px\].px-2.py-1.group .task-color-dot[data-color="green"],
+.flex.min-h-\[48px\].px-2.py-1.group .task-color-dot[data-color="gray"],
+.flex.min-h-\[48px\].px-2.py-1.group .task-color-dot[data-color="none"] {
+  border: 1.5px solid var(--border-primary) !important;
+}
+
+.flex.min-h-\[48px\].px-2.py-1.group .task-color-dot[data-color="none"] {
+  border: 2px solid var(--border-primary) !important;
 }
 
 /* Indicador visual cuando se puede hacer drop en una columna */
@@ -1111,4 +1236,90 @@ div[class*="bg-white"].drop-zone::after {
 div[class*="bg-white"].drop-zone:hover::after {
   opacity: 0;
   border-style: solid;
+}
+
+/* REGLAS DE MÁXIMA ESPECIFICIDAD PARA CÍRCULOS DE COLORES */
+/* Estas reglas deben estar al final para tener máxima prioridad */
+html body .flex.min-h-\[48px\].px-2.py-1.group .task-color-dot,
+html body .flex.min-h-\[48px\].px-2.py-1.group .task-color-dot[data-color="red"],
+html body .flex.min-h-\[48px\].px-2.py-1.group .task-color-dot[data-color="yellow"],
+html body .flex.min-h-\[48px\].px-2.py-1.group .task-color-dot[data-color="blue"],
+html body .flex.min-h-\[48px\].px-2.py-1.group .task-color-dot[data-color="green"],
+html body .flex.min-h-\[48px\].px-2.py-1.group .task-color-dot[data-color="gray"],
+html body .flex.min-h-\[48px\].px-2.py-1.group .task-color-dot[data-color="none"] {
+  border: 1.5px solid #ffffff !important;
+  border-color: #ffffff !important;
+}
+
+html body .flex.min-h-\[48px\].px-2.py-1.group .task-color-dot[data-color="none"] {
+  border: 2px solid #ffffff !important;
+  border-color: #ffffff !important;
+}
+
+html body .task-context-menu .color-dot-option[data-color="red"],
+html body .task-context-menu .color-dot-option[data-color="yellow"],
+html body .task-context-menu .color-dot-option[data-color="blue"],
+html body .task-context-menu .color-dot-option[data-color="green"],
+html body .task-context-menu .color-dot-option[data-color="gray"],
+html body .task-context-menu .color-dot-option[data-color="none"] {
+  border: 1.5px solid var(--border-primary) !important;
+  border-color: var(--border-primary) !important;
+}
+
+html body .task-context-menu .color-dot-option[data-color="none"] {
+  border: 2px solid var(--border-primary) !important;
+  border-color: var(--border-primary) !important;
+} 
+
+/* REGLAS ESPECÍFICAS PARA CÍRCULOS DE COLORES GENERADOS POR ALPINE.JS */
+.w-4.h-4.rounded-full {
+  border: none !important;
+}
+
+.w-4.h-4.rounded-full.border.border-white {
+  border: none !important;
+}
+
+.w-4.h-4.rounded-full.border.border-gray-400 {
+  border: 2px solid var(--transparent-circle-border) !important;
+}
+
+/* Reglas específicas para círculos sin color */
+.w-4.h-4.rounded-full:not([style*="background"]) {
+  border: 2px solid var(--transparent-circle-border) !important;
+}
+
+/* Reglas para círculos con color */
+.w-4.h-4.rounded-full[style*="background"] {
+  border: none !important;
+} 
+
+/* Tema oscuro - bordes de círculos transparentes */
+[data-theme="dark"] .w-4.h-4.rounded-full.border.border-gray-400,
+[data-theme="dark"] .w-4.h-4.rounded-full:not([style*="background"]) {
+  border: 2px solid #111827 !important; /* Gris muy oscuro para dark theme */
+}
+
+/* Reglas más específicas para modo dark */
+html body[data-theme="dark"] .w-4.h-4.rounded-full.border.border-gray-400,
+html body[data-theme="dark"] .w-4.h-4.rounded-full:not([style*="background"]) {
+  border: 2px solid #111827 !important;
+}
+
+/* Reglas específicas para cualquier elemento con tema dark */
+*[data-theme="dark"] .w-4.h-4.rounded-full.border.border-gray-400,
+*[data-theme="dark"] .w-4.h-4.rounded-full:not([style*="background"]) {
+  border: 2px solid #111827 !important;
+} 
+
+/* Tema claro - bordes de círculos transparentes */
+[data-theme="light"] .w-4.h-4.rounded-full.border.border-gray-400,
+[data-theme="light"] .w-4.h-4.rounded-full:not([style*="background"]) {
+  border: 2px solid #e5e7eb !important; /* Gris claro para light theme */
+}
+
+/* Reglas más específicas para modo light */
+html body[data-theme="light"] .w-4.h-4.rounded-full.border.border-gray-400,
+html body[data-theme="light"] .w-4.h-4.rounded-full:not([style*="background"]) {
+  border: 2px solid #e5e7eb !important;
 } 
