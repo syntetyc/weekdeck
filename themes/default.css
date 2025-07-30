@@ -1,5 +1,6 @@
 /* Tema por defecto - WeekDeck */
 
+/* Variables globales por defecto */
 :root {
   /* Colores principales */
   --primary-color: #000000;
@@ -43,6 +44,9 @@
   --transition-fast: 0.15s ease;
   --transition-normal: 0.2s ease;
   --transition-slow: 0.3s ease;
+  
+  /* Gradiente inferior */
+  --bg-gradient-bottom: linear-gradient(to top, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.9) 20%, rgba(255, 255, 255, 0.6) 50%, rgba(255, 255, 255, 0.2) 80%, rgba(255, 255, 255, 0) 100%);
 }
 
 /* Aplicación de variables CSS */
@@ -114,6 +118,25 @@ header {
 .modal-content {
   background-color: var(--bg-modal);
   box-shadow: var(--shadow-lg);
+}
+
+/* Campos de entrada del modal en light theme */
+.modal-content input[type="text"],
+.modal-content textarea {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-primary) !important;
+}
+
+.modal-content input[type="text"]::placeholder,
+.modal-content textarea::placeholder {
+  color: var(--text-muted) !important;
+}
+
+.modal-content input[type="text"]:focus,
+.modal-content textarea:focus {
+  border-color: var(--border-focus) !important;
+  outline: none !important;
 }
 
 /* Botones */
@@ -235,4 +258,14 @@ header {
 .w-5.h-5.rounded-full[style*="background:#fff"] {
   background: transparent !important;
   border: 2px solid var(--border-primary) !important;
+}
+
+/* Clase específica para el tema por defecto */
+html.theme-default {
+  /* Las variables se heredan de :root */
+}
+
+/* Gradiente inferior para tema light */
+html.theme-default body::after {
+  background: var(--bg-gradient-bottom) !important;
 } 

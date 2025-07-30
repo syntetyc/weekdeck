@@ -1,6 +1,7 @@
 /* Tema oscuro - WeekDeck */
 
-:root {
+/* Clase específica para el tema oscuro */
+html.theme-dark {
   /* Colores principales */
   --primary-color: #ffffff;
   --secondary-color: #222;
@@ -142,6 +143,25 @@ header {
 .modal-content {
   background-color: var(--bg-modal);
   box-shadow: var(--shadow-lg);
+}
+
+/* Campos de entrada del modal en dark theme */
+.modal-content input[type="text"],
+.modal-content textarea {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-primary) !important;
+}
+
+.modal-content input[type="text"]::placeholder,
+.modal-content textarea::placeholder {
+  color: var(--text-muted) !important;
+}
+
+.modal-content input[type="text"]:focus,
+.modal-content textarea:focus {
+  border-color: var(--border-focus) !important;
+  outline: none !important;
 }
 
 /* Botones */

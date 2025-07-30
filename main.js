@@ -25,6 +25,7 @@ function weekdeckApp() {
     dragOverIdx: null,
     dragOverColumn: null,
     isDragging: false,
+    weekendHidden: false,
 
     
     // --- INIT ---
@@ -37,6 +38,12 @@ function weekdeckApp() {
             this.tasks = parsed;
           }
         } catch {}
+      }
+      
+      // Cargar estado del weekend
+      const savedWeekendHidden = localStorage.getItem('weekdeck-weekend-hidden');
+      if (savedWeekendHidden !== null) {
+        this.weekendHidden = savedWeekendHidden === 'true';
       }
       
       // Agregar elementos tutoriales si no hay tareas guardadas
@@ -54,6 +61,17 @@ function weekdeckApp() {
       
       // Configurar menús contextuales
       this.setupContextMenus();
+      
+      // Aplicar estado inicial del weekend
+      this.$nextTick(() => {
+        if (this.weekendHidden) {
+          const weekendColumns = document.querySelectorAll('.weekend-column');
+          weekendColumns.forEach(column => {
+            column.classList.add('weekend-hidden');
+            column.style.display = 'none';
+          });
+        }
+      });
     },
     
     // Configurar event listeners para pantalla completa
@@ -83,20 +101,39 @@ function weekdeckApp() {
         {
           text: 'Light Theme',
           icon: 'light_mode',
-          action: () => window.changeTheme('default'),
+          action: (event) => {
+            const triggerElement = event.target.closest('.context-menu-item');
+            window.changeTheme('default', triggerElement);
+          },
           selected: () => window.getCurrentTheme() === 'default'
         },
         {
           text: 'Dark Theme',
           icon: 'dark_mode',
-          action: () => window.changeTheme('dark'),
+          action: (event) => {
+            const triggerElement = event.target.closest('.context-menu-item');
+            window.changeTheme('dark', triggerElement);
+          },
           selected: () => window.getCurrentTheme() === 'dark'
         },
-
       ];
       
       // Registrar menú de temas
       window.registerContextMenu('theme-menu', themeOptions);
+      
+      // Menú de configuración
+      const settingsOptions = [
+        {
+          text: this.weekendHidden ? 'Show weekend' : 'Hide weekend',
+          icon: 'weekend',
+          action: () => {
+            this.toggleWeekend();
+          }
+        }
+      ];
+      
+      // Registrar menú de configuración
+      window.registerContextMenu('settings-menu', settingsOptions);
     },
     
     // Mostrar menú de temas
@@ -105,6 +142,72 @@ function weekdeckApp() {
       event.stopPropagation();
       
       window.showContextMenu('theme-menu', event.target.closest('button'), 'bottom-right');
+    },
+    
+    // Mostrar menú de configuración
+    showSettingsMenu(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      
+      // Actualizar opciones del menú según el estado actual
+      const settingsOptions = [
+        {
+          text: this.weekendHidden ? 'Show weekend' : 'Hide weekend',
+          icon: 'weekend',
+          action: () => {
+            this.toggleWeekend();
+          }
+        }
+      ];
+      
+      // Actualizar menú de configuración
+      if (window.contextMenuManager.menus.has('settings-menu')) {
+        window.contextMenuManager.menus.get('settings-menu').options = settingsOptions;
+      } else {
+        window.registerContextMenu('settings-menu', settingsOptions);
+      }
+      
+      window.showContextMenu('settings-menu', event.target.closest('button'), 'bottom-right');
+    },
+    
+    // Toggle del weekend
+    toggleWeekend() {
+      this.weekendHidden = !this.weekendHidden;
+      
+      // Obtener todas las columnas del weekend
+      const weekendColumns = document.querySelectorAll('.weekend-column');
+      
+      if (this.weekendHidden) {
+        // Ocultar con animación
+        weekendColumns.forEach(column => {
+          column.classList.add('weekend-hidden');
+        });
+        
+        // Después de la animación, ocultar completamente
+        setTimeout(() => {
+          weekendColumns.forEach(column => {
+            column.style.display = 'none';
+          });
+        }, 800);
+        
+      } else {
+        // Mostrar primero
+        weekendColumns.forEach(column => {
+          column.style.display = 'flex';
+        });
+        
+        // Luego animar la aparición
+        setTimeout(() => {
+          weekendColumns.forEach(column => {
+            column.classList.remove('weekend-hidden');
+          });
+        }, 50);
+      }
+      
+      // Guardar preferencia en localStorage
+      localStorage.setItem('weekdeck-weekend-hidden', this.weekendHidden);
+      
+      console.log(`Weekend ${this.weekendHidden ? 'hidden' : 'shown'}`);
     },
     
     // Mostrar menú contextual de tareas
@@ -119,6 +222,16 @@ function weekdeckApp() {
           text: task.completed ? 'Unmark as complete' : 'Mark as complete',
           icon: task.completed ? 'radio_button_unchecked' : 'check_circle',
           action: () => this.toggleComplete(day, idx)
+        },
+        {
+          text: 'Duplicate',
+          icon: 'content_copy',
+          action: () => this.duplicateTask(day, idx)
+        },
+        {
+          text: 'Move to top',
+          icon: 'vertical_align_top',
+          action: () => this.moveTaskToTop(day, idx)
         },
         { separator: true },
         {
@@ -206,6 +319,12 @@ function weekdeckApp() {
       // Crear opciones del menú contextual del header
       const menuOptions = [
         {
+          text: 'Clear completed',
+          icon: 'cleaning_services',
+          action: () => this.clearCompletedTasks(day),
+          iconClass: 'text-orange-600'
+        },
+        {
           text: 'Clear content',
           icon: 'delete_sweep',
           action: () => this.clearDayContent(day),
@@ -229,6 +348,24 @@ function weekdeckApp() {
       // Confirmar antes de borrar
       if (confirm(`Are you sure you want to clear all content from ${day}?`)) {
         this.tasks[day] = [];
+      }
+    },
+    
+    // Borrar solo las tareas completadas de un día
+    clearCompletedTasks(day) {
+      const completedTasks = this.tasks[day].filter(task => task.completed);
+      
+      if (completedTasks.length === 0) {
+        console.log(`No hay tareas completadas en ${day}`);
+        return;
+      }
+      
+      // Confirmar antes de borrar
+      if (confirm(`Are you sure you want to clear ${completedTasks.length} completed task(s) from ${day}?`)) {
+        // Filtrar solo las tareas no completadas
+        this.tasks[day] = this.tasks[day].filter(task => !task.completed);
+        
+        console.log(`${completedTasks.length} tarea(s) completada(s) eliminada(s) de ${day}`);
       }
     },
     
@@ -412,6 +549,47 @@ function weekdeckApp() {
       // Fallback si no se encuentra el elemento
       this.tasks[day].splice(idx, 1);
     }
+  },
+  
+  duplicateTask(day, idx) {
+    // Obtener la tarea original
+    const originalTask = this.tasks[day][idx];
+    
+    // Crear una copia de la tarea
+    const duplicatedTask = {
+      id: '_' + Math.random().toString(36).substr(2, 9),
+      title: originalTask.title + ' (copy)',
+      desc: originalTask.desc,
+      completed: false, // La copia siempre empieza como no completada
+      color: originalTask.color,
+      bgFill: originalTask.bgFill
+    };
+    
+    // Insertar la copia después de la tarea original
+    this.tasks[day].splice(idx + 1, 0, duplicatedTask);
+    
+    // Mostrar notificación visual (opcional)
+    console.log(`Tarea duplicada: "${duplicatedTask.title}"`);
+  },
+  
+  moveTaskToTop(day, idx) {
+    // Verificar que la tarea no esté ya en la primera posición
+    if (idx === 0) {
+      console.log('La tarea ya está en la primera posición');
+      return;
+    }
+    
+    // Obtener la tarea
+    const task = this.tasks[day][idx];
+    
+    // Remover la tarea de su posición actual
+    this.tasks[day].splice(idx, 1);
+    
+    // Insertar la tarea al principio del array
+    this.tasks[day].unshift(task);
+    
+    // Mostrar notificación visual (opcional)
+    console.log(`Tarea movida al inicio: "${task.title}"`);
   },
     openModal(day, idx) {
       const t = this.tasks[day][idx];

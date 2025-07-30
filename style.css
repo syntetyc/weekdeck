@@ -54,6 +54,33 @@ html, body {
   flex-direction: column;
   min-height: 100vh;
 }
+
+/* Estilos para ocultar columnas del weekend */
+.weekend-column {
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  opacity: 1;
+  transform: scale(1);
+  width: 100%;
+  flex: 1;
+  visibility: visible;
+}
+
+/* Animación para las columnas que se redistribuyen */
+.flex.gap-3.w-full.mx-auto.h-full > div:not(.weekend-column) {
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.weekend-column.weekend-hidden {
+  opacity: 0;
+  transform: scale(0.9) translateX(-10px);
+  width: 0;
+  flex: 0;
+  visibility: hidden;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
 body {
   background: #f5f5f5;
   font-family: 'Space Mono', monospace;
@@ -140,7 +167,8 @@ header button:active {
   border-radius: var(--context-menu-border-radius);
   box-shadow: var(--context-menu-shadow);
   min-width: var(--context-menu-min-width);
-  max-width: 280px;
+  max-width: 300px;
+  width: auto;
   opacity: 0;
   transform: scale(0.95) translateY(-5px);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -166,6 +194,7 @@ header button:active {
   font-size: var(--context-menu-font-size);
   color: var(--context-menu-color);
   position: relative;
+  min-height: 40px;
 }
 
 .context-menu-item:hover {
@@ -200,6 +229,10 @@ header button:active {
 .context-menu-item span:not(.material-symbols-outlined) {
   flex: 1;
   font-size: 16px !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .context-menu-subtext {
@@ -209,15 +242,32 @@ header button:active {
 }
 
 .context-menu-separator {
-  height: 1px;
-  background-color: var(--context-menu-separator-color);
-  margin: 4px 0;
-  padding: 0;
-  cursor: default;
+  height: 1px !important;
+  background-color: var(--context-menu-separator-color) !important;
+  margin: 8px 16px !important;
+  padding: 0 !important;
+  cursor: default !important;
+  border: none !important;
+  border-radius: 0 !important;
+  min-height: 1px !important;
+  max-height: 1px !important;
+  flex: none !important;
+  display: block !important;
 }
 
 .context-menu-separator:hover {
-  background-color: var(--context-menu-separator-color);
+  background-color: var(--context-menu-separator-color) !important;
+}
+
+/* Asegurar que los separadores no hereden estilos de elementos de menú */
+.context-menu-separator .material-symbols-outlined,
+.context-menu-separator span,
+.context-menu-separator div {
+  display: none !important;
+}
+
+.context-menu-separator * {
+  display: none !important;
 }
 
 /* Indicador de selección para temas */
@@ -1424,4 +1474,44 @@ html body[data-theme="dark"] .w-4.h-4.rounded-full:not([style*="background"]) {
 html body[data-theme="light"] .w-4.h-4.rounded-full.border.border-gray-400,
 html body[data-theme="light"] .w-4.h-4.rounded-full:not([style*="background"]) {
   border: 2px solid #e5e7eb !important;
+} 
+
+/* Estilos para View Transitions API con fade */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Configuración para View Transitions con fade */
+::view-transition-old(root) {
+  animation: fade-out 0.3s ease-in-out;
+}
+
+::view-transition-new(root) {
+  animation: fade-in 0.3s ease-in-out;
+}
+
+/* Fallback para navegadores que no soportan View Transitions */
+@supports not (view-transition-name: none) {
+  .theme-transition {
+    transition: all 0.3s ease-in-out;
+  }
+}
+
+/* Transición suave para cambios de tema */
+html {
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+body {
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.weekdeck-wrapper {
+  transition: background-color 0.3s ease-in-out;
 } 

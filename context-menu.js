@@ -138,7 +138,7 @@ class ContextMenuManager {
         
         // Ejecutar la acción después de un breve delay para evitar conflictos
         setTimeout(() => {
-          option.action();
+          option.action(e);
         }, 10);
       });
     }
