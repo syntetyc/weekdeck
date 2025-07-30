@@ -138,7 +138,7 @@
                 @dragleave="onDragLeave(day, null, $event)"
                 @drop="onDrop(day, null, $event)"
               >
-                <input type="text" class="flex-1 border-0 border-b border-gray-300 focus:ring-0 focus:border-black bg-transparent text-base" x-model="newTask[day]" @keydown.enter="addTask(day)" @blur="addTask(day)">
+                <input type="text" class="flex-1 border-0 border-b border-gray-300 focus:ring-0 focus:border-black bg-transparent text-base add-task-input" x-model="newTask[day]" @keydown.enter="addTask(day)" @blur="addTask(day)" placeholder="Add new task...">
               </div>
               <!-- Indicador visual si la columna está vacía y es zona de drop -->
               <template x-if="isDragging && dragOverColumn === day && tasks[day].length === 0">

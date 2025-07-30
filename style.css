@@ -249,35 +249,36 @@ body:has(.flex.min-h-\[48px\].px-2.py-1.group:nth-child(n+6))::after {
   border-bottom: none !important;
 }
 
-.flex-1.flex.flex-col.relative.clickable-area::after {
-  content: '+ Add task';
-  position: absolute;
-  bottom: 60px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(107, 114, 128, 0.9);
-  color: #f3f4f6;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-family: 'Space Mono', monospace;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  pointer-events: none;
-  z-index: 10;
-  text-align: center;
-  white-space: nowrap;
-  width: auto;
-  min-width: 90px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 500;
+/* Estilos para el input de nueva tarea */
+.add-task-input {
+  color: transparent;
+  transition: color 0.3s ease;
 }
 
-.flex-1.flex.flex-col.relative.clickable-area:hover::after {
-  opacity: 1;
+.add-task-input::placeholder {
+  color: transparent;
+  transition: color 0.3s ease;
 }
+
+/* Mostrar placeholder al hacer hover sobre la tabla */
+.bg-white.border.border-gray-200.rounded-lg.flex.flex-col.min-h-\[70vh\].h-full.transition-all.duration-150.relative:hover .add-task-input {
+  color: #6b7280;
+}
+
+.bg-white.border.border-gray-200.rounded-lg.flex.flex-col.min-h-\[70vh\].h-full.transition-all.duration-150.relative:hover .add-task-input::placeholder {
+  color: #9ca3af;
+}
+
+/* Mostrar texto cuando el input tiene focus */
+.add-task-input:focus {
+  color: #000000;
+}
+
+.add-task-input:focus::placeholder {
+  color: #9ca3af;
+}
+
+
 
 /* Hover effect para las filas de tareas */
 .flex.min-h-\[48px\].px-2.py-1.group {
