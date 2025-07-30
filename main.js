@@ -189,9 +189,6 @@ function weekdeckApp() {
           if (newTaskElement) {
             console.log('Elemento encontrado, aplicando animación');
             
-            // PRUEBA: Añadir borde rojo para verificar que es el elemento correcto
-            newTaskElement.style.border = '2px solid red';
-            
             // Aplicar estilos iniciales directamente
             newTaskElement.style.opacity = '0';
             newTaskElement.style.transform = 'translateY(30px)';
@@ -211,7 +208,6 @@ function weekdeckApp() {
               newTaskElement.style.transition = '';
               newTaskElement.style.opacity = '';
               newTaskElement.style.transform = '';
-              newTaskElement.style.border = ''; // Remover borde rojo
               console.log('Estilos limpiados');
             }, 400);
           } else {
