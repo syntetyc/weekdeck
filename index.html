@@ -56,9 +56,11 @@
           style="overflow: visible;"
         >
             <div class="px-3 py-2 text-2xl font-extrabold tracking-wider flex items-center">
-              <span class="material-symbols-outlined text-red-500 mr-2" x-show="currentDay === day">asterisk</span>
+              <span class="tooltip-container" x-show="currentDay === day">
+                <span class="material-symbols-outlined text-red-500 mr-2">asterisk</span>
+                <span class="tooltip top">today</span>
+              </span>
               <span x-text="day"></span>
-              <span class="ml-2 w-2 h-2 bg-black rounded-full inline-block"></span>
             </div>
             <div class="flex-1 flex flex-col relative" style="overflow: visible;">
               <template x-for="(task, tIdx) in tasks[day]" :key="task.id">

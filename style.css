@@ -95,6 +95,76 @@ header button:active {
   content: "⛶";
   font-family: monospace;
 }
+
+/* Sistema dinámico de tooltips */
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: 'Space Mono', monospace;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  pointer-events: none;
+  z-index: 1000;
+  transform: translateY(-5px);
+}
+
+.tooltip-container:hover .tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* Posiciones del tooltip */
+.tooltip.top {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-5px);
+}
+
+.tooltip-container:hover .tooltip.top {
+  transform: translateX(-50%) translateY(0);
+}
+
+.tooltip.bottom {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(5px);
+}
+
+.tooltip-container:hover .tooltip.bottom {
+  transform: translateX(-50%) translateY(0);
+}
+
+.tooltip.left {
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%) translateX(-5px);
+}
+
+.tooltip-container:hover .tooltip.left {
+  transform: translateY(-50%) translateX(0);
+}
+
+.tooltip.right {
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%) translateX(5px);
+}
+
+.tooltip-container:hover .tooltip.right {
+  transform: translateY(-50%) translateX(0);
+}
 .weekdeck-grid-wrapper {
   display: contents;
 }
