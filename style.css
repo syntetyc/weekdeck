@@ -265,8 +265,34 @@ header button:active {
   transform: scale(1) translateY(0);
 }
 
+/* Animaciones para submenús internos */
 .context-menu-content {
-  padding: 6px 0;
+  transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
+}
+
+.context-menu-content.sliding-out {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+.context-menu-content.sliding-in {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.context-menu-content.sliding-in.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+/* Asegurar que el contenido del menú tenga overflow hidden */
+.context-menu {
+  overflow: hidden;
+}
+
+.context-menu-content {
+  width: 100%;
+  position: relative;
 }
 
 .context-menu-item {
@@ -286,10 +312,82 @@ header button:active {
   color: #155dfc !important;
 }
 
+/* Clases de colores para iconos - MÁXIMA ESPECIFICIDAD */
+.context-menu[data-menu-id="color-menu"] .context-menu-item .material-symbols-outlined.color-red {
+  color: #F36B6B !important;
+}
+
+.context-menu[data-menu-id="color-menu"] .context-menu-item .material-symbols-outlined.color-yellow {
+  color: #FFD86B !important;
+}
+
+.context-menu[data-menu-id="color-menu"] .context-menu-item .material-symbols-outlined.color-blue {
+  color: #6B9AFF !important;
+}
+
+.context-menu[data-menu-id="color-menu"] .context-menu-item .material-symbols-outlined.color-green {
+  color: #7BE495 !important;
+}
+
+.context-menu[data-menu-id="color-menu"] .context-menu-item .material-symbols-outlined.color-purple {
+  color: #A963B0 !important;
+}
+
+/* Hover general para iconos */
 .context-menu-item:hover .material-symbols-outlined {
   color: #155dfc !important;
 }
 
+/* EXCEPCIÓN ESPECÍFICA: Los iconos de colores SIEMPRE mantienen su color */
+.context-menu[data-menu-id="color-menu"] .material-symbols-outlined.color-red,
+.context-menu[data-menu-id="color-menu"] .context-menu-item:hover .material-symbols-outlined.color-red {
+  color: #F36B6B !important;
+}
+
+.context-menu[data-menu-id="color-menu"] .material-symbols-outlined.color-yellow,
+.context-menu[data-menu-id="color-menu"] .context-menu-item:hover .material-symbols-outlined.color-yellow {
+  color: #FFD86B !important;
+}
+
+.context-menu[data-menu-id="color-menu"] .material-symbols-outlined.color-blue,
+.context-menu[data-menu-id="color-menu"] .context-menu-item:hover .material-symbols-outlined.color-blue {
+  color: #6B9AFF !important;
+}
+
+.context-menu[data-menu-id="color-menu"] .material-symbols-outlined.color-green,
+.context-menu[data-menu-id="color-menu"] .context-menu-item:hover .material-symbols-outlined.color-green {
+  color: #7BE495 !important;
+}
+
+.context-menu[data-menu-id="color-menu"] .material-symbols-outlined.color-purple,
+.context-menu[data-menu-id="color-menu"] .context-menu-item:hover .material-symbols-outlined.color-purple {
+  color: #A963B0 !important;
+}
+
+/* Solo el texto se pone azul en hover para el menú de colores */
+.context-menu[data-menu-id="color-menu"] .context-menu-item:hover span:not(.material-symbols-outlined) {
+  color: #2563eb;
+}
+
+/* Los iconos de colores nunca cambian de color, ni en hover ni cuando están seleccionados */
+.context-menu[data-menu-id="color-menu"] .material-symbols-outlined.color-red,
+.context-menu[data-menu-id="color-menu"] .material-symbols-outlined.color-yellow,
+.context-menu[data-menu-id="color-menu"] .material-symbols-outlined.color-blue,
+.context-menu[data-menu-id="color-menu"] .material-symbols-outlined.color-green,
+.context-menu[data-menu-id="color-menu"] .material-symbols-outlined.color-purple {
+  color: inherit !important;
+}
+
+/* Estilos para el botón Back en submenús */
+.context-menu-item .material-symbols-outlined.text-blue-600 {
+  color: #2563eb !important;
+}
+
+.context-menu-item:hover .material-symbols-outlined.text-blue-600 {
+  color: #2563eb !important;
+}
+
+/* Estilos para elementos deshabilitados en el menú */
 .context-menu-item.disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -302,6 +400,17 @@ header button:active {
 
 .context-menu-item.disabled .material-symbols-outlined {
   color: #9ca3af !important;
+}
+
+/* Estilos para el botón Back */
+.context-menu-item:first-child {
+  border-bottom: 1px solid var(--context-menu-separator-color);
+  margin-bottom: 4px;
+  padding-bottom: 8px;
+}
+
+.context-menu-item:first-child:hover {
+  background-color: #f3f4f6;
 }
 
 .context-menu-item .material-symbols-outlined {
@@ -1073,6 +1182,49 @@ html body .header-menu-btn.hover\:bg-gray-200:hover .material-symbols-outlined {
     width: 320px;
     flex: 0 0 320px;
   }
+  
+  /* Estilos específicos para el input de nueva tarea en móviles */
+  .add-task-input {
+    /* Asegurar que se ajuste al ancho disponible */
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    /* Reducir el padding para dar más espacio al texto */
+    padding: 8px 12px !important;
+    /* Ajustar el tamaño de fuente para móviles */
+    font-size: 16px !important;
+    /* Asegurar que no se desborde */
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+  
+  /* Ajustar el contenedor del input para que no se desborde */
+  .flex.items-center.min-h-\[48px\].px-2.transition-all.duration-150 {
+    /* Asegurar que el contenedor se ajuste al ancho de la columna */
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    /* Reducir el padding para dar más espacio */
+    padding: 8px 12px !important;
+    /* Asegurar que los elementos se alineen correctamente */
+    align-items: center !important;
+    gap: 8px !important;
+  }
+  
+  /* Ajustar el icono de agregar para que no ocupe mucho espacio */
+  .flex.items-center.min-h-\[48px\].px-2.transition-all.duration-150 .material-symbols-outlined {
+    font-size: 20px !important;
+    flex-shrink: 0 !important;
+    margin-right: 8px !important;
+  }
+  
+  /* Asegurar que el input tome todo el espacio disponible */
+  .flex.items-center.min-h-\[48px\].px-2.transition-all.duration-150 input {
+    flex: 1 !important;
+    min-width: 0 !important;
+    width: 100% !important;
+  }
 } 
 .task-color-dot {
   width: 14px;
@@ -1679,6 +1831,83 @@ body {
     transform: translateX(100%);
     opacity: 0;
   }
+}
+
+/* Nuevo sistema de notificaciones centradas */
+.notification-center {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.notification-toast {
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  min-width: 200px;
+  max-width: 400px;
+  animation: slideUpIn 0.3s ease-out;
+}
+
+.notification-toast.success {
+  /* border-left: 4px solid #10b981; */
+}
+
+.notification-toast.error {
+  /* border-left: 4px solid #ef4444; */
+}
+
+.notification-toast .material-symbols-outlined {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.notification-toast.success .material-symbols-outlined {
+  color: #10b981;
+}
+
+.notification-toast.error .material-symbols-outlined {
+  color: #ef4444;
+}
+
+@keyframes slideUpIn {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideUpOut {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+.notification-toast.hiding {
+  animation: slideUpOut 0.3s ease-in;
 } 
 
 /* Estilos para mejorar la experiencia táctil en móviles */
@@ -1688,6 +1917,11 @@ body {
     min-width: 200px;
     /* Aumentar el padding para más área táctil */
     padding: 8px 0 4px 0;
+    /* Mejorar la apariencia en móviles */
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    /* Asegurar que esté por encima de todo */
+    z-index: 10000;
   }
   
   .context-menu-item {
@@ -1732,26 +1966,35 @@ body {
     /* Aumentar el tamaño del icono */
     font-size: 28px;
   }
+} 
+
+/* Transiciones suaves para cambios de contenido interno */
+.context-menu {
+  transition: opacity 0.2s ease-in-out;
 }
 
-/* Estilos específicos para dispositivos táctiles */
-@media (hover: none) and (pointer: coarse) {
-  .context-menu-item:hover {
-    /* En dispositivos táctiles, mantener el estado hover más tiempo */
-    background-color: var(--context-menu-hover-bg);
-  }
-  
-  /* Mejorar la respuesta táctil */
-  .context-menu-item:active {
-    background-color: #e5e7eb;
-    transform: scale(0.98);
-  }
-  
-  /* Asegurar que los menús no se cierren accidentalmente */
-  .context-menu {
-    /* Aumentar el z-index para asegurar que esté por encima */
-    z-index: 10000;
-    /* Agregar un pequeño delay antes de cerrar */
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
+.context-menu-content {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Estilos para elementos deshabilitados */
+.context-menu-item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.context-menu-item.disabled:hover {
+  background-color: transparent;
+}
+
+/* Animación de entrada para submenús */
+.context-menu.show {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.context-menu {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
 } 

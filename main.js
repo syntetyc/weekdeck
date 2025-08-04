@@ -619,23 +619,52 @@ function weekdeckApp() {
     
     // Mostrar notificación de éxito
     showSuccessNotification(message) {
-      // Crear notificación temporal
-      const notification = document.createElement('div');
-      notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg z-50 notification';
-      notification.textContent = message;
+      this.showNotification(message, 'success');
+    },
+    
+    // Mostrar notificación de error
+    showErrorNotification(message) {
+      this.showNotification(message, 'error');
+    },
+    
+    // Mostrar notificación
+    showNotification(message, type = 'success') {
+      // Crear contenedor de notificaciones si no existe
+      let notificationCenter = document.querySelector('.notification-center');
+      if (!notificationCenter) {
+        notificationCenter = document.createElement('div');
+        notificationCenter.className = 'notification-center';
+        document.body.appendChild(notificationCenter);
+      }
       
-      document.body.appendChild(notification);
+      // Crear elemento de notificación
+      const notification = document.createElement('div');
+      notification.className = `notification-toast ${type}`;
+      
+      // Icono según el tipo
+      const icon = document.createElement('span');
+      icon.className = 'material-symbols-outlined';
+      icon.textContent = type === 'success' ? 'check_circle' : 'error';
+      
+      // Texto del mensaje
+      const text = document.createElement('span');
+      text.textContent = message;
+      
+      // Agregar elementos al notification
+      notification.appendChild(icon);
+      notification.appendChild(text);
+      
+      // Agregar al contenedor
+      notificationCenter.appendChild(notification);
       
       // Remover después de 3 segundos
       setTimeout(() => {
-        if (notification.parentNode) {
-          notification.style.animation = 'slideOut 0.3s ease-in';
-          setTimeout(() => {
-            if (notification.parentNode) {
-              notification.parentNode.removeChild(notification);
-            }
-          }, 300);
-        }
+        notification.classList.add('hiding');
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 300);
       }, 3000);
     },
     
@@ -644,26 +673,23 @@ function weekdeckApp() {
       event.preventDefault();
       event.stopPropagation();
       
-      // Detectar si es un evento táctil
-      const isTouchEvent = event.type === 'touchstart' || event.type === 'touchend';
-      
-      // Crear opciones del menú contextual
       const task = this.tasks[day][idx];
       const menuOptions = [
         {
-          text: task.completed ? 'Unmark as complete' : 'Mark as complete',
+          text: task.completed ? 'Mark as incomplete' : 'Mark as complete',
           icon: task.completed ? 'radio_button_unchecked' : 'check_circle',
-          action: () => this.toggleComplete(day, idx)
+          action: () => this.toggleTaskCompletion(day, idx)
+        },
+        {
+          text: 'Move to',
+          icon: 'swap_horiz',
+          action: () => this.showMoveToSubmenu(event, day, idx),
+          keepOpen: true // Mantener el menú abierto
         },
         {
           text: 'Duplicate',
           icon: 'content_copy',
           action: () => this.duplicateTask(day, idx)
-        },
-        {
-          text: 'Move to top',
-          icon: 'vertical_align_top',
-          action: () => this.moveTaskToTop(day, idx)
         },
         {
           text: 'Add notes',
@@ -672,13 +698,12 @@ function weekdeckApp() {
         },
         { separator: true },
         {
-          text: 'Delete task',
+          text: 'Delete',
           icon: 'delete',
-          action: () => this.deleteTask(day, idx),
-          iconClass: 'text-red-600'
+          action: () => this.deleteTask(day, idx)
         }
       ];
-      
+
       // Registrar el menú si no existe
       if (!window.contextMenuManager.menus.has('task-menu')) {
         window.registerContextMenu('task-menu', menuOptions);
@@ -686,10 +711,142 @@ function weekdeckApp() {
         // Actualizar opciones si el menú ya existe
         window.contextMenuManager.menus.get('task-menu').options = menuOptions;
       }
-      
-      // Usar el elemento correcto para posicionar el menú
+
       const triggerElement = event.target.closest('button') || event.target;
       window.showContextMenu('task-menu', triggerElement, 'bottom-right');
+    },
+    
+    // Mostrar submenú de "Move to"
+    showMoveToSubmenu(event, day, idx) {
+      console.log('showMoveToSubmenu called with day:', day, 'idx:', idx);
+      
+      const task = this.tasks[day][idx];
+      const menuOptions = [
+        {
+          text: 'Back',
+          icon: 'arrow_back',
+          action: () => {
+            console.log('Back button clicked - showing original menu content');
+            // Cambiar directamente el contenido sin usar changeMenuContent
+            this.restoreOriginalMenu(event, day, idx);
+          },
+          keepOpen: true // Asegurar que mantenga el menú abierto
+        },
+        {
+          text: 'Top',
+          icon: 'vertical_align_top',
+          action: () => this.moveTaskToTop(day, idx)
+        }
+      ];
+      
+      // Agregar opciones para cada día
+      this.days.forEach(targetDay => {
+        const isCurrentDay = targetDay === day;
+        menuOptions.push({
+          text: targetDay,
+          icon: isCurrentDay ? 'check_circle' : 'radio_button_unchecked',
+          action: () => this.moveTaskToDay(day, idx, targetDay),
+          iconClass: isCurrentDay ? 'text-blue-600' : '',
+          disabled: isCurrentDay
+        });
+      });
+      
+      console.log('Menu options created:', menuOptions);
+      console.log('About to call changeMenuContent');
+      
+      // Cambiar el contenido del menú actual
+      window.contextMenuManager.changeMenuContent(menuOptions, 'move-to-submenu');
+    },
+    
+    // Restaurar el menú original directamente
+    restoreOriginalMenu(event, day, idx) {
+      console.log('restoreOriginalMenu called');
+      
+      if (!window.contextMenuManager.activeMenu) {
+        console.log('No active menu found');
+        return;
+      }
+      
+      const task = this.tasks[day][idx];
+      const menuOptions = [
+        {
+          text: 'Edit',
+          icon: 'edit',
+          action: () => this.editTask(day, idx)
+        },
+        {
+          text: 'Duplicate',
+          icon: 'content_copy',
+          action: () => this.duplicateTask(day, idx)
+        },
+        {
+          text: 'Delete',
+          icon: 'delete',
+          action: () => this.deleteTask(day, idx)
+        },
+        { separator: true },
+        {
+          text: 'Move to',
+          icon: 'swap_horiz',
+          action: () => this.showMoveToSubmenu(event, day, idx),
+          keepOpen: true // Mantener el menú abierto
+        },
+        {
+          text: 'Add notes',
+          icon: 'note_add',
+          action: () => this.openModal(day, idx)
+        },
+        { separator: true },
+        {
+          text: task.completed ? 'Mark as incomplete' : 'Mark as complete',
+          icon: task.completed ? 'radio_button_unchecked' : 'check_circle',
+          action: () => this.toggleTaskCompletion(day, idx)
+        }
+      ];
+      
+      // Limpiar contenido actual
+      window.contextMenuManager.activeMenu.innerHTML = '';
+      
+      // Crear nuevo contenido
+      const newContent = window.contextMenuManager.createMenuContent(menuOptions);
+      window.contextMenuManager.activeMenu.appendChild(newContent);
+      
+      // Actualizar configuración
+      window.contextMenuManager.currentMenuId = 'task-menu';
+      window.contextMenuManager.menus.set('task-menu', { 
+        options: menuOptions, 
+        element: window.contextMenuManager.activeMenu 
+      });
+      
+      console.log('Original menu restored');
+    },
+    
+    // Mover tarea a otro día
+    moveTaskToDay(fromDay, idx, toDay) {
+      if (fromDay === toDay) return;
+      
+      const task = this.tasks[fromDay][idx];
+      this.tasks[fromDay].splice(idx, 1);
+      this.tasks[toDay].push(task);
+      
+      // Cerrar el menú después de mover
+      window.contextMenuManager.closeAll();
+      
+      this.showSuccessNotification(`Task moved to ${toDay}`);
+    },
+    
+    // Mover tarea al principio de la lista
+    moveTaskToTop(day, idx) {
+      if (idx === 0) return; // Ya está en la primera posición
+      
+      const task = this.tasks[day][idx];
+      this.tasks[day].splice(idx, 1);
+      this.tasks[day].unshift(task); // Agregar al principio del array
+      
+      // Cerrar el menú después de mover
+      window.contextMenuManager.closeAll();
+      
+      this.showSuccessNotification('Task moved to top');
     },
     
     // Mostrar menú contextual de colores
@@ -728,17 +885,20 @@ function weekdeckApp() {
       menuOptions.push({ separator: true });
       
       // Agregar opciones de colores
-      const colorNames = ['Red', 'Yellow', 'Blue', 'Green', 'Gray'];
-      const colorValues = ['#F36B6B', '#FFD86B', '#6B9AFF', '#7BE495', '#BBBBBB'];
+      const colorNames = ['Red', 'Yellow', 'Blue', 'Green', 'Purple'];
+      const colorValues = ['#F36B6B', '#FFD86B', '#6B9AFF', '#7BE495', '#A963B0'];
+      const colorClasses = ['color-red', 'color-yellow', 'color-blue', 'color-green', 'color-purple'];
       
       colorNames.forEach((name, colorIdx) => {
         const colorValue = colorValues[colorIdx];
+        const colorClass = colorClasses[colorIdx];
         const isSelected = task.color === colorValue;
         menuOptions.push({
           text: name,
+          icon: 'eraser_size_5',
           action: () => this.setColor(day, idx, colorValue),
-          selected: () => isSelected,
-          customIcon: `<span class="w-4 h-4 rounded-full inline-block" style="background: ${colorValue}; border: 1px solid #ccc; border-radius: 50%; width: 16px; height: 16px; aspect-ratio: 1 / 1; min-width: 16px; min-height: 16px; max-width: 16px; max-height: 16px; ${isSelected ? 'border: 2px solid #2563eb;' : ''}"></span>`
+          iconClass: colorClass, // Siempre usar la clase de color, nunca text-blue-600
+          selected: () => isSelected
         });
       });
       
