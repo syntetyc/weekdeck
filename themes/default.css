@@ -268,4 +268,50 @@ html.theme-default {
 /* Gradiente inferior para tema light */
 html.theme-default body::after {
   background: var(--bg-gradient-bottom) !important;
+}
+
+/* Estilos para el offcanvas de información en tema por defecto */
+.info-offcanvas {
+  background-color: var(--bg-secondary) !important;
+}
+
+.info-offcanvas .border-gray-200 {
+  border-color: var(--border-primary) !important;
+}
+
+.info-offcanvas .text-black {
+  color: var(--text-primary) !important;
+}
+
+.info-offcanvas .text-gray-700 {
+  color: var(--text-primary) !important;
+}
+
+.info-offcanvas .text-gray-800 {
+  color: var(--text-primary) !important;
+}
+
+.info-offcanvas .text-gray-600 {
+  color: var(--text-secondary) !important;
+}
+
+.info-offcanvas .text-gray-500 {
+  color: var(--text-muted) !important;
+}
+
+.info-offcanvas .bg-gray-100 {
+  background-color: var(--hover-secondary) !important;
+}
+
+.info-offcanvas .border-gray-100 {
+  border-color: var(--border-primary) !important;
+}
+
+/* Estilos para el acordeón del offcanvas */
+.info-offcanvas button:hover h3 {
+  color: var(--accent-color) !important;
+}
+
+.info-offcanvas .material-symbols-outlined {
+  transition: transform 0.2s ease;
 } 

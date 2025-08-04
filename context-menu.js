@@ -4,6 +4,7 @@ class ContextMenuManager {
   constructor() {
     this.activeMenu = null;
     this.menus = new Map();
+    this.isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     this.init();
   }
   
@@ -14,6 +15,15 @@ class ContextMenuManager {
         this.closeAll();
       }
     });
+    
+    // Agregar soporte para eventos táctiles en móviles
+    if (this.isTouchDevice) {
+      document.addEventListener('touchstart', (e) => {
+        if (!e.target.closest('.context-menu') && !e.target.closest('[data-context-menu]')) {
+          this.closeAll();
+        }
+      }, { passive: true });
+    }
     
     // Cerrar menús con Escape
     document.addEventListener('keydown', (e) => {
@@ -129,7 +139,8 @@ class ContextMenuManager {
     }
     
     if (option.action) {
-      item.addEventListener('click', (e) => {
+      // Función para manejar la acción del menú
+      const handleAction = (e) => {
         e.stopPropagation();
         e.preventDefault();
         
@@ -140,7 +151,22 @@ class ContextMenuManager {
         setTimeout(() => {
           option.action(e);
         }, 10);
-      });
+      };
+      
+      // Agregar event listeners para click y touch
+      item.addEventListener('click', handleAction);
+      
+      // Agregar soporte específico para eventos táctiles en móviles
+      if (this.isTouchDevice) {
+        item.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+        }, { passive: false });
+        
+        item.addEventListener('touchend', (e) => {
+          e.preventDefault();
+          handleAction(e);
+        }, { passive: false });
+      }
     }
     
     if (option.disabled) {
@@ -164,7 +190,7 @@ class ContextMenuManager {
     switch (position) {
       case 'bottom-right':
         top = triggerRect.bottom + 5;
-        left = triggerRect.right - 180; // Ancho fijo del menú
+        left = triggerRect.right - 210; // Ancho fijo del menú + 30px adicionales
         break;
       case 'bottom-left':
         top = triggerRect.bottom + 5;
@@ -185,8 +211,8 @@ class ContextMenuManager {
     
     // Asegurar que no se salga de la pantalla
     if (left < 10) left = 10;
-    if (left + 180 > window.innerWidth - 10) {
-      left = window.innerWidth - 190;
+    if (left + 210 > window.innerWidth - 10) {
+      left = window.innerWidth - 220;
     }
     if (top < 10) {
       top = triggerRect.top - 5;

@@ -5,8 +5,8 @@ html.theme-dark {
   /* Colores principales */
   --primary-color: #ffffff;
   --secondary-color: #222;
-  --accent-color: #fff;
-  --highlight-color: #fff;
+  --accent-color: #155dfc;
+  --highlight-color: #155dfc;
   
   /* Colores de fondo */
   --bg-primary: #111;
@@ -207,8 +207,32 @@ body::after {
 } 
 
 /* Botón de menú contextual en dark theme */
-.flex.min-h-\[48px\].px-2.py-1.group:hover .material-symbols-outlined {
+.flex.min-h-\[55px\].px-2.py-1.group button .material-symbols-outlined {
+  opacity: 0 !important;
+  transition: opacity 0.2s ease;
+}
+
+.flex.min-h-\[55px\].px-2.py-1.group:hover button .material-symbols-outlined {
+  opacity: 1 !important;
   color: var(--text-secondary) !important;
+}
+
+/* Texto azul al hover en dark theme */
+.flex.min-h-\[55px\].px-2.py-1.group:hover .flex-1.min-w-0 span {
+  color: #155dfc !important;
+}
+
+.flex.min-h-\[55px\].px-2.py-1.group:hover input {
+  color: #155dfc !important;
+}
+
+/* Reglas con máxima especificidad para dark theme */
+html body .flex.min-h-\[55px\].px-2.py-1.group:hover .flex-1.min-w-0 span {
+  color: #155dfc !important;
+}
+
+html body .flex.min-h-\[55px\].px-2.py-1.group:hover input {
+  color: #155dfc !important;
 }
 
 /* Elementos completados en dark theme */
@@ -327,4 +351,50 @@ body::after {
 .w-5.h-5.rounded-full[style*="background:#fff"] {
   background: transparent !important;
   border: 2px solid var(--border-primary) !important;
+}
+
+/* Estilos para el offcanvas de información en tema dark */
+.info-offcanvas {
+  background-color: var(--bg-secondary) !important;
+}
+
+.info-offcanvas .border-gray-200 {
+  border-color: var(--border-primary) !important;
+}
+
+.info-offcanvas .text-black {
+  color: var(--text-primary) !important;
+}
+
+.info-offcanvas .text-gray-700 {
+  color: var(--text-secondary) !important;
+}
+
+.info-offcanvas .text-gray-800 {
+  color: var(--text-primary) !important;
+}
+
+.info-offcanvas .text-gray-600 {
+  color: var(--text-secondary) !important;
+}
+
+.info-offcanvas .text-gray-500 {
+  color: var(--text-muted) !important;
+}
+
+.info-offcanvas .bg-gray-100 {
+  background-color: var(--bg-primary) !important;
+}
+
+.info-offcanvas .border-gray-100 {
+  border-color: var(--border-primary) !important;
+}
+
+/* Estilos para el acordeón del offcanvas en tema dark */
+.info-offcanvas button:hover h3 {
+  color: var(--accent-color) !important;
+}
+
+.info-offcanvas .material-symbols-outlined {
+  transition: transform 0.2s ease;
 } 

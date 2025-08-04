@@ -1,0 +1,103 @@
+{
+  "sections": [
+    {
+      "id": "privacy",
+      "title": "Totally Private",
+      "icon": "security",
+      "content": "WeekDeck works entirely in your browser and on your computer. No data is uploaded to any server - everything runs locally, ensuring your privacy and data security."
+    },
+    {
+      "id": "basics",
+      "title": "How it works",
+      "icon": "help",
+      "content": "Drag and drop tasks between days to reorganize your week. Use keyboard shortcuts for text formatting:",
+      "shortcuts": [
+        {
+          "key": "Cmd/Ctrl",
+          "plus": "+",
+          "action": "B",
+          "description": "Bold Text"
+        },
+        {
+          "key": "Cmd/Ctrl",
+          "plus": "+",
+          "action": "I",
+          "description": "Italic Text"
+        },
+        {
+          "key": "Cmd/Ctrl",
+          "plus": "+",
+          "action": "U",
+          "description": "Underline Text"
+        }
+      ],
+      "saveLoad": {
+        "title": "Save and Load",
+        "description": "You can give each deck a custom name and save it as a .wdeck file. Use different files to load different types of weeks or projects."
+      }
+    },
+    {
+      "id": "about",
+      "title": "The project",
+      "icon": "person",
+      "content": "WeekDeck is a project by Roberto Nieto, a designer, illustrator, and art director with 20 years of experience in digital projects.",
+      "links": [
+        {
+          "name": "robertonieto.com",
+          "url": "https://robertonieto.com"
+        },
+        {
+          "name": "syntetyc.com",
+          "url": "https://syntetyc.com"
+        }
+      ],
+      "technicalInfo": {
+        "title": "Technical info",
+        "description": "Built with Bootstrap, Material Design Icons, Floating UI and Alpine.js."
+      }
+    },
+    {
+      "id": "support",
+      "title": "Support",
+      "icon": "favorite",
+      "content": "If you'd like to support my work, you can visit my illustration stores:",
+      "links": [
+        {
+          "name": "INPrnt",
+          "description": "Gallery level giclee prints, shipments from United States",
+          "url": "https://www.inprnt.com/gallery/syntetyc/"
+        },
+        {
+          "name": "IDGaming",
+          "description": "High Quality Gaming Mousepads",
+          "url": "https://www.idgaming.co.uk/collections/syntetyc?ref=0-EwKOTfz30VZJ"
+        },
+        {
+          "name": "Swapwear",
+          "description": "Swappable graphic jackets",
+          "url": "https://swapwear.com/collections/syntetyc"
+        },
+        {
+          "name": "Displate",
+          "description": "Amazing, vibrant and sharp metal posters",
+          "url": "https://displate.com/syntetyc?art=5d99e7c06647f"
+        },
+        {
+          "name": "Posterlounge",
+          "description": "High quality posters, several formats, materials and frames",
+          "url": "https://www.posterlounge.com/artists/syntetyc/"
+        }
+      ]
+    },
+    {
+      "id": "contact",
+      "title": "Contact",
+      "icon": "email",
+      "content": "If you have questions, queries, or improvement suggestions, you can contact:",
+      "email": {
+        "address": "info@robertonieto.com",
+        "label": "Email Contact"
+      }
+    }
+  ]
+} 
