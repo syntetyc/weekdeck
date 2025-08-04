@@ -62,11 +62,16 @@ function weekdeckApp() {
       // Inicializar tema actual
       this.currentTheme = window.themeManager ? window.themeManager.getCurrentTheme() : 'default';
       
-      // Agregar elementos tutoriales si no hay tareas guardadas
-      this.addTutorialItems();
+      // Agregar elementos tutoriales solo si no hay tareas guardadas
+      const hasTasks = this.days.some(day => this.tasks[day] && this.tasks[day].length > 0);
+      if (!hasTasks) {
+        this.addTutorialItems();
+      }
       
       this.$watch('tasks', (val) => {
+        console.log('🔄 Tasks watcher triggered, saving to localStorage...');
         localStorage.setItem('weekdeck-tasks', JSON.stringify(val));
+        console.log('✅ Tasks saved to localStorage');
       }, { deep: true });
       
       // Watcher para el título de la página
@@ -90,8 +95,35 @@ function weekdeckApp() {
         console.log('Tema cambiado a:', this.currentTheme, '- Actualizando colores de iconos');
       });
       
-      // Aplicar estado inicial del weekend
-      this.$nextTick(() => {
+               // Aplicar highlights pendientes si existen
+         setTimeout(() => {
+           const pendingHighlights = localStorage.getItem('weekdeck-pending-highlights');
+           if (pendingHighlights) {
+             try {
+               const highlights = JSON.parse(pendingHighlights);
+               console.log('🎨 Aplicando highlights pendientes...');
+               
+               highlights.forEach(highlight => {
+                 const taskElement = document.querySelector(`[data-task-id="${highlight.taskId}"]`);
+                 if (taskElement) {
+                   console.log(`🎨 Aplicando highlight a ${highlight.taskId}: ${highlight.color}66`);
+                   taskElement.style.background = highlight.color + '66';
+                   console.log(`✅ Highlight aplicado correctamente`);
+                 } else {
+                   console.log(`⚠️ No se encontró elemento para ${highlight.taskId}`);
+                 }
+               });
+               
+               // Limpiar highlights pendientes
+               localStorage.removeItem('weekdeck-pending-highlights');
+               console.log('✅ Highlights pendientes aplicados y limpiados');
+             } catch (error) {
+               console.error('Error aplicando highlights pendientes:', error);
+               localStorage.removeItem('weekdeck-pending-highlights');
+             }
+           }
+        
+        // Aplicar estado inicial del weekend
         if (this.weekendHidden) {
           const weekendColumns = document.querySelectorAll('.weekend-column');
           const mainContainer = document.querySelector('.flex.flex-col.lg\\:flex-row.gap-3.w-full.mx-auto.h-full');
@@ -205,14 +237,44 @@ function weekdeckApp() {
     
     // Configurar menús contextuales
     setupContextMenus() {
-      // Menú de configuración
+      // Menú de configuración inicial
       const settingsOptions = [
         {
+          text: 'Save Week',
+          icon: 'save',
+          action: () => {
+            this.saveTasksToFile();
+          }
+        },
+        {
+          text: 'Load Week',
+          icon: 'upload_file',
+          action: () => {
+            this.loadTasksFromFile();
+          }
+        },
+        {
+          text: 'Export to PDF',
+          icon: 'picture_as_pdf',
+          action: () => {
+            this.exportToPDF();
+          }
+        },
+        {
           text: this.weekendHidden ? 'Show weekend' : 'Hide weekend',
-          icon: 'weekend',
+          icon: 'event_busy',
           action: () => {
             this.toggleWeekend();
           }
+        },
+        { separator: true },
+        {
+          text: 'Clear all',
+          icon: 'delete_forever',
+          action: () => {
+            this.showClearAllConfirmation();
+          },
+          iconClass: 'text-red-600'
         }
       ];
       
@@ -230,14 +292,6 @@ function weekdeckApp() {
       // Actualizar opciones del menú según el estado actual
       const settingsOptions = [
         {
-          text: this.weekendHidden ? 'Show weekend' : 'Hide weekend',
-          icon: 'weekend',
-          action: () => {
-            this.toggleWeekend();
-          }
-        },
-        { separator: true },
-        {
           text: 'Save Week',
           icon: 'save',
           action: () => {
@@ -251,12 +305,18 @@ function weekdeckApp() {
             this.loadTasksFromFile();
           }
         },
-        { separator: true },
         {
           text: 'Export to PDF',
           icon: 'picture_as_pdf',
           action: () => {
             this.exportToPDF();
+          }
+        },
+        {
+          text: this.weekendHidden ? 'Show weekend' : 'Hide weekend',
+          icon: 'event_busy',
+          action: () => {
+            this.toggleWeekend();
           }
         },
         { separator: true },
@@ -342,72 +402,172 @@ function weekdeckApp() {
       );
       
       if (confirmed) {
-        this.clearAllData();
+        // Limpiar localStorage
+        localStorage.removeItem('weekdeck-tasks');
+        localStorage.removeItem('weekend-hidden');
+        localStorage.removeItem('weekdeck-page-title');
+        
+        // Mostrar notificación de éxito
+        this.showSuccessNotification('All tasks cleared successfully');
+        
+        // Refrescar la página después de un pequeño delay
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
       }
     },
     
     // Borrar todos los datos y resetear al estado inicial
     clearAllData() {
-      console.log('🗑️ Clearing all data...');
+      // Limpiar tareas de todos los días (exactamente como clearDayContent)
+      this.days.forEach(day => {
+        this.tasks[day] = [];
+      });
       
       // Limpiar localStorage
       localStorage.removeItem('weekdeck-tasks');
-      localStorage.removeItem('weekdeck-weekend-hidden');
+      localStorage.removeItem('weekend-hidden');
       localStorage.removeItem('weekdeck-page-title');
       
       // Resetear título de la página
       this.pageTitle = '';
       
-      // Refresh inmediato
-      window.location.reload();
+      // Resetear estado del weekend
+      this.weekendHidden = false;
+      
+      // Añadir tareas del tutorial
+      this.tasks.Monday.push({
+        id: 'tutorial-1',
+        title: '<--- click for change the color',
+        desc: '',
+        color: '#6B9AFF',
+        bgFill: false,
+        completed: false,
+        icon: 'eraser_size_5'
+      });
+      
+      this.tasks.Tuesday.push({
+        id: 'tutorial-2',
+        title: 'Click for extra options --->',
+        desc: '',
+        color: '#FFD86B',
+        bgFill: false,
+        completed: false,
+        icon: 'eraser_size_5'
+      });
+      
+      this.tasks.Wednesday.push({
+        id: 'tutorial-3',
+        title: 'Drag and drop elements',
+        desc: '',
+        color: '#7BE495',
+        bgFill: false,
+        completed: false,
+        icon: 'eraser_size_5'
+      });
+      
+      this.tasks.Sunday.push({
+        id: 'tutorial-4',
+        title: 'Up here you can explore more options: fullscreen, light/dark mode, settings, project info..',
+        desc: '',
+        color: '#F36B6B',
+        bgFill: false,
+        completed: false,
+        icon: 'eraser_size_5'
+      });
     },
 
     // Guardar tareas en archivo
     saveTasksToFile() {
       try {
-        // Crear objeto con todos los datos
-        const dataToSave = {
-          tasks: this.tasks,
-          weekendHidden: this.weekendHidden,
-          pageTitle: this.pageTitle,
-          currentTheme: window.themeManager ? window.themeManager.getCurrentTheme() : 'default',
-          exportDate: new Date().toISOString(),
-          version: '1.0'
-        };
+        console.log('💾 Starting file save...');
+        console.log('🔍 saveTasksToFile function called');
         
-        // Convertir a JSON
-        const jsonData = JSON.stringify(dataToSave, null, 2);
+        // Forzar guardado en localStorage primero
+        this.saveData();
         
-        // Crear blob y descargar
-        const blob = new Blob([jsonData], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
+        // Pequeño delay para asegurar que Alpine.js se sincronice
+        setTimeout(() => {
+          // Leer tareas directamente del DOM para obtener el estado actual
+          const currentTasks = {};
+          this.days.forEach(day => {
+            currentTasks[day] = [];
+            const taskElements = document.querySelectorAll(`[data-day="${day}"][data-task-id]`);
+            console.log(`📊 Found ${taskElements.length} task elements for ${day}`);
+            
+            taskElements.forEach((taskElement, index) => {
+              const taskId = taskElement.getAttribute('data-task-id');
+              const titleElement = taskElement.querySelector('.break-words');
+              const noteElement = taskElement.querySelector('.text-sm');
+              const iconElement = taskElement.querySelector('.task-dot .material-symbols-outlined');
+              
+              const task = {
+                id: taskId,
+                title: titleElement ? titleElement.textContent : '',
+                desc: noteElement ? noteElement.textContent : '',
+                completed: titleElement && titleElement.classList.contains('line-through'),
+                color: iconElement ? iconElement.style.color : '',
+                icon: iconElement ? iconElement.textContent : 'eraser_size_5',
+                bgFill: !!(taskElement.style.background && taskElement.style.background !== '' && taskElement.style.background !== 'none' && taskElement.style.background !== 'transparent')
+              };
+              
+              currentTasks[day].push(task);
+              console.log(`  📝 Task ${index + 1}: ${task.title} (${task.id})`);
+              console.log(`    - bgFill: ${task.bgFill}, color: ${task.color}`);
+            });
+          });
+          
+          console.log('📊 Tasks to save from DOM:');
+          this.days.forEach(day => {
+            console.log(`  ${day}: ${currentTasks[day]?.length || 0} tasks`);
+          });
+          
+          // Crear objeto con todos los datos
+          const dataToSave = {
+            tasks: currentTasks,
+            weekendHidden: this.weekendHidden,
+            pageTitle: this.pageTitle,
+            currentTheme: window.themeManager ? window.themeManager.getCurrentTheme() : 'default',
+            exportDate: new Date().toISOString(),
+            version: '1.0'
+          };
+          
+          // Convertir a JSON
+          const jsonData = JSON.stringify(dataToSave, null, 2);
+          
+          // Crear blob y descargar
+          const blob = new Blob([jsonData], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          
+          // Crear nombre del archivo usando el título de la página
+          const pageTitle = this.pageTitle || 'untitled';
+          const sanitizedTitle = pageTitle.replace(/[^a-zA-Z0-9\s-_]/g, '').replace(/\s+/g, '_');
+          const fileName = `${sanitizedTitle}_weekdeck.wdeck`;
+          
+          // Crear elemento de descarga
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = fileName;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          
+          // Limpiar URL
+          URL.revokeObjectURL(url);
+          
+          this.showSuccessNotification('Tasks saved successfully!');
+        }, 100);
         
-        // Crear nombre del archivo usando el título de la página
-        const pageTitle = this.pageTitle || 'untitled';
-        const sanitizedTitle = pageTitle.replace(/[^a-zA-Z0-9\s-_]/g, '').replace(/\s+/g, '_');
-        const fileName = `${sanitizedTitle}_weekdeck.wdeck`;
-        
-        // Crear elemento de descarga
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = fileName;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        
-        // Limpiar URL
-        URL.revokeObjectURL(url);
-        
-        this.showSuccessNotification('Tasks saved successfully!');
       } catch (error) {
         console.error('Error saving tasks:', error);
-        alert('Error saving tasks. Please try again.');
+        this.showErrorNotification('Error saving tasks. Please try again.');
       }
     },
 
     // Cargar tareas desde archivo
     loadTasksFromFile() {
       try {
+        console.log('🔍 loadTasksFromFile function called');
         // Crear input file oculto
         const input = document.createElement('input');
         input.type = 'file';
@@ -430,190 +590,110 @@ function weekdeckApp() {
                 throw new Error('Invalid file format - missing tasks object');
               }
               
-              // Validar que tenga al menos un día
-              const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-              const hasValidDays = days.some(day => loadedData.tasks[day] && Array.isArray(loadedData.tasks[day]));
+              // Limpiar tareas existentes primero
+              console.log('🧹 Clearing existing tasks...');
+              this.days.forEach(day => {
+                this.tasks[day] = [];
+              });
               
-              if (!hasValidDays) {
-                throw new Error('Invalid file format - no valid day data found');
-              }
-              
-              // Cargar tareas - asegurar que Alpine.js detecte los cambios
-              
-              // Crear un nuevo objeto tasks para forzar la reactividad
-              const newTasks = {};
-              
-              // Cargar nuevas tareas en el nuevo objeto
-              days.forEach(day => {
+              // Cargar tareas directamente
+              console.log('📥 Loading tasks...');
+              this.days.forEach(day => {
                 if (loadedData.tasks[day] && Array.isArray(loadedData.tasks[day])) {
-                  newTasks[day] = [...loadedData.tasks[day]];
-                  console.log(`📅 Loaded ${newTasks[day].length} tasks for ${day}`);
+                  this.tasks[day] = [...loadedData.tasks[day]];
+                  console.log(`📅 Loaded ${this.tasks[day].length} tasks for ${day}`);
+                  
+                  // Verificar que bgFill y color se cargaron correctamente
+                  this.tasks[day].forEach((task, index) => {
+                    console.log(`  📥 Task ${index + 1}: ${task.title}`);
+                    console.log(`    - bgFill: ${task.bgFill}, color: ${task.color}`);
+                    console.log(`    - bgFill type: ${typeof task.bgFill}`);
+                    console.log(`    - bgFill === true: ${task.bgFill === true}`);
+                    console.log(`    - bgFill === false: ${task.bgFill === false}`);
+                    
+                    // Convertir bgFill a boolean si es necesario
+                    if (task.bgFill !== undefined) {
+                      if (typeof task.bgFill === 'string') {
+                        task.bgFill = task.bgFill === 'true';
+                        console.log(`    - bgFill convertido a boolean: ${task.bgFill}`);
+                      }
+                      
+                      const bgFill = task.bgFill;
+                      // Forzar reactividad de manera más agresiva
+                      this.$nextTick(() => {
+                        task.bgFill = !bgFill;
+                        this.$nextTick(() => {
+                          task.bgFill = bgFill;
+                          console.log(`    - Reactividad forzada: bgFill = ${bgFill}`);
+                        });
+                      });
+                    }
+                  });
                 } else {
-                  newTasks[day] = [];
+                  this.tasks[day] = [];
                 }
               });
               
-              // Método 1: Asignar el nuevo objeto completo para forzar la reactividad
-              this.tasks = newTasks;
-              
-              // Método 2: Forzar reactividad usando Alpine.js
-              this.$nextTick(() => {
-                // Re-asignar cada día individualmente para forzar la reactividad
-                days.forEach(day => {
-                  this.tasks[day] = [...newTasks[day]];
-                });
-                
-                // Método 3: Forzar actualización usando setTimeout
-                setTimeout(() => {
-                  // Re-asignar nuevamente para forzar la reactividad
-                  days.forEach(day => {
-                    if (newTasks[day].length > 0) {
-                      this.tasks[day] = [...newTasks[day]];
-                      console.log(`🔄 Re-assigned ${this.tasks[day].length} tasks for ${day}`);
+              // Guardar highlights pendientes en localStorage para aplicarlos después del refresh
+              console.log('💾 Guardando highlights pendientes...');
+              const pendingHighlights = [];
+              this.days.forEach(day => {
+                if (this.tasks[day] && this.tasks[day].length > 0) {
+                  this.tasks[day].forEach((task, index) => {
+                    if (task.bgFill && task.color) {
+                      pendingHighlights.push({
+                        taskId: task.id,
+                        color: task.color
+                      });
+                      console.log(`💾 Highlight pendiente: ${task.id} -> ${task.color}`);
                     }
                   });
-                }, 50);
+                }
               });
               
-              // Verificar que la estructura es correcta
-              console.log('🔍 Tasks object structure:', Object.keys(this.tasks));
-              console.log('🔍 Sample task data:', this.tasks.Monday?.[0]);
+              // Guardar en localStorage
+              if (pendingHighlights.length > 0) {
+                localStorage.setItem('weekdeck-pending-highlights', JSON.stringify(pendingHighlights));
+                console.log(`💾 Guardados ${pendingHighlights.length} highlights pendientes`);
+              }
               
-              // Forzar actualización de Alpine.js usando $nextTick
-              this.$nextTick(() => {
-                // Trigger un evento personalizado para forzar re-render
-                window.dispatchEvent(new CustomEvent('tasks-updated'));
-                
-                // Verificar que las tareas se asignaron correctamente
-                console.log('🔍 Monday tasks after assignment:', this.tasks.Monday?.length);
-                console.log('🔍 Tuesday tasks after assignment:', this.tasks.Tuesday?.length);
-              });
+              console.log('✅ Tasks loaded successfully');
               
               // Cargar configuración si existe
               if (loadedData.weekendHidden !== undefined) {
                 this.weekendHidden = loadedData.weekendHidden;
-                // Aplicar estado del weekend
-                this.toggleWeekend();
-                this.toggleWeekend(); // Toggle dos veces para aplicar el estado correcto
               }
               
-              // Cargar título si existe
-              if (loadedData.pageTitle) {
+              if (loadedData.pageTitle !== undefined) {
                 this.pageTitle = loadedData.pageTitle;
               }
               
-              // Cargar tema si existe
-              if (loadedData.currentTheme && window.themeManager) {
-                window.themeManager.setTheme(loadedData.currentTheme);
-              }
-              
-              // Guardar datos
+              // Guardar en localStorage para persistencia
               this.saveData();
               
-              // Marcar que se han cargado tareas para que se restauren después del refresh
-              localStorage.setItem('weekdeck-tasks-loaded', 'true');
+                            // Mostrar notificación de éxito
+              this.showSuccessNotification('Tasks loaded successfully!');
               
-              // Forzar actualización de Alpine.js
-              this.$nextTick(() => {
-                console.log('✅ Tasks loaded successfully!');
-                console.log('📊 Current tasks state:', this.tasks);
-                
-                // Verificar que las tareas se cargaron correctamente
-                const totalTasks = Object.values(this.tasks).reduce((sum, dayTasks) => sum + dayTasks.length, 0);
-                console.log(`📈 Total tasks loaded: ${totalTasks}`);
-                
-                // Forzar una actualización adicional usando Alpine.js
-                this.$dispatch('tasks-loaded');
-                
-                // Método alternativo: forzar re-render usando Alpine.js
-                this.$nextTick(() => {
-                  // Trigger múltiples eventos para asegurar actualización
-                  this.$dispatch('tasks-loaded');
-                  window.dispatchEvent(new CustomEvent('tasks-updated'));
-                });
-                
-                // Verificar que Alpine.js detectó los cambios
-                setTimeout(() => {
-                  const visibleTasks = document.querySelectorAll('.flex.min-h-\\[48px\\].px-2.py-1.group');
-                  console.log(`👁️ Visible tasks in DOM: ${visibleTasks.length}`);
-                  
-                  // Verificar el estado de Alpine.js
-                  const mondayColumn = document.querySelector('[data-day="Monday"]');
-                  console.log('🔍 Monday column exists:', !!mondayColumn);
-                  
-                  // Verificar si Alpine.js está renderizando las tareas
-                  const mondayTasks = document.querySelectorAll('[data-day="Monday"]');
-                  console.log('🔍 Monday tasks in DOM:', mondayTasks.length);
-                  
-                  // Si no hay tareas visibles o hay menos tareas de las esperadas
-                  if (visibleTasks.length < totalTasks) {
-                    console.log(`⚠️ Only ${visibleTasks.length} tasks visible, expected ${totalTasks}, forcing refresh...`);
-                    
-                    // Método 1: Forzar re-render usando Alpine.js
-                    this.$nextTick(() => {
-                      // Disparar múltiples eventos para forzar actualización
-                      this.$dispatch('tasks-loaded');
-                      window.dispatchEvent(new CustomEvent('tasks-updated'));
-                      
-                      // Método 2: Re-asignar tareas para forzar reactividad
-                      days.forEach(day => {
-                        if (this.tasks[day] && this.tasks[day].length > 0) {
-                          const currentTasks = [...this.tasks[day]];
-                          this.tasks[day] = [];
-                          setTimeout(() => {
-                            this.tasks[day] = currentTasks;
-                            console.log(`🔄 Re-rendered ${this.tasks[day].length} tasks for ${day}`);
-                          }, 10);
-                        }
-                      });
-                      
-                      // Método 3: Intentar re-renderizar manualmente
-                      const template = document.querySelector('template[x-for*="tasks[day]"]');
-                      if (template) {
-                        console.log('🔄 Re-rendering template...');
-                        template.remove();
-                        template.parentNode.appendChild(template);
-                      }
-                    });
-                  }
-                }, 100);
-                
-                this.showSuccessNotification(`Tasks loaded successfully! (${totalTasks} tasks)`);
-                
-                // Verificación final después de un tiempo
-                setTimeout(() => {
-                  const finalVisibleTasks = document.querySelectorAll('.flex.min-h-\\[48px\\].px-2.py-1.group');
-                  console.log(`🎯 Final check - Visible tasks in DOM: ${finalVisibleTasks.length}`);
-                  
-                  if (finalVisibleTasks.length < totalTasks) {
-                    console.log('⚠️ Still missing tasks, forcing page refresh...');
-                    // Forzar refresh de la página para asegurar que Alpine.js renderice correctamente
-                    this.showSuccessNotification('Tasks loaded! Refreshing page to display them...');
-                    setTimeout(() => {
-                      window.location.reload();
-                    }, 1500);
-                  } else {
-                    console.log('✅ All tasks rendered successfully!');
-                  }
-                }, 200);
-              });
+              // Refrescar la página después de un pequeño delay
+              setTimeout(() => {
+                window.location.reload();
+              }, 500);
+              
             } catch (error) {
-              console.error('Error loading tasks:', error);
-              alert('Error loading file. Please make sure it\'s a valid WeekDeck (.wdeck) file.');
+              console.error('Error loading file:', error);
+              this.showErrorNotification('Error loading file: ' + error.message);
             }
           };
           
           reader.readAsText(file);
         };
         
-        // Trigger file selection
-        document.body.appendChild(input);
+        // Trigger el input file
         input.click();
-        document.body.removeChild(input);
         
       } catch (error) {
         console.error('Error setting up file input:', error);
-        alert('Error loading tasks. Please try again.');
+        this.showErrorNotification('Error setting up file input');
       }
     },
     
@@ -724,7 +804,7 @@ function weekdeckApp() {
       const task = this.tasks[day][idx];
       const menuOptions = [
         {
-          text: 'Back',
+          text: 'Go back',
           icon: 'arrow_back',
           action: () => {
             console.log('Back button clicked - showing original menu content');
@@ -733,6 +813,7 @@ function weekdeckApp() {
           },
           keepOpen: true // Asegurar que mantenga el menú abierto
         },
+        { separator: true },
         {
           text: 'Top',
           icon: 'vertical_align_top',
@@ -1095,6 +1176,9 @@ function weekdeckApp() {
       this.tasks[day].push(newTask);
       this.newTask[day] = '';
       
+      // Forzar guardado
+      this.saveData();
+      
       // Animar el nuevo item creado
       this.$nextTick(() => {
         console.log('$nextTick ejecutado');
@@ -1140,8 +1224,10 @@ function weekdeckApp() {
     },
     
     saveData() {
-      // The data is automatically saved by Alpine.js watchers
-      console.log('Data saved');
+      // Forzar guardado manual en localStorage
+      console.log('💾 Manually saving data to localStorage...');
+      localStorage.setItem('weekdeck-tasks', JSON.stringify(this.tasks));
+      console.log('✅ Data manually saved to localStorage');
     },
     
     setColor(day, idx, color) {
@@ -1175,149 +1261,195 @@ function weekdeckApp() {
     },
     
     // Función para exportar a PDF
-    exportToPDF() {
+        exportToPDF() {
       // Mostrar notificación de que se está generando el PDF
       this.showSuccessNotification('Generating PDF...');
       
-      // Crear una copia del contenido para el PDF
-      const pdfContent = document.createElement('div');
-      pdfContent.style.cssText = `
-        width: 297mm;
-        height: 210mm;
-        padding: 20mm;
-        background: white;
-        color: black;
-        font-family: 'Space Mono', monospace;
-        font-size: 12px;
-        line-height: 1.4;
-        page-break-inside: avoid;
-        overflow: hidden;
-      `;
+      // Forzar una actualización completa del estado antes de exportar
+      this.saveData();
       
-      // Crear el header del PDF
-      const header = document.createElement('div');
-      header.style.cssText = `
-        text-align: left;
-        margin-bottom: 20px;
-        padding-bottom: 10px;
-        border-bottom: 2px solid #333;
-        font-size: 24px;
-        font-weight: bold;
-        color: #333;
-      `;
-      header.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <span>WEEKDECK</span>
-          <span style="color: #666; font-weight: normal;">/</span>
-          <span style="font-size: 16px; font-weight: normal; color: #666;">
-            ${this.pageTitle || 'Write a title'}
-          </span>
-        </div>
-      `;
-      pdfContent.appendChild(header);
-      
-      // Crear el contenido de las columnas
-      const columnsContainer = document.createElement('div');
-      columnsContainer.style.cssText = `
-        display: flex;
-        gap: 15px;
-        height: calc(100% - 80px);
-      `;
-      
-      // Iterar sobre los días
-      this.days.forEach(day => {
-        const column = document.createElement('div');
-        column.style.cssText = `
-          flex: 1;
-          padding: 10px;
-          min-height: 0;
+      // Usar setTimeout para asegurar que todos los cambios se hayan procesado
+      setTimeout(() => {
+        // Obtener el estado actual directamente del DOM
+        const currentTasks = {};
+        this.days.forEach(day => {
+          currentTasks[day] = [];
+          // Buscar todas las tareas en el DOM para este día
+          const taskElements = document.querySelectorAll(`[data-day="${day}"][data-task-id]`);
+          taskElements.forEach((taskElement, index) => {
+            const taskId = taskElement.getAttribute('data-task-id');
+            const titleElement = taskElement.querySelector('.break-words');
+            const noteElement = taskElement.querySelector('.text-sm');
+            const iconElement = taskElement.querySelector('.task-dot .material-symbols-outlined');
+            
+                          const task = {
+                id: taskId,
+                title: titleElement ? titleElement.textContent : '',
+                desc: noteElement ? noteElement.textContent : '',
+                completed: titleElement && titleElement.classList.contains('line-through'),
+                color: iconElement ? iconElement.style.color : '',
+                icon: iconElement ? iconElement.textContent : 'eraser_size_5',
+                bgFill: !!(taskElement.style.background && taskElement.style.background !== '' && taskElement.style.background !== 'none' && taskElement.style.background !== 'transparent')
+              };
+            
+            currentTasks[day].push(task);
+          });
+        });
+        
+        // Crear una copia del contenido para el PDF
+        const pdfContent = document.createElement('div');
+        pdfContent.style.cssText = `
+          width: 297mm;
+          height: 210mm;
+          padding: 20mm;
+          background: white;
+          color: black;
+          font-family: 'Space Mono', monospace;
+          font-size: 12px;
+          line-height: 1.4;
+          page-break-inside: avoid;
           overflow: hidden;
         `;
         
-        // Header del día
-        const dayHeader = document.createElement('div');
-        dayHeader.style.cssText = `
+        // Crear el header del PDF
+        const header = document.createElement('div');
+        header.style.cssText = `
+          text-align: left;
+          margin-bottom: 20px;
+          padding-bottom: 10px;
+          border-bottom: 2px solid #333;
+          font-size: 24px;
           font-weight: bold;
-          font-size: 14px;
-          margin-bottom: 10px;
-          padding-bottom: 5px;
-          border-bottom: 1px solid #ddd;
-          text-align: center;
           color: #333;
         `;
-        dayHeader.textContent = day;
-        column.appendChild(dayHeader);
+        header.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span>WEEKDECK</span>
+            <span style="color: #666; font-weight: normal;">/</span>
+            <span style="font-size: 16px; font-weight: normal; color: #666;">
+              ${this.pageTitle || 'Write a title'}
+            </span>
+          </div>
+        `;
+        pdfContent.appendChild(header);
         
-        // Contenido de las tareas
-        const tasksContainer = document.createElement('div');
-        tasksContainer.style.cssText = `
-          height: calc(100% - 40px);
-          overflow-y: auto;
+        // Crear el contenido de las columnas
+        const columnsContainer = document.createElement('div');
+        columnsContainer.style.cssText = `
+          display: flex;
+          gap: 15px;
+          height: calc(100% - 80px);
         `;
         
-        if (this.tasks[day] && this.tasks[day].length > 0) {
-          this.tasks[day].forEach(task => {
-            const taskElement = document.createElement('div');
-            taskElement.style.cssText = `
-              margin-bottom: 8px;
-              padding: 8px;
-              font-size: 11px;
-              line-height: 1.3;
-              word-wrap: break-word;
-              ${task.completed ? 'text-decoration: line-through; color: #999;' : ''}
-            `;
-            
-            // Icono de la tarea (más pequeño)
-            const icon = document.createElement('span');
-            icon.style.cssText = `
-              display: inline-block;
-              width: 8px;
-              height: 8px;
-              margin-right: 6px;
-              background: ${task.color || '#ddd'};
-              border-radius: 50%;
-              vertical-align: middle;
-            `;
-            
-            const taskText = document.createElement('span');
-            taskText.textContent = task.title;
-            
-            taskElement.appendChild(icon);
-            taskElement.appendChild(taskText);
-            tasksContainer.appendChild(taskElement);
-          });
-        }
+        // Iterar sobre los días
+        this.days.forEach(day => {
+          const column = document.createElement('div');
+          column.style.cssText = `
+            flex: 1;
+            padding: 10px;
+            min-height: 0;
+            overflow: hidden;
+          `;
+          
+          // Header del día
+          const dayHeader = document.createElement('div');
+          dayHeader.style.cssText = `
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+            color: #333;
+          `;
+          dayHeader.textContent = day;
+          column.appendChild(dayHeader);
+          
+          // Contenido de las tareas
+          const tasksContainer = document.createElement('div');
+          tasksContainer.style.cssText = `
+            height: calc(100% - 40px);
+            overflow-y: auto;
+          `;
+          
+          if (currentTasks[day] && currentTasks[day].length > 0) {
+            currentTasks[day].forEach(task => {
+              const taskElement = document.createElement('div');
+              taskElement.style.cssText = `
+                margin-bottom: 8px;
+                padding: 8px;
+                font-size: 11px;
+                line-height: 1.3;
+                word-wrap: break-word;
+                ${task.completed ? 'text-decoration: line-through; color: #999;' : ''}
+              `;
+              
+              // Icono de la tarea (más pequeño)
+              const icon = document.createElement('span');
+              icon.style.cssText = `
+                display: inline-block;
+                width: 8px;
+                height: 8px;
+                margin-right: 6px;
+                background: ${task.color || '#ddd'};
+                border-radius: 50%;
+                vertical-align: middle;
+              `;
+              
+              const taskText = document.createElement('span');
+              taskText.innerHTML = this.renderMarkdown(task.title);
+              
+              taskElement.appendChild(icon);
+              taskElement.appendChild(taskText);
+              
+              // Añadir notas si existen
+              if (task.desc && task.desc.trim() !== '') {
+                const noteText = document.createElement('div');
+                noteText.style.cssText = `
+                  margin-top: 2px;
+                  font-size: 9px;
+                  line-height: 1.2;
+                  word-wrap: break-word;
+                  ${task.completed ? 'text-decoration: line-through; color: #999;' : 'color: #666;'}
+                `;
+                noteText.innerHTML = this.renderMarkdown(task.desc);
+                taskElement.appendChild(noteText);
+              }
+              tasksContainer.appendChild(taskElement);
+            });
+          }
+          
+          column.appendChild(tasksContainer);
+          columnsContainer.appendChild(column);
+        });
         
-        column.appendChild(tasksContainer);
-        columnsContainer.appendChild(column);
-      });
-      
-      pdfContent.appendChild(columnsContainer);
-      
-      // Configuración del PDF
-      const opt = {
-        margin: 0,
-        filename: `weekdeck-${new Date().toISOString().split('T')[0]}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
-          scale: 2,
-          useCORS: true,
-          letterRendering: true
-        },
-        jsPDF: { 
-          unit: 'mm', 
-          format: 'a4', 
-          orientation: 'landscape'
-        }
-      };
-      
-      // Generar el PDF
-      html2pdf().set(opt).from(pdfContent).save().then(() => {
-        this.showSuccessNotification('PDF exported successfully!');
-      }).catch(error => {
-        console.error('Error generating PDF:', error);
-        this.showSuccessNotification('Error generating PDF');
-      });
+        pdfContent.appendChild(columnsContainer);
+        
+        // Configuración del PDF
+        const opt = {
+          margin: 0,
+          filename: `weekdeck-${new Date().toISOString().split('T')[0]}.pdf`,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { 
+            scale: 2,
+            useCORS: true,
+            letterRendering: true
+          },
+          jsPDF: { 
+            unit: 'mm', 
+            format: 'a4', 
+            orientation: 'landscape'
+          }
+        };
+        
+        // Generar el PDF
+        html2pdf().set(opt).from(pdfContent).save().then(() => {
+          this.showSuccessNotification('PDF exported successfully!');
+        }).catch(error => {
+          console.error('Error generating PDF:', error);
+          this.showSuccessNotification('Error generating PDF');
+        });
+      }, 100); // Pequeño delay para asegurar que todos los cambios se hayan procesado
     },
     
 
@@ -1328,7 +1460,14 @@ function weekdeckApp() {
     
     toggleBgFill(day, idx) {
       const t = this.tasks[day][idx];
-      if (t.color) t.bgFill = !t.bgFill;
+      if (t.color) {
+        t.bgFill = !t.bgFill;
+        this.saveData(); // Guardar los cambios
+        
+        // Mostrar notificación
+        const action = t.bgFill ? 'highlighted' : 'unhighlighted';
+        this.showSuccessNotification(`Task ${action}`);
+      }
     },
     toggleComplete(day, idx) {
       const task = this.tasks[day][idx];
@@ -1860,96 +1999,47 @@ function weekdeckApp() {
 function infoOffcanvas() {
   return {
     isOpen: false,
-    expandedSections: ['concept'], // La primera sección estará expandida por defecto
-    sections: [
-      {
-        "id": "concept",
-        "title": "Simple Weekly Planner",
-        "icon": "calendar_month",
-        "content": "WeekDeck is a minimalist weekly task organizer designed for simplicity and productivity. This local, private, and efficient week planner helps you organize your tasks visually with drag & drop functionality. Perfect for anyone seeking a clean, distraction-free approach to weekly planning without the complexity of traditional project management tools."
-      },
-      {
-        "id": "privacy",
-        "title": "Totally Private",
-        "icon": "security",
-        "content": "WeekDeck works entirely in your browser and on your computer. No data is uploaded to any server - everything runs locally, ensuring your privacy and data security."
-      },
-      {
-        "id": "basics",
-        "title": "How it works",
-        "icon": "help",
-        "content": "Drag and drop tasks between days to reorganize your week.",
-        "saveLoad": {
-          "title": "Save and Load",
-          "description": "You can give each deck a custom name and save it as a .wdeck file. Use different files to load different types of weeks or projects."
-        }
-      },
-      {
-        "id": "about",
-        "title": "The project",
-        "icon": "person",
-        "content": "WeekDeck is a project by Roberto Nieto, a designer, illustrator, and art director with 20 years of experience in digital projects.",
-        "links": [
-          {
-            "name": "robertonieto.com",
-            "url": "https://robertonieto.com"
-          },
-          {
-            "name": "syntetyc.com",
-            "url": "https://syntetyc.com"
-          }
-        ],
-                  "technicalInfo": {
-            "title": "Technical info",
-            "description": "Built with Alpine.js, custom code and local storage. No external dependencies except for Material Design Icons."
-          }
-      },
-      {
-        "id": "support",
-        "title": "Support",
-        "icon": "favorite",
-        "content": "If you'd like to support my work, you can visit my illustration stores:",
-        "links": [
-          {
-            "name": "INPrnt",
-            "description": "Gallery level giclee prints, shipments from United States",
-            "url": "https://www.inprnt.com/gallery/syntetyc/"
-          },
-          {
-            "name": "IDGaming",
-            "description": "High Quality Gaming Mousepads",
-            "url": "https://www.idgaming.co.uk/collections/syntetyc?ref=0-EwKOTfz30VZJ"
-          },
-          {
-            "name": "Swapwear",
-            "description": "Swappable graphic jackets",
-            "url": "https://swapwear.com/collections/syntetyc"
-          },
-          {
-            "name": "Displate",
-            "description": "Amazing, vibrant and sharp metal posters",
-            "url": "https://displate.com/syntetyc?art=5d99e7c06647f"
-          },
-          {
-            "name": "Posterlounge",
-            "description": "High quality posters, several formats, materials and frames",
-            "url": "https://www.posterlounge.com/artists/syntetyc/"
-          }
-        ]
-      },
-      {
-        "id": "contact",
-        "title": "Contact",
-        "icon": "email",
-        "content": "If you have questions, queries, or improvement suggestions, you can contact:",
-        "email": {
-          "address": "info@robertonieto.com",
-          "label": "Email Contact"
-        }
-      }
-    ],
+    expandedSections: ['privacy'], // La primera sección estará expandida por defecto
+    sections: [],
     
-    init() {
+    async init() {
+      // Cargar contenido desde el archivo JSON
+      try {
+        console.log('🔄 Loading info-content.json...');
+        const response = await fetch('info-content.json');
+        console.log('📡 Response status:', response.status);
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('📄 Loaded data:', data);
+          console.log('📋 Sections count:', data.sections ? data.sections.length : 0);
+          this.sections = data.sections;
+          console.log('✅ Sections loaded successfully');
+        } else {
+          console.error('❌ Error loading info-content.json - Status:', response.status);
+          // Fallback con contenido básico si no se puede cargar el archivo
+          this.sections = [
+            {
+              "id": "privacy",
+              "title": "Totally Private",
+              "icon": "security",
+              "content": "WeekDeck works entirely in your browser and on your computer. No data is uploaded to any server - everything runs locally, ensuring your privacy and data security."
+            }
+          ];
+        }
+      } catch (error) {
+        console.error('❌ Error loading info-content.json:', error);
+        // Fallback con contenido básico
+        this.sections = [
+          {
+            "id": "privacy",
+            "title": "Totally Private",
+            "icon": "security",
+            "content": "WeekDeck works entirely in your browser and on your computer. No data is uploaded to any server - everything runs locally, ensuring your privacy and data security."
+          }
+        ];
+      }
+      
       // Escuchar evento para abrir el offcanvas
       document.addEventListener('openInfoOffcanvas', () => {
         this.open();

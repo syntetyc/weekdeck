@@ -10,30 +10,10 @@
       "id": "basics",
       "title": "How it works",
       "icon": "help",
-      "content": "Drag and drop tasks between days to reorganize your week. Use keyboard shortcuts for text formatting:",
-      "shortcuts": [
-        {
-          "key": "Cmd/Ctrl",
-          "plus": "+",
-          "action": "B",
-          "description": "Bold Text"
-        },
-        {
-          "key": "Cmd/Ctrl",
-          "plus": "+",
-          "action": "I",
-          "description": "Italic Text"
-        },
-        {
-          "key": "Cmd/Ctrl",
-          "plus": "+",
-          "action": "U",
-          "description": "Underline Text"
-        }
-      ],
+      "content": "WeekDeck works locally in your browser, using the cache to save your week. If you want to save a file with your week, to use in other devices or to share it with others, you can do it by clicking - Save Week - in the top right corner. If you clean the cache of your browser, you will lose your week, so save it before cleaning it.",
       "saveLoad": {
-        "title": "Save and Load",
-        "description": "You can give each deck a custom name and save it as a .wdeck file. Use different files to load different types of weeks or projects."
+        "title": "Your data is yours",
+        "description": "You have complete control over your information in WeekDeck. Everything is stored locally on your device and you can use it anywhere you want. Your privacy, your rules."
       }
     },
     {

@@ -164,6 +164,85 @@ header {
   outline: none !important;
 }
 
+/* Estilos específicos para campos de texto del modal en modo dark */
+html.theme-dark .modal-content input[type="text"],
+html.theme-dark .modal-content textarea {
+  background-color: #181818 !important;
+  color: #fff !important;
+  border-color: #333 !important;
+}
+
+html.theme-dark .modal-content input[type="text"]::placeholder,
+html.theme-dark .modal-content textarea::placeholder {
+  color: #666 !important;
+}
+
+html.theme-dark .modal-content input[type="text"]:focus,
+html.theme-dark .modal-content textarea:focus {
+  border-color: #fff !important;
+  outline: none !important;
+}
+
+/* Estilos específicos para sobrescribir clases de Tailwind en el modal */
+html.theme-dark input.border-black {
+  border-color: #333 !important;
+  color: #fff !important;
+  background-color: #181818 !important;
+}
+
+html.theme-dark textarea.border-black {
+  border-color: #333 !important;
+  color: #fff !important;
+  background-color: #181818 !important;
+}
+
+html.theme-dark input.border-black:focus,
+html.theme-dark textarea.border-black:focus {
+  border-color: #fff !important;
+  outline: none !important;
+}
+
+html.theme-dark input.border-black::placeholder,
+html.theme-dark textarea.border-black::placeholder {
+  color: #666 !important;
+}
+
+/* Estilos para el botón Save del modal en modo dark */
+html.theme-dark .modal-content button.bg-black {
+  background-color: #155dfc !important;
+  color: white !important;
+  border: none !important;
+  transition: background-color 0.2s ease !important;
+}
+
+html.theme-dark .modal-content button.bg-black:hover {
+  background-color: #0f4cd4 !important;
+}
+
+/* Estilos con máxima especificidad para el botón Save en modo dark */
+html.theme-dark .modal-content button.bg-black.text-white {
+  background-color: #155dfc !important;
+  color: white !important;
+  border: none !important;
+  transition: background-color 0.2s ease !important;
+}
+
+html.theme-dark .modal-content button.bg-black.text-white:hover {
+  background-color: #0f4cd4 !important;
+}
+
+/* Estilos con especificidad extrema para sobrescribir Tailwind en modo dark */
+html.theme-dark div.modal-content button.bg-black.text-white.rounded {
+  background-color: #155dfc !important;
+  color: white !important;
+  border: none !important;
+  transition: background-color 0.2s ease !important;
+}
+
+html.theme-dark div.modal-content button.bg-black.text-white.rounded:hover {
+  background-color: #0f4cd4 !important;
+}
+
 /* Botones */
 .btn-primary {
   background-color: var(--primary-color);
@@ -397,4 +476,28 @@ html body .flex.min-h-\[55px\].px-2.py-1.group:hover input {
 
 .info-offcanvas .material-symbols-outlined {
   transition: transform 0.2s ease;
+}
+
+/* Estilos para tareas completadas en modo dark */
+html.theme-dark .text-gray-300 {
+  color: #666 !important; /* Gris oscuro para tareas completadas en dark mode */
+}
+
+html.theme-dark .line-through.text-gray-300 {
+  color: #666 !important; /* Gris oscuro para tareas completadas en dark mode */
+}
+
+/* Estilos específicos para notas de tareas completadas en modo dark */
+html.theme-dark .text-sm.line-through.text-gray-300 {
+  color: #666 !important; /* Gris oscuro para notas de tareas completadas en dark mode */
+}
+
+/* Estilos específicos para notas de tareas en modo dark */
+html.theme-dark .text-sm.text-gray-600 {
+  color: #bbb !important; /* Gris claro para notas normales en dark mode */
+}
+
+/* Estilos específicos para notas de tareas completadas en modo dark */
+html.theme-dark .text-sm.line-through.text-gray-300 {
+  color: #999 !important; /* Gris claro para notas de tareas completadas en dark mode */
 } 

@@ -403,12 +403,6 @@ header button:active {
 }
 
 /* Estilos para el botón Back */
-.context-menu-item:first-child {
-  border-bottom: 1px solid var(--context-menu-separator-color);
-  margin-bottom: 4px;
-  padding-bottom: 8px;
-}
-
 .context-menu-item:first-child:hover {
   background-color: #f3f4f6;
 }
@@ -2194,4 +2188,40 @@ body {
       display: flex;
     }
   }
+}
+
+/* Estilos para el botón Save del modal */
+.modal-content button.bg-black {
+  background-color: #155dfc !important;
+  color: white !important;
+  border: none !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.modal-content button.bg-black:hover {
+  background-color: #0f4cd4 !important;
+}
+
+/* Estilos con máxima especificidad para el botón Save */
+html body .modal-content button.bg-black.text-white {
+  background-color: #155dfc !important;
+  color: white !important;
+  border: none !important;
+  transition: background-color 0.2s ease !important;
+}
+
+html body .modal-content button.bg-black.text-white:hover {
+  background-color: #0f4cd4 !important;
+}
+
+/* Estilos con especificidad extrema para sobrescribir Tailwind */
+html body div.modal-content button.bg-black.text-white.rounded {
+  background-color: #155dfc !important;
+  color: white !important;
+  border: none !important;
+  transition: background-color 0.2s ease !important;
+}
+
+html body div.modal-content button.bg-black.text-white.rounded:hover {
+  background-color: #0f4cd4 !important;
 }

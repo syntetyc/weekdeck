@@ -68,7 +68,7 @@
   }
   </script>
 
-  <!-- Google Analytics
+  <!-- Google Analytics-->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-3G2F75B20M"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -76,7 +76,7 @@
     gtag('js', new Date());
 
     gtag('config', 'G-3G2F75B20M');
-  </script> -->
+  </script> 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -103,7 +103,7 @@
     <header class="bg-black text-white px-3 sm:px-4 lg:px-6 py-3 text-lg sm:text-xl lg:text-2xl font-bold tracking-widest flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0" style="font-family: 'Space Mono', monospace;" x-data="weekdeckApp()" x-init="init()">
       <!-- Título y campo editable en móvil -->
       <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 items-center text-center sm:text-left">
-        <span class="text-base sm:text-lg lg:text-xl">WEEKDECK</span>
+        <img src="logo/wd-main-white.svg" alt="WeekDeck" class="h-6 sm:h-8 lg:h-10 mr-2">
         <span class="text-gray-400 hidden sm:inline">/</span>
         <div class="flex items-center justify-center sm:justify-start">
           <span 
@@ -206,7 +206,7 @@
                     isDragging && dragData && dragData.fromDay === day && dragData.fromIdx === tIdx ? 'shadow-lg cursor-grabbing' : '',
                     'items-center'
                   ]"
-                  :style="task.bgFill && task.color ? 'background:' + (task.color + '22') : ''"
+                  :style="task.bgFill && task.color ? 'background:' + (task.color + '66') : ''"
                   :data-task-id="task.id"
                   :data-day="day"
                   :data-idx="tIdx"
@@ -243,6 +243,12 @@
                       class="w-full border-0 focus:ring-0 bg-transparent text-base sm:text-lg break-words"
                       :class="task.completed ? 'line-through text-gray-300' : ''"
                       style="font-family: inherit;">
+                    <!-- Notas de la tarea -->
+                    <div x-show="task.desc && task.desc.trim() !== ''" 
+                         class="mt-0 text-sm break-words whitespace-pre-line overflow-wrap-break-word px-1"
+                         :class="task.completed ? 'line-through text-gray-300' : 'text-gray-600'"
+                         x-html="renderMarkdown(task.desc)">
+                    </div>
                   </div>
                   <!-- Menú contextual usando sistema dinámico -->
                   <div class="relative flex items-center ml-2 self-center transition-all duration-200">
@@ -300,7 +306,7 @@
           <input type="text" class="w-full border-b border-black mb-3 text-base" x-model="modalTask.title" placeholder="Title">
           <textarea class="w-full border-b border-black mb-3 text-base" rows="3" x-model="modalTask.desc" placeholder="Description"></textarea>
           <div class="flex justify-end gap-2 mt-4">
-            <button class="px-4 py-2 bg-black text-white rounded" @click="saveModalTask">Save</button>
+            <button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" @click="saveModalTask">Save</button>
             <button class="px-4 py-2 border border-black rounded" @click="modalOpen=false">Cancel</button>
           </div>
         </div>
@@ -370,7 +376,7 @@
               <template x-if="section.saveLoad">
                 <div class="mb-4">
                   <h4 class="text-sm font-semibold text-gray-800 mb-2" x-text="section.saveLoad.title"></h4>
-                  <p class="text-sm text-gray-600" x-text="section.saveLoad.description"></p>
+                  <p class="text-gray-600 leading-relaxed" x-text="section.saveLoad.description"></p>
                 </div>
               </template>
               
