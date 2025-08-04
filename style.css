@@ -2173,3 +2173,25 @@ body {
     background-color: rgba(0, 0, 0, 0.1) !important;
   }
 }
+
+/* Estilos para móvil - botones de menú siempre visibles */
+@media (max-width: 1023px) {
+  /* Botones de menú siempre visibles en móvil */
+  .flex.min-h-\[50px\].sm\:min-h-\[55px\].px-2.py-1.group .relative.flex.items-center.ml-2.self-center {
+    opacity: 1 !important;
+    display: flex !important;
+  }
+  
+  /* Botones de menú en desktop - comportamiento hover */
+  @media (min-width: 1024px) {
+    .flex.min-h-\[50px\].sm\:min-h-\[55px\].px-2.py-1.group .relative.flex.items-center.ml-2.self-center {
+      opacity: 0;
+      display: none;
+    }
+    
+    .flex.min-h-\[50px\].sm\:min-h-\[55px\].px-2.py-1.group:hover .relative.flex.items-center.ml-2.self-center {
+      opacity: 1;
+      display: flex;
+    }
+  }
+}

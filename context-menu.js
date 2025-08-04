@@ -256,25 +256,13 @@ class ContextMenuManager {
     const isMobile = window.innerWidth <= 1023;
     
     if (isMobile) {
-      // En móviles, centrar el menú en la pantalla
-      const menuWidth = 210; // Ancho fijo del menú
-      const menuHeight = 150; // Altura estimada del menú
-      
-      // Centrar horizontalmente
-      left = (window.innerWidth - menuWidth) / 2;
-      
-      // Centrar verticalmente
-      top = (window.innerHeight - menuHeight) / 2;
-      
-      // Asegurar que no se salga de la pantalla
-      if (left < 10) left = 10;
-      if (left + menuWidth > window.innerWidth - 10) {
-        left = window.innerWidth - menuWidth - 10;
-      }
-      if (top < 10) top = 10;
-      if (top + menuHeight > window.innerHeight - 10) {
-        top = window.innerHeight - menuHeight - 10;
-      }
+      // En móviles, centrar el menú en la pantalla usando porcentajes
+      menuElement.style.top = '50%';
+      menuElement.style.left = '50%';
+      menuElement.style.transform = 'translate(-50%, -50%)';
+      menuElement.style.position = 'fixed';
+      menuElement.style.zIndex = '10000';
+      return; // Salir aquí para evitar el posicionamiento en píxeles
     } else {
       // En desktop, usar el posicionamiento original
       switch (position) {
