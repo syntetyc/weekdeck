@@ -231,7 +231,7 @@
                       x-show="!task.editing" 
                       @click="startEditTask(day, tIdx)"
                       class="break-words whitespace-pre-line text-base sm:text-lg overflow-wrap-break-word cursor-pointer px-1 py-0.5 rounded transition-colors hover:text-[#155dfc]"
-                      :class="task.completed ? 'line-through text-gray-400' : ''"
+                      :class="task.completed ? 'line-through text-gray-300' : ''"
                       x-html="renderMarkdown(task.title)">
                     </span>
                     <input 
@@ -241,12 +241,12 @@
                       @keydown.enter="saveTaskEdit(day, tIdx)" 
                       @keydown.escape="cancelTaskEdit(day, tIdx)"
                       class="w-full border-0 focus:ring-0 bg-transparent text-base sm:text-lg break-words"
-                      :class="task.completed ? 'line-through text-gray-400' : ''"
+                      :class="task.completed ? 'line-through text-gray-300' : ''"
                       style="font-family: inherit;">
                   </div>
                   <!-- Menú contextual usando sistema dinámico -->
                   <div class="relative flex items-center ml-2 self-center md:hidden md:group-hover:block transition-all duration-200">
-                    <button @click="showTaskContextMenu($event, day, tIdx)" class="p-1 hover:bg-gray-200 rounded-full">
+                    <button @click="showTaskContextMenu($event, day, tIdx)" class="p-1 rounded-full">
                       <span class="material-symbols-outlined">more_vert</span>
                     </button>
                   </div>

@@ -891,9 +891,14 @@ html body .header-menu-btn.hover\:bg-gray-200:hover .material-symbols-outlined {
   color: var(--context-menu-color) !important;
 }
 
-/* Color highlight al hover del botón de menú */
+/* Color highlight al hover del botón de menú - solo cambia el color del icono */
 .flex.min-h-[55px].px-2.py-1.group button:hover .material-symbols-outlined {
   color: #155dfc !important;
+}
+
+/* Quitar background gris del botón de menú al hacer hover */
+.flex.min-h-[55px].px-2.py-1.group button:hover {
+  background-color: transparent !important;
 }
 
 
@@ -940,11 +945,6 @@ html body .header-menu-btn.hover\:bg-gray-200:hover .material-symbols-outlined {
 .flex.min-h-[42px].px-2.py-1.group.item-adding.show {
   opacity: 1;
   transform: translateY(0);
-}
-
-/* Quitar background gris del botón de menú al hacer hover */
-.flex.min-h-[55px].px-2.py-1.group button:hover {
-  background-color: transparent !important;
 }
 
 /* Eliminar box-shadow para evitar bordes duplicados */
@@ -1998,3 +1998,178 @@ body {
   transform: scale(0.95);
   transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
 } 
+
+/* Estilos para evitar que el texto salte de línea cuando aparece el botón del menú */
+.flex.min-h-\[50px\].sm\:min-h-\[55px\].px-2.py-1.group {
+  position: relative;
+}
+
+/* Contenedor del texto con espacio reservado para el botón */
+.flex.min-h-\[50px\].sm\:min-h-\[55px\].px-2.py-1.group .flex-1.min-w-0 {
+  margin-right: 40px; /* Espacio reservado para el botón del menú */
+  min-width: 0;
+  flex: 1;
+}
+
+/* Botón del menú siempre presente pero invisible */
+.flex.min-h-\[50px\].sm\:min-h-\[55px\].px-2.py-1.group .relative.flex.items-center.ml-2.self-center {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+/* Estilo del botón del menú - sin fondo gris en hover */
+.flex.min-h-\[50px\].sm\:min-h-\[55px\].px-2.py-1.group .relative.flex.items-center.ml-2.self-center button {
+  background: transparent;
+  border: none;
+  padding: 4px;
+  border-radius: 50%;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Hover del botón - solo cambia el color del icono */
+.flex.min-h-\[50px\].sm\:min-h-\[55px\].px-2.py-1.group .relative.flex.items-center.ml-2.self-center button:hover {
+  background: transparent;
+}
+
+/* Hover del icono - cambia a azul principal */
+.flex.min-h-\[50px\].sm\:min-h-\[55px\].px-2.py-1.group .relative.flex.items-center.ml-2.self-center button:hover .material-symbols-outlined {
+  color: #155dfc !important;
+}
+
+/* Mostrar botón en hover */
+.flex.min-h-\[50px\].sm\:min-h-\[55px\].px-2.py-1.group:hover .relative.flex.items-center.ml-2.self-center {
+  opacity: 1;
+}
+
+/* Asegurar que el texto no se desborde */
+.flex.min-h-\[50px\].sm\:min-h-\[55px\].px-2.py-1.group .flex-1.min-w-0 .break-words.whitespace-pre-line.text-base.sm\:text-lg.overflow-wrap-break-word {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: pre-line;
+  line-height: 1.4;
+  hyphens: auto;
+  max-width: 100%;
+  overflow: hidden;
+  display: block;
+  text-overflow: ellipsis;
+  min-height: 0;
+  flex-shrink: 1;
+}
+
+/* Asegurar que el contenedor del texto tenga el ancho correcto */
+.flex.min-h-\[50px\].sm\:min-h-\[55px\].px-2.py-1.group .flex-1.min-w-0 {
+  min-width: 0;
+  max-width: calc(100% - 80px); /* Dejar espacio para iconos y botones */
+  flex: 1 1 auto;
+  overflow: hidden;
+} 
+
+/* Estilos para móvil - campo de texto siempre visible */
+@media (max-width: 1023px) {
+  .add-task-input {
+    opacity: 1 !important;
+  }
+  
+  .flex.items-center.min-h-\[48px\].px-2.transition-all.duration-150 .material-symbols-outlined {
+    opacity: 1 !important;
+  }
+}
+
+/* Estilos para desktop - mantener comportamiento de hover */
+@media (min-width: 1024px) {
+  .add-task-input {
+    opacity: 0;
+  }
+  
+  .flex.items-center.min-h-\[48px\].px-2.transition-all.duration-150:hover .add-task-input {
+    opacity: 1;
+  }
+  
+  .flex.items-center.min-h-\[48px\].px-2.transition-all.duration-150 .material-symbols-outlined {
+    opacity: 0;
+  }
+  
+  .flex.items-center.min-h-\[48px\].px-2.transition-all.duration-150:hover .material-symbols-outlined {
+    opacity: 1;
+  }
+}
+
+/* Estilos para móvil - menús con scroll y respuesta al scroll de página */
+@media (max-width: 1023px) {
+  /* Menús centrados en móvil con scroll */
+  .context-menu {
+    max-height: 70vh !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: rgba(0, 0, 0, 0.3) transparent !important;
+  }
+  
+  /* Estilizar scrollbar para webkit */
+  .context-menu::-webkit-scrollbar {
+    width: 6px !important;
+  }
+  
+  .context-menu::-webkit-scrollbar-track {
+    background: transparent !important;
+  }
+  
+  .context-menu::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.3) !important;
+    border-radius: 3px !important;
+  }
+  
+  .context-menu::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.5) !important;
+  }
+  
+  /* Menús que responden al scroll de la página */
+  .context-menu {
+    position: fixed !important;
+    z-index: 10000 !important;
+    /* Mantener centrado pero permitir scroll */
+    transform: translate(-50%, -50%) !important;
+    /* Asegurar que no se salga de la pantalla */
+    max-width: 90vw !important;
+    min-width: 280px !important;
+  }
+  
+  /* Ajustar posición cuando hay scroll */
+  .context-menu.scroll-adjusted {
+    position: fixed !important;
+    /* La posición se ajustará dinámicamente con JavaScript */
+  }
+  
+  /* Asegurar que los elementos del menú sean táctiles */
+  .context-menu-item {
+    min-height: 48px !important;
+    padding: 12px 16px !important;
+    font-size: 16px !important;
+    touch-action: manipulation !important;
+  }
+  
+  /* Mejorar el área táctil de los iconos */
+  .context-menu-item .material-symbols-outlined {
+    font-size: 24px !important;
+    min-width: 24px !important;
+    margin-right: 12px !important;
+  }
+  
+  /* Separadores más visibles en móvil */
+  .context-menu-separator {
+    height: 1px !important;
+    margin: 8px 0 !important;
+    background-color: rgba(0, 0, 0, 0.1) !important;
+  }
+}

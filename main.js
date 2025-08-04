@@ -678,7 +678,7 @@ function weekdeckApp() {
         {
           text: task.completed ? 'Mark as incomplete' : 'Mark as complete',
           icon: task.completed ? 'radio_button_unchecked' : 'check_circle',
-          action: () => this.toggleTaskCompletion(day, idx)
+          action: () => this.toggleComplete(day, idx)
         },
         {
           text: 'Move to',
@@ -700,7 +700,8 @@ function weekdeckApp() {
         {
           text: 'Delete',
           icon: 'delete',
-          action: () => this.deleteTask(day, idx)
+          action: () => this.deleteTask(day, idx),
+          iconClass: 'text-red-600'
         }
       ];
 
@@ -736,7 +737,13 @@ function weekdeckApp() {
           text: 'Top',
           icon: 'vertical_align_top',
           action: () => this.moveTaskToTop(day, idx)
-        }
+        },
+        {
+          text: 'Bottom',
+          icon: 'vertical_align_bottom',
+          action: () => this.moveTaskToBottom(day, idx)
+        },
+        { separator: true }
       ];
       
       // Agregar opciones para cada día
@@ -782,7 +789,8 @@ function weekdeckApp() {
         {
           text: 'Delete',
           icon: 'delete',
-          action: () => this.deleteTask(day, idx)
+          action: () => this.deleteTask(day, idx),
+          iconClass: 'text-red-600'
         },
         { separator: true },
         {
@@ -1337,6 +1345,13 @@ function weekdeckApp() {
         task.bgFill = false;
         task.color = '';
       }
+      
+      // Guardar los cambios
+      this.saveData();
+      
+      // Mostrar notificación
+      const action = task.completed ? 'completed' : 'uncompleted';
+      this.showSuccessNotification(`Task ${action}`);
     },
       deleteTask(day, idx) {
     // Encontrar el elemento del item usando el día y índice
@@ -1396,7 +1411,34 @@ function weekdeckApp() {
     // Mostrar notificación visual (opcional)
     console.log(`Tarea movida al inicio: "${task.title}"`);
   },
-    openModal(day, idx) {
+  
+  moveTaskToBottom(day, idx) {
+    // Verificar que la tarea no esté ya en la última posición
+    if (idx === this.tasks[day].length - 1) {
+      console.log('La tarea ya está en la última posición');
+      return;
+    }
+    
+    // Obtener la tarea
+    const task = this.tasks[day][idx];
+    
+    // Remover la tarea de su posición actual
+    this.tasks[day].splice(idx, 1);
+    
+    // Insertar la tarea al final del array
+    this.tasks[day].push(task);
+    
+    // Cerrar el menú después de mover
+    window.contextMenuManager.closeAll();
+    
+    // Mostrar notificación
+    this.showSuccessNotification('Task moved to bottom');
+    
+    // Mostrar notificación visual (opcional)
+    console.log(`Tarea movida al final: "${task.title}"`);
+  },
+  
+  openModal(day, idx) {
       const t = this.tasks[day][idx];
       this.modalTask = { ...t, day, idx };
       this.modalOpen = true;

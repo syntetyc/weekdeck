@@ -31,8 +31,13 @@ class ContextMenuManager {
       }
     });
 
+    // En móvil, ajustar posición del menú en lugar de cerrarlo
     document.addEventListener('scroll', () => {
-      this.closeAll();
+      if (this.isTouchDevice && this.activeMenu) {
+        this.adjustMenuPositionOnScroll();
+      } else {
+        this.closeAll();
+      }
     });
 
     window.addEventListener('resize', () => {
@@ -327,6 +332,34 @@ class ContextMenuManager {
     
     this.menuHistory = [];
     this.currentMenuId = null;
+  }
+  
+  // Ajustar posición del menú en móvil durante el scroll
+  adjustMenuPositionOnScroll() {
+    if (!this.activeMenu || !this.isTouchDevice) return;
+    
+    const menuRect = this.activeMenu.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+    const viewportWidth = window.innerWidth;
+    
+    // Calcular nueva posición centrada
+    let newTop = 50; // Porcentaje desde arriba
+    let newLeft = 50; // Porcentaje desde la izquierda
+    
+    // Ajustar si el menú se sale de la pantalla
+    if (menuRect.bottom > viewportHeight) {
+      newTop = Math.max(10, 100 - (menuRect.height / viewportHeight) * 100);
+    }
+    
+    if (menuRect.right > viewportWidth) {
+      newLeft = Math.max(10, 100 - (menuRect.width / viewportWidth) * 100);
+    }
+    
+    // Aplicar nueva posición
+    this.activeMenu.style.top = `${newTop}%`;
+    this.activeMenu.style.left = `${newLeft}%`;
+    this.activeMenu.style.transform = 'translate(-50%, -50%)';
+    this.activeMenu.classList.add('scroll-adjusted');
   }
 }
 
