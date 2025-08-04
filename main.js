@@ -777,27 +777,20 @@ function weekdeckApp() {
       const task = this.tasks[day][idx];
       const menuOptions = [
         {
-          text: 'Edit',
-          icon: 'edit',
-          action: () => this.editTask(day, idx)
+          text: task.completed ? 'Mark as incomplete' : 'Mark as complete',
+          icon: task.completed ? 'radio_button_unchecked' : 'check_circle',
+          action: () => this.toggleComplete(day, idx)
         },
-        {
-          text: 'Duplicate',
-          icon: 'content_copy',
-          action: () => this.duplicateTask(day, idx)
-        },
-        {
-          text: 'Delete',
-          icon: 'delete',
-          action: () => this.deleteTask(day, idx),
-          iconClass: 'text-red-600'
-        },
-        { separator: true },
         {
           text: 'Move to',
           icon: 'swap_horiz',
           action: () => this.showMoveToSubmenu(event, day, idx),
           keepOpen: true // Mantener el menú abierto
+        },
+        {
+          text: 'Duplicate',
+          icon: 'content_copy',
+          action: () => this.duplicateTask(day, idx)
         },
         {
           text: 'Add notes',
@@ -806,9 +799,10 @@ function weekdeckApp() {
         },
         { separator: true },
         {
-          text: task.completed ? 'Mark as incomplete' : 'Mark as complete',
-          icon: task.completed ? 'radio_button_unchecked' : 'check_circle',
-          action: () => this.toggleTaskCompletion(day, idx)
+          text: 'Delete',
+          icon: 'delete',
+          action: () => this.deleteTask(day, idx),
+          iconClass: 'text-red-600'
         }
       ];
       
