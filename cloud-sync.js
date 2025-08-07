@@ -1,26 +1,19 @@
 // Cloud Sync Manager for WeekDeck
-// Handles synchronization with Google Drive and Dropbox
+// Handles synchronization with Google Drive using Google Sign-In
 
 class CloudSyncManager {
   constructor() {
     this.isGoogleDriveConnected = false;
-    this.isDropboxConnected = false;
     this.syncEnabled = localStorage.getItem('weekdeck-cloud-sync-enabled') === 'true';
     this.lastSyncTime = localStorage.getItem('weekdeck-last-sync-time');
-    this.syncProvider = localStorage.getItem('weekdeck-sync-provider') || null;
+    this.userEmail = localStorage.getItem('weekdeck-user-email') || null;
+    this.accessToken = localStorage.getItem('weekdeck-access-token') || null;
     
-    // Google Drive API configuration
-    this.googleDriveConfig = {
-      clientId: '', // Add your Google Drive Client ID here
-      apiKey: '', // Add your Google Drive API Key here
+    // Google Drive API configuration - Using public client ID for Google Sign-In
+    this.googleConfig = {
+      clientId: '1234567890-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com', // Public client ID (placeholder)
       discoveryDoc: 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest',
       scopes: 'https://www.googleapis.com/auth/drive.file'
-    };
-    
-    // Dropbox API configuration
-    this.dropboxConfig = {
-      clientId: '', // Add your Dropbox App Key here
-      redirectUri: window.location.origin
     };
     
     this.init();
@@ -29,71 +22,129 @@ class CloudSyncManager {
   async init() {
     console.log('🔄 CloudSyncManager: Initializing...');
     
-    // Check if user has previously connected to a service
-    if (this.syncProvider === 'googledrive') {
-      await this.initGoogleDrive();
-    } else if (this.syncProvider === 'dropbox') {
-      await this.initDropbox();
+    // Check if user was previously signed in
+    if (this.userEmail && this.accessToken) {
+      this.isGoogleDriveConnected = true;
+      await this.initGoogleAPI();
     }
     
+    // Load Google Sign-In
+    await this.loadGoogleSignIn();
+    
     // Set up auto-sync if enabled
-    if (this.syncEnabled) {
+    if (this.syncEnabled && this.isGoogleDriveConnected) {
       this.setupAutoSync();
     }
   }
 
-  // Google Drive Integration
-  async initGoogleDrive() {
+  // Load Google Sign-In
+  async loadGoogleSignIn() {
     try {
-      if (!this.googleDriveConfig.clientId || !this.googleDriveConfig.apiKey) {
-        console.warn('⚠️ Google Drive API credentials not configured');
-        return false;
-      }
-
-      // Load Google API
-      await this.loadScript('https://apis.google.com/js/api.js');
+      // Load Google Identity Services
       await this.loadScript('https://accounts.google.com/gsi/client');
       
-      await gapi.load('client', async () => {
-        await gapi.client.init({
-          apiKey: this.googleDriveConfig.apiKey,
-          discoveryDocs: [this.googleDriveConfig.discoveryDoc]
+      // Initialize Google Sign-In
+      if (window.google) {
+        google.accounts.id.initialize({
+          client_id: this.googleConfig.clientId,
+          callback: (response) => this.handleSignInResponse(response)
         });
         
-        console.log('✅ Google Drive API initialized');
-        this.isGoogleDriveConnected = true;
-      });
+        console.log('✅ Google Sign-In initialized');
+      }
       
       return true;
     } catch (error) {
-      console.error('❌ Error initializing Google Drive:', error);
+      console.error('❌ Error loading Google Sign-In:', error);
+      return false;
+    }
+  }
+  
+  // Initialize Google API for Drive access
+  async initGoogleAPI() {
+    try {
+      // Load Google API
+      await this.loadScript('https://apis.google.com/js/api.js');
+      
+      await new Promise((resolve) => {
+        gapi.load('client', resolve);
+      });
+      
+      await gapi.client.init({
+        discoveryDocs: [this.googleConfig.discoveryDoc]
+      });
+      
+      // Set access token
+      gapi.client.setToken({ access_token: this.accessToken });
+      
+      console.log('✅ Google Drive API initialized');
+      return true;
+    } catch (error) {
+      console.error('❌ Error initializing Google API:', error);
       return false;
     }
   }
 
-  async connectGoogleDrive() {
+  // Handle Google Sign-In response
+  handleSignInResponse(response) {
+    try {
+      // Decode JWT token to get user info
+      const payload = JSON.parse(atob(response.credential.split('.')[1]));
+      
+      this.userEmail = payload.email;
+      this.isGoogleDriveConnected = true;
+      
+      // Store user info
+      localStorage.setItem('weekdeck-user-email', this.userEmail);
+      
+      // Now request access token for Drive API
+      this.requestDriveAccess();
+      
+      console.log('✅ User signed in:', this.userEmail);
+      this.showSyncNotification(`Signed in as ${this.userEmail}`);
+      
+    } catch (error) {
+      console.error('❌ Error handling sign-in:', error);
+      this.showSyncNotification('Sign-in failed', 'error');
+    }
+  }
+  
+  // Request Drive API access
+  async requestDriveAccess() {
     try {
       const tokenClient = google.accounts.oauth2.initTokenClient({
-        client_id: this.googleDriveConfig.clientId,
-        scope: this.googleDriveConfig.scopes,
+        client_id: this.googleConfig.clientId,
+        scope: this.googleConfig.scopes,
         callback: (response) => {
           if (response.error) {
-            console.error('❌ Google Drive auth error:', response.error);
+            console.error('❌ Drive access error:', response.error);
             return;
           }
           
-          console.log('✅ Google Drive connected successfully');
-          this.isGoogleDriveConnected = true;
-          this.syncProvider = 'googledrive';
-          localStorage.setItem('weekdeck-sync-provider', 'googledrive');
-          this.showSyncNotification('Connected to Google Drive successfully!');
+          this.accessToken = response.access_token;
+          localStorage.setItem('weekdeck-access-token', this.accessToken);
+          
+          // Initialize Google API with token
+          this.initGoogleAPI();
+          
+          console.log('✅ Drive access granted');
+          this.showSyncNotification('Google Drive connected successfully!');
         }
       });
       
       tokenClient.requestAccessToken();
     } catch (error) {
-      console.error('❌ Error connecting to Google Drive:', error);
+      console.error('❌ Error requesting Drive access:', error);
       this.showSyncNotification('Failed to connect to Google Drive', 'error');
+    }
+  }
+  
+  // Sign in with Google
+  signInWithGoogle() {
+    if (window.google) {
+      google.accounts.id.prompt();
+    } else {
+      this.showSyncNotification('Google Sign-In not loaded', 'error');
     }
   }
 
@@ -158,86 +209,32 @@ class CloudSyncManager {
     }
   }
 
-  // Dropbox Integration
-  async initDropbox() {
+  // Sign out from Google
+  signOut() {
     try {
-      if (!this.dropboxConfig.clientId) {
-        console.warn('⚠️ Dropbox API credentials not configured');
-        return false;
+      // Clear stored data
+      this.isGoogleDriveConnected = false;
+      this.userEmail = null;
+      this.accessToken = null;
+      this.syncEnabled = false;
+      
+      // Clear localStorage
+      localStorage.removeItem('weekdeck-user-email');
+      localStorage.removeItem('weekdeck-access-token');
+      localStorage.removeItem('weekdeck-cloud-sync-enabled');
+      localStorage.removeItem('weekdeck-last-sync-time');
+      
+      // Sign out from Google
+      if (window.google) {
+        google.accounts.id.disableAutoSelect();
       }
       
-      // Load Dropbox SDK
-      await this.loadScript('https://unpkg.com/dropbox/dist/Dropbox-sdk.min.js');
+      console.log('✅ Signed out successfully');
+      this.showSyncNotification('Signed out from Google Drive');
       
-      this.dropboxClient = new Dropbox.Dropbox({
-        clientId: this.dropboxConfig.clientId,
-        fetch: fetch
-      });
-      
-      console.log('✅ Dropbox API initialized');
-      return true;
     } catch (error) {
-      console.error('❌ Error initializing Dropbox:', error);
-      return false;
-    }
-  }
-
-  async connectDropbox() {
-    try {
-      const authUrl = this.dropboxClient.getAuthenticationUrl(this.dropboxConfig.redirectUri);
-      
-      // Open popup for authentication
-      const popup = window.open(authUrl, 'dropbox-auth', 'width=600,height=600');
-      
-      // Listen for popup close
-      const checkClosed = setInterval(() => {
-        if (popup.closed) {
-          clearInterval(checkClosed);
-          // Check if we got the access token from URL
-          const urlParams = new URLSearchParams(window.location.hash.substring(1));
-          const accessToken = urlParams.get('access_token');
-          
-          if (accessToken) {
-            this.dropboxClient.setAccessToken(accessToken);
-            this.isDropboxConnected = true;
-            this.syncProvider = 'dropbox';
-            localStorage.setItem('weekdeck-sync-provider', 'dropbox');
-            localStorage.setItem('weekdeck-dropbox-token', accessToken);
-            this.showSyncNotification('Connected to Dropbox successfully!');
-          }
-        }
-      }, 1000);
-    } catch (error) {
-      console.error('❌ Error connecting to Dropbox:', error);
-      this.showSyncNotification('Failed to connect to Dropbox', 'error');
-    }
-  }
-
-  async syncToDropbox(data) {
-    try {
-      if (!this.isDropboxConnected) {
-        throw new Error('Dropbox not connected');
-      }
-
-      const fileName = `/${data.pageTitle || 'weekdeck'}_${new Date().toISOString().split('T')[0]}.wdeck`;
-      const fileContent = JSON.stringify(data, null, 2);
-      
-      const response = await this.dropboxClient.filesUpload({
-        path: fileName,
-        contents: fileContent,
-        mode: 'overwrite',
-        autorename: true
-      });
-      
-      console.log('✅ File synced to Dropbox:', response.result);
-      
-      this.lastSyncTime = new Date().toISOString();
-      localStorage.setItem('weekdeck-last-sync-time', this.lastSyncTime);
-      
-      return response.result;
-    } catch (error) {
-      console.error('❌ Error syncing to Dropbox:', error);
-      throw error;
+      console.error('❌ Error signing out:', error);
+      this.showSyncNotification('Error signing out', 'error');
     }
   }
 
@@ -249,17 +246,16 @@ class CloudSyncManager {
         return;
       }
 
+      if (!this.isGoogleDriveConnected) {
+        console.warn('⚠️ Google Drive not connected');
+        return;
+      }
+
       console.log('🔄 Starting cloud sync...');
       
-      if (this.syncProvider === 'googledrive' && this.isGoogleDriveConnected) {
-        await this.syncToGoogleDrive(data);
-        this.showSyncNotification('Synced to Google Drive successfully!');
-      } else if (this.syncProvider === 'dropbox' && this.isDropboxConnected) {
-        await this.syncToDropbox(data);
-        this.showSyncNotification('Synced to Dropbox successfully!');
-      } else {
-        console.warn('⚠️ No cloud provider connected');
-      }
+      await this.syncToGoogleDrive(data);
+      this.showSyncNotification('Synced to Google Drive successfully!');
+      
     } catch (error) {
       console.error('❌ Sync failed:', error);
       this.showSyncNotification('Sync failed: ' + error.message, 'error');
@@ -289,28 +285,25 @@ class CloudSyncManager {
   // Enable/disable sync
   toggleSync(enabled) {
     this.syncEnabled = enabled;
-    localStorage.setItem('weekdeck-cloud-sync-enabled', enabled.toString());
+    localStorage.setItem('weekdeck_sync_enabled', enabled.toString());
     
     if (enabled) {
       this.setupAutoSync();
-      this.showSyncNotification('Cloud sync enabled');
+      this.showSyncNotification('Auto-sync enabled');
     } else {
-      this.showSyncNotification('Cloud sync disabled');
+      this.showSyncNotification('Auto-sync disabled');
     }
   }
 
   // Disconnect from cloud provider
   disconnect() {
-    this.isGoogleDriveConnected = false;
-    this.isDropboxConnected = false;
-    this.syncProvider = null;
-    this.syncEnabled = false;
-    
-    localStorage.removeItem('weekdeck-sync-provider');
-    localStorage.removeItem('weekdeck-cloud-sync-enabled');
-    localStorage.removeItem('weekdeck-dropbox-token');
-    
-    this.showSyncNotification('Disconnected from cloud storage');
+    if (this.isGoogleDriveConnected) {
+      this.isGoogleDriveConnected = false;
+      this.syncProvider = null;
+      localStorage.removeItem('weekdeck_google_drive_connected');
+      localStorage.removeItem('weekdeck_sync_provider');
+      this.showSyncNotification('Disconnected from Google Drive');
+    }
   }
 
   // Utility functions
@@ -332,12 +325,78 @@ class CloudSyncManager {
     }
   }
 
+  // Show sync menu
+  showSyncMenu() {
+    const menuItems = [];
+    
+    if (!this.isGoogleDriveConnected) {
+      // User not signed in
+      menuItems.push(
+        { text: '🔐 Sign in with Google', action: () => this.signInWithGoogle() },
+        { separator: true },
+        { text: '📋 How it works:', action: null, disabled: true },
+        { text: '• Sign in with your Google account', action: null, disabled: true },
+        { text: '• Your tasks sync to your Google Drive', action: null, disabled: true },
+        { text: '• Access from any device', action: null, disabled: true }
+      );
+    } else {
+      // User signed in
+      menuItems.push(
+        { text: `✅ Signed in as ${this.userEmail}`, action: null, disabled: true },
+        { separator: true },
+        { text: '🔄 Sync Now', action: () => this.manualSync() },
+        { text: this.syncEnabled ? '⏸️ Disable Auto-sync' : '▶️ Enable Auto-sync', action: () => this.toggleSync(!this.syncEnabled) },
+        { separator: true },
+        { text: '🚪 Sign Out', action: () => this.signOut() }
+      );
+      
+      if (this.lastSyncTime) {
+        const lastSyncDate = new Date(this.lastSyncTime).toLocaleString();
+        menuItems.push({ text: `Last sync: ${lastSyncDate}`, action: null, disabled: true });
+      }
+    }
+    
+    // Registrar o actualizar el menú de cloud sync
+    if (window.contextMenuManager) {
+      if (window.contextMenuManager.menus.has('cloud-sync-menu')) {
+        window.contextMenuManager.menus.get('cloud-sync-menu').options = menuItems;
+      } else {
+        window.registerContextMenu('cloud-sync-menu', menuItems);
+      }
+      
+      // Mostrar el menú usando el botón de configuración como trigger
+      const settingsButton = document.querySelector('.settings-btn');
+      window.showContextMenu('cloud-sync-menu', settingsButton, 'bottom-right');
+    } else {
+      console.warn('Context menu manager not available');
+    }
+  }
+  
+
+  
+  // Manual sync function
+  async manualSync() {
+    if (!this.isGoogleDriveConnected) {
+      this.showSyncNotification('Please sign in with Google first', 'error');
+      return;
+    }
+    
+    try {
+      // Get current data from the app
+      const currentData = window.getAppData ? window.getAppData() : {};
+      await this.syncData(currentData);
+    } catch (error) {
+      console.error('Manual sync failed:', error);
+      this.showSyncNotification('Manual sync failed: ' + error.message, 'error');
+    }
+  }
+
   // Get sync status
   getSyncStatus() {
     return {
       enabled: this.syncEnabled,
-      provider: this.syncProvider,
-      connected: this.isGoogleDriveConnected || this.isDropboxConnected,
+      connected: this.isGoogleDriveConnected,
+      userEmail: this.userEmail,
       lastSync: this.lastSyncTime
     };
   }

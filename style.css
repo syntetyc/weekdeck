@@ -1,182 +1,43 @@
+/* ===== CSS VARIABLES ===== */
 :root {
   --active-color: #155dfc;
-  --bg-light: #f5f5f5;
   --text-dark: #333;
-  --error-color: #F97251;
-  --hover-color: #155dfc;
-  --highlight-color: #155dfc;
-  --border-hover: #000;
-  
-  /* Variables para drag and drop */
-  --drag-drop-border: #155dfc;
-  --drag-drop-border-width: 1px;
-  --drag-drop-border-style: dashed;
-  --drag-drop-opacity: 0.9;
-  
-  /* Variables para menús contextuales dinámicos */
-  --context-menu-bg: #fff;
-  --context-menu-border: #111;
-  --context-menu-border-radius: 0;
-  --context-menu-shadow: none;
-  --context-menu-padding: 12px 0 8px 0;
-  --context-menu-font: 'Space Mono', monospace;
-  --context-menu-font-size: 16px;
-  --context-menu-color: #111;
-  --context-menu-hover-bg: #f5f5f5;
-  --context-menu-hover-color: #111;
---context-menu-color: #111;
-  --context-menu-separator-color: #e5e5e5;
-  --context-menu-icon-size: 20px;
-  --context-menu-icon-color: #111;
-  --context-menu-item-padding: 7px 16px;
+  --text-light: #666;
+  --bg-light: #f8f9fa;
+  --border-light: #e9ecef;
+  --shadow-light: 0 2px 4px rgba(0,0,0,0.1);
+  --context-menu-z-index: 9999;
+  --context-menu-bg: white;
+  --context-menu-border: #e0e0e0;
+  --context-menu-border-radius: 8px;
+  --context-menu-shadow: 0 4px 12px rgba(0,0,0,0.15);
   --context-menu-min-width: 180px;
-  --context-menu-z-index: 1000;
-  
-  /* Variables para bordes de círculos transparentes */
-  --transparent-circle-border: #e5e7eb; /* Gris claro para light theme */
+  --context-menu-font: 'Space Mono', monospace;
+  --context-menu-padding: 4px 0;
+  --context-menu-item-padding: 8px 16px;
+  --context-menu-font-size: 14px;
+  --context-menu-color: #333;
+  --context-menu-hover-bg: #f5f5f5;
 }
 
-html, body {
-  height: auto;
-  width: 100vw;
-  min-height: 100vh;
-  min-width: 100vw;
-  margin: 0;
-  padding: 0 0 20px 0;
+/* ===== GLOBAL STYLES ===== */
+html {
   overflow-x: hidden;
-  overflow-y: auto;
 }
 
-.weekdeck-wrapper {
-  height: auto;
-  width: 100vw;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-/* Estilos para ocultar columnas del weekend */
-.weekend-column {
-  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  opacity: 1;
-  transform: scale(1);
-  width: 100%;
-  flex: 1;
-  visibility: visible;
-}
-
-/* Animación para las columnas que se redistribuyen */
-.flex.gap-3.w-full.mx-auto.h-full > div:not(.weekend-column) {
-  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-/* Transición para todas las columnas */
-.flex.gap-3.w-full.mx-auto.h-full > div {
-  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-/* Asegurar que todas las columnas tengan el mismo ancho proporcional */
-.flex.flex-col.lg\:flex-row.gap-3.w-full.mx-auto.h-full {
-  display: flex;
-  width: 100%;
-  gap: 12px;
-}
-
-/* Forzar ancho igual para todas las columnas */
-.flex.flex-col.lg\:flex-row.gap-3.w-full.mx-auto.h-full > div {
-  flex: 1 1 0;
-  min-width: 0;
-  box-sizing: border-box;
-  overflow: hidden;
-}
-
-/* Cuando las columnas del weekend están ocultas, las demás se redistribuyen */
-.flex.flex-col.lg\:flex-row.gap-3.w-full.mx-auto.h-full.weekend-hidden > div:not(.weekend-column) {
-  flex: 1 1 0;
-  min-width: 0;
-  max-width: calc((100% - 48px) / 5); /* 5 columnas con 4 gaps de 4 gaps de 12px */
-  width: calc((100% - 48px) / 5);
-  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-/* Transición para el contenedor principal */
-.flex.flex-col.lg\:flex-row.gap-3.w-full.mx-auto.h-full {
-  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-/* Asegurar que el contenido de las columnas no afecte el ancho */
-.bg-white.border.border-gray-200.rounded-lg.flex.flex-col.min-h-\[70vh\].h-full.transition-all.duration-150.relative {
-  min-width: 0;
-  max-width: 100%;
-  overflow: hidden;
-}
-
-/* Asegurar que el área de contenido de las columnas tenga el ancho correcto */
-.flex-1.flex.flex-col.relative {
-  min-width: 0;
-  max-width: 100%;
-  overflow: hidden;
-}
-
-/* Asegurar que el texto de las tareas haga saltos de línea */
-.flex.min-h-[55px].px-2.py-1.group .flex-1.min-w-0 {
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  word-break: break-word;
-  white-space: pre-line;
-  line-height: 1.4;
-  hyphens: auto;
-  max-width: 100%;
-  overflow: hidden;
-}
-
-/* Asegurar que el texto de las tareas se ajuste al contenedor */
-.flex.min-h-[55px].px-2.py-1.group .flex-1.min-w-0 .break-words.whitespace-pre-line.text-lg.overflow-wrap-break-word {
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  word-break: break-word;
-  white-space: pre-line;
-  line-height: 1.4;
-  hyphens: auto;
-  max-width: 100%;
-  overflow: hidden;
-  display: block;
-  text-overflow: ellipsis;
-  min-height: 0;
-  flex-shrink: 1;
-}
-
-/* Asegurar que el contenedor de texto tenga el ancho correcto */
-.flex.min-h-[55px].px-2.py-1.group .flex-1.min-w-0 {
-  min-width: 0;
-  max-width: calc(100% - 80px); /* Dejar espacio para iconos y botones */
-  flex: 1 1 auto;
-  overflow: hidden;
-}
-
-.weekend-column.weekend-hidden {
-  opacity: 0;
-  transform: scale(0.9) translateX(-10px);
-  width: 0;
-  flex: 0;
-  visibility: hidden;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
 body {
   background: #F2F2F2;
   font-family: 'Space Mono', monospace;
   color: var(--text-dark);
   margin: 0;
-  height: 100vh;
-  width: 100vw;
-  min-height: 100vh;
-  min-width: 100vw;
+  padding: 0;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
 }
+
+/* ===== HEADER STYLES ===== */
 .weekdeck-header {
   width: 100%;
   height: 48px;
@@ -185,11 +46,9 @@ body {
   align-items: center;
   padding-left: 24px;
   box-sizing: border-box;
-  /* position: fixed; */
-  /* top: 0; */
-  /* left: 0; */
   z-index: 2000;
 }
+
 .weekdeck-logo {
   color: #fff;
   font-family: 'Space Mono', monospace;
@@ -199,7 +58,6 @@ body {
   user-select: none;
 }
 
-/* Estilos para el botón de pantalla completa */
 header button {
   transition: all 0.2s ease;
 }
@@ -213,7 +71,7 @@ header button:active {
   transform: scale(0.95);
 }
 
-/* Asegurar que los iconos de Material Design se muestren */
+/* ===== MATERIAL ICONS ===== */
 .material-symbols-outlined {
   font-family: 'Material Symbols Outlined';
   font-weight: normal;
@@ -230,19 +88,60 @@ header button:active {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Fallback para iconos de Material Design */
 .material-symbols-outlined:empty::before {
   content: "⛶";
   font-family: monospace;
 }
 
-/* Sistema dinámico de tooltips */
+/* ===== TASK TEXT STYLES ===== */
+.flex.min-h-\[55px\].px-2.py-1.group .flex-1.min-w-0 {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: pre-line;
+  line-height: 1.4;
+  hyphens: auto;
+  max-width: 100%;
+  overflow: hidden;
+  min-width: 0;
+  max-width: calc(100% - 80px);
+  flex: 1 1 auto;
+}
+
+.flex.min-h-\[55px\].px-2.py-1.group .flex-1.min-w-0 .break-words.whitespace-pre-line.text-lg.overflow-wrap-break-word {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: pre-line;
+  line-height: 1.4;
+  hyphens: auto;
+  max-width: 100%;
+  overflow: hidden;
+  display: block;
+  text-overflow: ellipsis;
+  min-height: 0;
+  flex-shrink: 1;
+}
+
+/* ===== WEEKEND COLUMN STYLES ===== */
+.weekend-column.weekend-hidden {
+  opacity: 0;
+  transform: scale(0.9) translateX(-10px);
+  width: 0;
+  flex: 0;
+  visibility: hidden;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* ===== CONTEXT MENU STYLES ===== */
 .tooltip-container {
   position: relative;
   display: inline-block;
 }
 
-/* Sistema dinámico de menús contextuales */
 .context-menu {
   position: fixed;
   z-index: var(--context-menu-z-index);
@@ -258,6 +157,7 @@ header button:active {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: var(--context-menu-font);
   padding: var(--context-menu-padding);
+  overflow: hidden;
 }
 
 .context-menu.show {
@@ -265,9 +165,10 @@ header button:active {
   transform: scale(1) translateY(0);
 }
 
-/* Animaciones para submenús internos */
 .context-menu-content {
   transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
+  width: 100%;
+  position: relative;
 }
 
 .context-menu-content.sliding-out {
@@ -283,16 +184,6 @@ header button:active {
 .context-menu-content.sliding-in.show {
   transform: translateX(0);
   opacity: 1;
-}
-
-/* Asegurar que el contenido del menú tenga overflow hidden */
-.context-menu {
-  overflow: hidden;
-}
-
-.context-menu-content {
-  width: 100%;
-  position: relative;
 }
 
 .context-menu-item {
@@ -312,1885 +203,91 @@ header button:active {
   color: #155dfc !important;
 }
 
-/* Clases de colores para iconos - MÁXIMA ESPECIFICIDAD */
+/* Color classes for context menu icons */
 .context-menu[data-menu-id="color-menu"] .context-menu-item .material-symbols-outlined.color-red {
   color: #F36B6B !important;
 }
 
-.context-menu[data-menu-id="color-menu"] .context-menu-item .material-symbols-outlined.color-yellow {
-  color: #FFD86B !important;
-}
-
 .context-menu[data-menu-id="color-menu"] .context-menu-item .material-symbols-outlined.color-blue {
-  color: #6B9AFF !important;
+  color: #155dfc !important;
 }
 
 .context-menu[data-menu-id="color-menu"] .context-menu-item .material-symbols-outlined.color-green {
-  color: #7BE495 !important;
+  color: #28a745 !important;
+}
+
+.context-menu[data-menu-id="color-menu"] .context-menu-item .material-symbols-outlined.color-yellow {
+  color: #ffc107 !important;
 }
 
 .context-menu[data-menu-id="color-menu"] .context-menu-item .material-symbols-outlined.color-purple {
-  color: #A963B0 !important;
+  color: #6f42c1 !important;
 }
 
-/* Hover general para iconos */
-.context-menu-item:hover .material-symbols-outlined {
-  color: #155dfc !important;
-}
-
-/* EXCEPCIÓN ESPECÍFICA: Los iconos de colores SIEMPRE mantienen su color */
-.context-menu[data-menu-id="color-menu"] .material-symbols-outlined.color-red,
-.context-menu[data-menu-id="color-menu"] .context-menu-item:hover .material-symbols-outlined.color-red {
-  color: #F36B6B !important;
-}
-
-.context-menu[data-menu-id="color-menu"] .material-symbols-outlined.color-yellow,
-.context-menu[data-menu-id="color-menu"] .context-menu-item:hover .material-symbols-outlined.color-yellow {
-  color: #FFD86B !important;
-}
-
-.context-menu[data-menu-id="color-menu"] .material-symbols-outlined.color-blue,
-.context-menu[data-menu-id="color-menu"] .context-menu-item:hover .material-symbols-outlined.color-blue {
-  color: #6B9AFF !important;
-}
-
-.context-menu[data-menu-id="color-menu"] .material-symbols-outlined.color-green,
-.context-menu[data-menu-id="color-menu"] .context-menu-item:hover .material-symbols-outlined.color-green {
-  color: #7BE495 !important;
-}
-
-.context-menu[data-menu-id="color-menu"] .material-symbols-outlined.color-purple,
-.context-menu[data-menu-id="color-menu"] .context-menu-item:hover .material-symbols-outlined.color-purple {
-  color: #A963B0 !important;
-}
-
-/* Solo el texto se pone azul en hover para el menú de colores */
-.context-menu[data-menu-id="color-menu"] .context-menu-item:hover span:not(.material-symbols-outlined) {
-  color: #2563eb;
-}
-
-/* Los iconos de colores nunca cambian de color, ni en hover ni cuando están seleccionados */
-.context-menu[data-menu-id="color-menu"] .material-symbols-outlined.color-red,
-.context-menu[data-menu-id="color-menu"] .material-symbols-outlined.color-yellow,
-.context-menu[data-menu-id="color-menu"] .material-symbols-outlined.color-blue,
-.context-menu[data-menu-id="color-menu"] .material-symbols-outlined.color-green,
-.context-menu[data-menu-id="color-menu"] .material-symbols-outlined.color-purple {
-  color: inherit !important;
-}
-
-/* Estilos para el botón Back en submenús */
-.context-menu-item .material-symbols-outlined.text-blue-600 {
-  color: #2563eb !important;
-}
-
-.context-menu-item:hover .material-symbols-outlined.text-blue-600 {
-  color: #2563eb !important;
-}
-
-/* Estilos para elementos deshabilitados en el menú */
-.context-menu-item.disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  color: #9ca3af !important;
-}
-
-.context-menu-item.disabled:hover {
-  background-color: transparent;
-}
-
-.context-menu-item.disabled .material-symbols-outlined {
-  color: #9ca3af !important;
-}
-
-/* Estilos para el botón Back */
-.context-menu-item:first-child:hover {
-  background-color: #f3f4f6;
-}
-
-.context-menu-item .material-symbols-outlined {
-  font-size: var(--context-menu-icon-size);
-  margin-right: 12px;
-  color: var(--context-menu-icon-color);
-}
-
-.context-menu-item span:not(.material-symbols-outlined) {
-  flex: 1;
-  font-size: 16px !important;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-width: 0;
-}
-
-.context-menu-subtext {
-  font-size: 14px;
-  color: #9ca3af;
-  margin-left: 8px;
+.context-menu[data-menu-id="color-menu"] .context-menu-item .material-symbols-outlined.color-orange {
+  color: #fd7e14 !important;
 }
 
 .context-menu-separator {
-  height: 1px !important;
-  background-color: var(--context-menu-separator-color) !important;
-  margin: 8px 16px !important;
-  padding: 0 !important;
-  cursor: default !important;
-  border: none !important;
-  border-radius: 0 !important;
-  min-height: 1px !important;
-  max-height: 1px !important;
-  flex: none !important;
-  display: block !important;
+  height: 1px;
+  background-color: var(--context-menu-border);
+  margin: 4px 0;
 }
 
-.context-menu-separator:hover {
-  background-color: var(--context-menu-separator-color) !important;
-}
-
-/* Asegurar que los separadores no hereden estilos de elementos de menú */
-.context-menu-separator .material-symbols-outlined,
-.context-menu-separator span,
-.context-menu-separator div {
-  display: none !important;
-}
-
-.context-menu-separator * {
-  display: none !important;
-}
-
-/* Indicador de selección para temas */
-.context-menu-item.selected {
-  background-color: var(--context-menu-hover-bg);
-  color: var(--context-menu-color);
-}
-
-.context-menu-item.selected .material-symbols-outlined {
-  color: var(--context-menu-icon-color);
-}
-
-.context-menu-item.selected::after {
-  content: '✓';
-  position: absolute;
-  right: 16px;
-  color: var(--context-menu-icon-color);
-  font-weight: bold;
-}
-
-/* Estilos para iconos con clases adicionales */
-.context-menu-item .material-symbols-outlined.text-red-600 {
-  color: #dc2626 !important;
-}
-
-/* Excepción para iconos con colores específicos en hover */
-.context-menu-item:hover .material-symbols-outlined.text-red-600 {
-  color: #dc2626 !important;
-}
-
-/* Estilos para iconos personalizados en menús contextuales */
-.context-menu-item .w-4.h-4.rounded-full {
-  margin-right: 8px;
-  vertical-align: middle;
-  border-radius: 50% !important;
-  width: 16px !important;
-  height: 16px !important;
-  display: inline-block;
-  aspect-ratio: 1 / 1 !important;
-  min-width: 16px !important;
-  min-height: 16px !important;
-  max-width: 16px !important;
-  max-height: 16px !important;
-}
-
-.context-menu-item .material-symbols-outlined.text-blue-600 {
-  color: #2563eb !important;
-}
-
-/* Excepción para iconos azules en hover */
-.context-menu-item:hover .material-symbols-outlined.text-blue-600 {
-  color: #2563eb !important;
-}
-
-/* Forzar círculos perfectos en menús contextuales */
-.context-menu-item span[style*="border-radius: 50%"] {
-  border-radius: 50% !important;
-  width: 16px !important;
-  height: 16px !important;
-  aspect-ratio: 1 / 1 !important;
-  min-width: 16px !important;
-  min-height: 16px !important;
-  max-width: 16px !important;
-  max-height: 16px !important;
-  display: inline-block !important;
-}
-
-.tooltip {
-  position: absolute;
-  background: rgba(0, 0, 0, 0.9);
-  color: white;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-family: 'Space Mono', monospace;
-  white-space: nowrap;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.2s ease;
-  pointer-events: none;
-  z-index: 1000;
-  transform: translateY(-5px);
-}
-
-.tooltip-container:hover .tooltip {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-}
-
-/* Posiciones del tooltip */
-.tooltip.top {
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%) translateY(-5px);
-}
-
-.tooltip-container:hover .tooltip.top {
-  transform: translateX(-50%) translateY(0);
-}
-
-.tooltip.bottom {
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%) translateY(5px);
-}
-
-.tooltip-container:hover .tooltip.bottom {
-  transform: translateX(-50%) translateY(0);
-}
-
-.tooltip.left {
-  right: 100%;
-  top: 50%;
-  transform: translateY(-50%) translateX(-5px);
-}
-
-.tooltip-container:hover .tooltip.left {
-  transform: translateY(-50%) translateX(0);
-}
-
-.tooltip.right {
-  left: 100%;
-  top: 50%;
-  transform: translateY(-50%) translateX(5px);
-}
-
-.tooltip-container:hover .tooltip.right {
-  transform: translateY(-50%) translateX(0);
-}
-.weekdeck-grid-wrapper {
-  display: contents;
-}
-.section, .container, .weekdeck-grid-wrapper {
-  margin: 0 !important;
-  padding: 0 20px 0 20px !important;
-  width: 100vw;
-  min-width: 0;
-  max-width: 100vw;
-  box-sizing: border-box;
-  background: transparent;
-  height: auto;
-  min-height: calc(100vh - 48px);
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
-#week-columns.columns {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  width: 100%;
-  height: auto;
-  margin: 0;
-  padding: 0;
-  gap: 8px;
-  box-sizing: border-box;
-  align-items: stretch;
-  justify-items: stretch;
-  min-height: 0;
-}
-@media (max-width: 1200px) {
-  .section, .container {
-    max-width: 100vw;
-    padding: 0 8px 0 8px !important;
-  }
-  #week-columns.columns {
-    padding: 0;
-  }
-  .section, .container, .weekdeck-grid-wrapper {
-    height: auto;
-    min-height: calc(100vh - 48px);
-  }
-  html, body {
-    padding: 0 0 8px 0;
-  }
-}
-.day-column.column {
-  flex: 1 1 0;
-  min-width: 0;
-  max-width: 100%;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  height: auto;
-  min-height: 100%;
-  background: #fff;
-  border-right: 1px solid #ededed;
-  box-sizing: border-box;
-  overflow: visible;
-  min-height: 0;
-}
-.day-column.column:last-child {
-  border-right: none;
-}
-.flex-1.flex.flex-col.relative {
-  cursor: pointer;
-  transition: border-color 0.2s ease;
-  position: relative;
-}
-
-/* Hover effect para toda la columna */
-.bg-white.border.border-gray-200.rounded-lg.flex.flex-col.min-h-\[70vh\].h-full.transition-all.duration-150.relative {
-  cursor: pointer;
-  transition: border-color 0.2s ease;
-  height: auto;
-  min-height: calc(100vh - 120px);
-  overflow: visible;
-  position: relative;
-  z-index: 1;
-  box-sizing: border-box;
-  border: var(--drag-drop-border-width) var(--drag-drop-border-style) transparent !important;
-}
-
-/* Títulos de días sticky */
-.bg-white.border.border-gray-200.rounded-lg.flex.flex-col.min-h-\[70vh\].h-full.transition-all.duration-150.relative .px-3.py-2.text-2xl.font-extrabold.tracking-wider.flex.items-center {
-  position: sticky;
-  top: 0;
-  background: white;
-  z-index: 100;
-  padding: 12px 16px;
-  border-bottom: 1px solid #f0f0f0;
-  margin: 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-}
-
-/* Efecto gradiente fijo en la parte inferior del navegador */
-body::after {
-  content: '';
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 100px;
-  background: linear-gradient(to top, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.9) 20%, rgba(255, 255, 255, 0.6) 50%, rgba(255, 255, 255, 0.2) 80%, rgba(255, 255, 255, 0) 100%);
-  pointer-events: none;
-  z-index: 99999;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-/* Mostrar gradiente cuando hay mucho contenido */
-body:has(.flex.min-h-[55px].px-2.py-1.group:nth-child(n+6))::after {
-  opacity: 1;
-}
-
-/* Mostrar gradiente cuando la ventana es pequeña */
-@media (max-height: 700px) {
-  body::after {
-    opacity: 1;
-  }
-}
-.h-full {
-  height: auto !important;
-  min-height: 98% !important;
-}
-
-.bg-white.border.border-gray-200.rounded-lg.flex.flex-col.min-h-\[70vh\].h-full.transition-all.duration-150.relative:hover {
-  border-color: var(--border-hover) !important;
-}
-
-/* Mantener borde superior transparente en el área de listado al hacer hover en la columna */
-.bg-white.border.border-gray-200.rounded-lg.flex.flex-col.min-h-\[70vh\].h-full.transition-all.duration-150.relative:hover .flex-1.flex.flex-col.relative {
-  border-top-color: transparent !important;
-}
-
-/* Eliminar borde del área de contenido para que no interfiera con el borde de la tabla */
-.flex-1.flex.flex-col.relative {
-  border: none !important;
-  height: auto;
-  min-height: 0;
-  overflow: visible;
-  position: relative;
-}
-
-/* Eliminar borde del input para que no aparezca línea gris */
-.flex-1.border-0.border-b.border-gray-300.focus\:ring-0.focus\:border-black.bg-transparent.text-base {
-  border-bottom: none !important;
-}
-
-/* Eliminar borde del contenedor del input */
-.flex.items-center.min-h-\[55px\].px-2.transition-all.duration-150 {
-  border-bottom: none !important;
-}
-
-/* Estilos para el input de nueva tarea */
-.add-task-input {
-  color: #6b7280;
-  transition: all 0.3s ease;
-  font-size: 18px;
-  opacity: 0;
-}
-
-.add-task-input::placeholder {
-  color: #9ca3af;
-  transition: all 0.3s ease;
-}
-
-/* Mostrar input cuando tiene la clase opacity-100 */
-.add-task-input.opacity-100 {
-  opacity: 1 !important;
-  color: #6b7280 !important;
-}
-
-.add-task-input.opacity-100::placeholder {
-  color: #9ca3af !important;
-}
-
-/* Mostrar texto cuando el input tiene focus */
-.add-task-input:focus {
-  color: #000000 !important;
-  opacity: 1 !important;
-}
-
-.add-task-input:focus::placeholder {
-  color: #9ca3af !important;
-}
-
-
-
-/* Hover effect para las filas de tareas */
-.flex.min-h-[55px].px-2.py-1.group {
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border-left: 3px solid transparent !important;
-}
-
-/* Tamaño de fuente para el texto de las tareas */
-.flex.min-h-[55px].px-2.py-1.group .flex-1.min-w-0.break-words.whitespace-pre-line.text-lg.overflow-wrap-break-word {
-  font-size: 18px;
-  line-height: 1.4;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  word-break: break-word;
-  white-space: pre-line;
-  hyphens: auto;
-  max-width: 100%;
-  overflow: hidden;
-  display: block;
-  text-overflow: ellipsis;
-}
-
-/* Estilos para el formato de texto markdown */
-.flex.min-h-[55px].px-2.py-1.group .flex-1.min-w-0.break-words.whitespace-pre-line.text-lg.overflow-wrap-break-word strong {
-  font-weight: bold;
-}
-
-.flex.min-h-[55px].px-2.py-1.group .flex-1.min-w-0.break-words.whitespace-pre-line.text-lg.overflow-wrap-break-word em {
-  font-style: italic;
-}
-
-.flex.min-h-[55px].px-2.py-1.group .flex-1.min-w-0.break-words.whitespace-pre-line.text-lg.overflow-wrap-break-word u {
-  text-decoration: underline;
-}
-
-.flex.min-h-[55px].px-2.py-1.group:hover {
-  border-left-color: #155dfc !important;
-}
-
-.flex.min-h-[55px].px-2.py-1.group:hover .flex-1.min-w-0 span {
-  color: #155dfc !important;
-}
-
-/* También cambiar el color del texto en el input cuando está editando */
-.flex.min-h-[55px].px-2.py-1.group:hover input {
-  color: #155dfc !important;
-}
-
-/* Reglas con máxima especificidad para asegurar que funcione */
-html body .flex.min-h-[55px].px-2.py-1.group:hover .flex-1.min-w-0 span {
-  color: #155dfc !important;
-}
-
-html body .flex.min-h-[55px].px-2.py-1.group:hover input {
-  color: #155dfc !important;
-}
-
-/* Menú contextual - oculto por defecto, visible al hover del item */
-.flex.min-h-[55px].px-2.py-1.group button .material-symbols-outlined {
-  opacity: 0 !important;
-  transition: opacity 0.2s ease;
-}
-
-/* Botón de menú del header - transparente por defecto, visible al hover */
-.header-menu-btn .material-symbols-outlined {
-  color: transparent !important;
-  transition: color 0.2s ease;
-}
-
-/* Mostrar botón del header al hover de la tabla */
-.bg-white.border.border-gray-200.rounded-lg.flex.flex-col.min-h-\[70vh\].h-full.transition-all.duration-150.relative:hover .header-menu-btn .material-symbols-outlined {
-  color: var(--context-menu-color) !important;
-}
-
-/* Color highlight al hover del botón de menú del header */
-.header-menu-btn:hover .material-symbols-outlined {
-  color: #155dfc !important;
-}
-
-/* Asegurar que el color azul se aplique incluso con la clase hover:bg-gray-200 */
-.header-menu-btn.hover\:bg-gray-200:hover .material-symbols-outlined {
-  color: #155dfc !important;
-}
-
-/* Regla con máxima especificidad para el color azul del header */
-html body .header-menu-btn:hover .material-symbols-outlined {
-  color: #155dfc !important;
-}
-
-html body .header-menu-btn.hover\:bg-gray-200:hover .material-symbols-outlined {
-  color: #155dfc !important;
-}
-
-/* Quitar background gris del botón de menú del header al hacer hover */
-.header-menu-btn:hover {
-  background-color: transparent !important;
-}
-
-/* Sobrescribir específicamente la clase hover:bg-gray-200 de Tailwind */
-.header-menu-btn.hover\:bg-gray-200:hover {
-  background-color: transparent !important;
-}
-
-/* Mostrar menú contextual al hover del item */
-.flex.min-h-[55px].px-2.py-1.group:hover button .material-symbols-outlined {
-  opacity: 1 !important;
-  color: var(--context-menu-color) !important;
-}
-
-/* Color highlight al hover del botón de menú - solo cambia el color del icono */
-.flex.min-h-[55px].px-2.py-1.group button:hover .material-symbols-outlined {
-  color: #155dfc !important;
-}
-
-/* Quitar background gris del botón de menú al hacer hover */
-.flex.min-h-[55px].px-2.py-1.group button:hover {
-  background-color: transparent !important;
-}
-
-
-
-/* Animación fade + scale para menús contextuales */
-.menu-fade-scale {
-  opacity: 0;
-  transform: scale(0.95) translateY(-5px);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.menu-fade-scale.show {
-  opacity: 1;
-  transform: scale(1) translateY(0);
-}
-
-/* Animación fade + slide para menú de colores (izquierda a derecha) */
-.menu-fade-slide {
-  opacity: 0 !important;
-  transform: scale(0.95) translateX(-15px) !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-.menu-fade-slide.show {
-  opacity: 1 !important;
-  transform: scale(1) translateX(0) !important;
-}
-
-/* Animación de eliminación de items */
-.item-removing {
-  opacity: 0;
-  transform: translateY(-20px) rotateX(-10deg);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  pointer-events: none;
-}
-
-/* Animación de creación de items */
-.flex.min-h-[42px].px-2.py-1.group.item-adding {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.flex.min-h-[42px].px-2.py-1.group.item-adding.show {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Eliminar box-shadow para evitar bordes duplicados */
-.flex.min-h-[55px].px-2.py-1.group {
-  box-shadow: none !important;
-}
-
-.flex.min-h-[55px].px-2.py-1.group:hover {
-  box-shadow: none !important;
-}
-.day-title {
-  font-size: 1.1em;
-  font-weight: 700;
-  color: var(--text-dark);
-  margin-bottom: 0.2em;
-  letter-spacing: 0.04em;
-  text-align: left;
-  text-transform: uppercase;
-  font-family: 'Space Mono', monospace;
-  position: relative;
-  padding-left: 4px;
-  padding-bottom: 2px;
-  width: 100%;
-  box-sizing: border-box;
-  background: #fff;
-  z-index: 1;
-}
-
-/* Estilos para el icono del día actual */
-.material-symbols-outlined.text-red-500 {
-  font-size: 20px;
-  font-weight: bold;
-  color: #155dfc !important;
-  margin-right: 8px;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-/* Estilos para elementos tutoriales */
-.flex.min-h-[55px].px-2.py-1.group:has(.flex-1.min-w-0.break-words.whitespace-pre-line.text-base.overflow-wrap-break-word:contains('tutorial')) {
-  background: rgba(21, 93, 252, 0.05) !important;
-  border-left: 3px solid #155dfc !important;
-  animation: tutorial-pulse 3s infinite;
-}
-
-/* Estilos específicos para elementos tutoriales por ID */
-.flex.min-h-[55px].px-2.py-1.group:has([data-task-id*="tutorial"]) {
-  background: rgba(21, 93, 252, 0.05) !important;
-  border-left: 3px solid #155dfc !important;
-  animation: tutorial-pulse 3s infinite;
-}
-
-@keyframes tutorial-pulse {
-  0% {
-    background: rgba(21, 93, 252, 0.05);
-  }
-  50% {
-    background: rgba(21, 93, 252, 0.1);
-  }
-  100% {
-    background: rgba(21, 93, 252, 0.05);
-  }
-}
-
-.tasks-list {
-  flex: 1 1 auto;
-  min-height: 60px;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-.task-row {
-  display: block;
-  border-bottom: 1.5px solid #222;
-  background: transparent;
-  box-sizing: border-box;
-  padding: 0;
-  font-family: 'Space Mono', monospace;
-  margin: 0;
-}
-.empty-row {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-}
-.task-title {
-  flex: 1 1 0;
-  min-width: 0;
-  font-size: 15px;
-  line-height: 1.2;
-  font-weight: 400;
-  word-break: break-word;
-  overflow-wrap: break-word;
-  white-space: pre-line;
-  color: #111;
-  font-family: 'Space Mono', monospace;
-  text-align: left;
-  padding: 0 8px 0 0;
-}
-.delete-task-btn {
-  opacity: 0;
-  background: none;
-  border: none;
-  color: var(--error-color);
-  font-size: 20px;
-  margin-left: 8px;
-  transition: opacity 0.2s;
-  cursor: pointer;
-  box-shadow: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-}
-.task-row:hover .delete-task-btn {
-  opacity: 1;
-}
-.add-task-input.input {
-  box-sizing: border-box;
-  width: 100%;
-  border: 0;
-  border-bottom: 2px solid #e5e7eb;
-  background: #fff;
-  font-size: 20px;
-  line-height: 28px;
-  padding: 0 8px;
-  margin: 0;
-  align-self: center;
-  color: var(--text-dark);
-  font-family: 'Montserrat', sans-serif;
-  border-radius: 0;
-  transition: border-color 0.2s;
-}
-.add-task-input.input:focus {
-  border-bottom: 2px solid var(--highlight-color);
-  background: #fff;
-  outline: none;
-}
-.add-task-input.input::placeholder {
-  color: #b5b5b5;
-  font-size: 20px;
-  opacity: 0.7;
-  font-family: 'Montserrat', sans-serif;
-}
-.day-column.drag-over .day-box {
-  border: 2px dashed var(--highlight-color);
-  background: #e0f7fa;
-}
-.button.is-success, .button.is-link, .button {
-  border-radius: 15px;
-  font-weight: 700;
-  font-size: 16px;
-  padding: 8px 24px;
-  border: 1.5px solid var(--highlight-color);
-  background: var(--highlight-color);
-  color: #fff;
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
-  box-shadow: none;
-  font-family: 'Montserrat', sans-serif;
-}
-.button.is-success:hover, .button.is-link:hover, .button:hover {
-  background: var(--hover-color);
-  color: #fff;
-  border-color: var(--hover-color);
-}
-.button {
-  box-shadow: none;
-}
+/* ===== MOBILE RESPONSIVE STYLES ===== */
 @media (max-width: 1023px) {
-  .section, .container, #week-columns.columns {
-    flex-direction: column;
-    height: auto;
-    min-height: 100vh;
-    width: 100vw;
-    min-width: 100vw;
-  }
-  #week-columns.columns {
-    flex-wrap: wrap;
-    overflow-x: auto;
-    height: auto;
-  }
-  .day-column.column {
-    min-width: 280px;
-    max-width: 280px;
-    width: 280px;
-    flex: 0 0 280px;
-    margin-bottom: 0;
-  }
-  .day-box {
-    min-height: 250px;
-    padding: 0.7em 0.5em 0.5em 0.5em;
-  }
-  .add-task-input.input {
-    font-size: 18px !important;
-  }
-  .task-title {
-    font-size: 18px;
-  }
-  
-  /* En móviles, mantener las columnas horizontales con scroll */
-  .flex.flex-col.lg\:flex-row.gap-3.w-full.mx-auto.h-full {
-    flex-direction: row;
-    gap: 8px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  .flex.flex-col.lg\:flex-row.gap-3.w-full.mx-auto.h-full > div {
-    min-width: 280px;
-    max-width: 280px;
-    width: 280px;
-    flex: 0 0 280px;
-  }
-  
-  /* Cuando las columnas del weekend están ocultas en móvil */
-  .flex.flex-col.lg\:flex-row.gap-3.w-full.mx-auto.h-full.weekend-hidden > div:not(.weekend-column) {
-    min-width: 320px;
-    max-width: 320px;
-    width: 320px;
-    flex: 0 0 320px;
-  }
-  
-  /* Estilos específicos para el input de nueva tarea en móviles */
-  .add-task-input {
-    /* Asegurar que se ajuste al ancho disponible */
-    width: 100% !important;
-    max-width: 100% !important;
-    box-sizing: border-box !important;
-    /* Reducir el padding para dar más espacio al texto */
-    padding: 8px 12px !important;
-    /* Ajustar el tamaño de fuente para móviles */
+  .context-menu {
+    min-width: 200px !important;
+    max-width: 280px !important;
     font-size: 16px !important;
-    /* Asegurar que no se desborde */
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
   }
-  
-  /* Ajustar el contenedor del input para que no se desborde */
-  .flex.items-center.min-h-\[48px\].px-2.transition-all.duration-150 {
-    /* Asegurar que el contenedor se ajuste al ancho de la columna */
-    width: 100% !important;
-    max-width: 100% !important;
-    box-sizing: border-box !important;
-    /* Reducir el padding para dar más espacio */
-    padding: 8px 12px !important;
-    /* Asegurar que los elementos se alineen correctamente */
-    align-items: center !important;
-    gap: 8px !important;
-  }
-  
-  /* Ajustar el icono de agregar para que no ocupe mucho espacio */
-  .flex.items-center.min-h-\[48px\].px-2.transition-all.duration-150 .material-symbols-outlined {
-    font-size: 20px !important;
-    flex-shrink: 0 !important;
-    margin-right: 8px !important;
-  }
-  
-  /* Asegurar que el input tome todo el espacio disponible */
-  .flex.items-center.min-h-\[48px\].px-2.transition-all.duration-150 input {
-    flex: 1 !important;
-    min-width: 0 !important;
-    width: 100% !important;
-  }
-} 
-.task-color-dot {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  margin-right: 8px;
-  background: transparent;
-  border: 1.5px solid #ffffff !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.task-color-dot[data-color="red"] { background: #F36B6B; border-color: #ffffff !important; }
-.task-color-dot[data-color="yellow"] { background: #FFD86B; border-color: #ffffff !important; }
-.task-color-dot[data-color="blue"] { background: #6B9AFF; border-color: #ffffff !important; }
-.task-color-dot[data-color="green"] { background: #7BE495; border-color: #ffffff !important; }
-.task-color-dot[data-color="gray"] { background: #bbb; border-color: #ffffff !important; }
-.task-color-dot[data-color="none"] { background: transparent; border: 2px solid #ffffff !important; }
 
-.task-menu-btn {
-  font-size: 18px;
-  color: #111;
-  cursor: pointer;
-  margin-left: 8px;
-  vertical-align: middle;
-  transition: color 0.2s;
-  user-select: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.task-menu-btn:hover {
-  color: var(--active-color);
-}
-
-.task-context-menu {
-  position: absolute;
-  top: 36px;
-  right: 0;
-  min-width: 180px;
-  background: #fff;
-  border: 1px solid #111;
-  border-radius: 0;
-  box-shadow: none;
-  z-index: 1000;
-  padding: 12px 0 8px 0;
-  font-family: 'Space Mono', monospace;
-  font-size: 14px;
-  color: #111;
-  animation: fadeInMenu 0.15s;
-}
-@keyframes fadeInMenu {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.task-context-menu .color-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 16px 8px 16px;
-  margin-bottom: 8px;
-}
-.task-context-menu .color-dot-option {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  border: 1.5px solid #ffffff !important;
-  cursor: pointer;
-  transition: border 0.2s, box-shadow 0.2s;
-}
-.task-context-menu .color-dot-option.selected {
-  box-shadow: 0 0 0 2px #111;
-}
-.task-context-menu .menu-option {
-  padding: 7px 16px;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-  border: none;
-  background: none;
-  width: 100%;
-  text-align: left;
-  font-family: inherit;
-  font-size: 14px;
-  color: #111;
-}
-.task-context-menu .menu-option:hover {
-  background: #f5f5f5;
-  color: #111;
-}
-.task-context-menu .close-menu-btn {
-  position: absolute;
-  top: 7px;
-  right: 10px;
-  font-size: 20px;
-  color: #111;
-  cursor: pointer;
-  background: none;
-  border: none;
-  padding: 0;
-  line-height: 1;
-}
-.task-context-menu .close-menu-btn:hover {
-  color: #F36B6B;
-} 
-.completed-task {
-  text-decoration: line-through;
-  color: #bbb !important;
-  opacity: 0.5;
-} 
-.level {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: transparent;
-  box-shadow: none;
-  border: none;
-  padding: 10px;
-  margin: 0;
-}
-.level-left {
-  display: flex;
-  align-items: center;
-  padding: 0;
-  margin: 0;
-  flex: 1 1 auto;
-}
-.level-right {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 0;
-  margin: 0;
-  flex-shrink: 0;
-} 
-.level, .level-left, .level-right {
-  align-items: flex-start !important;
-  height: 100%;
-}
-.task-menu-btn {
-  align-self: flex-start;
-} 
-
-/* Efectos visuales de drag and drop - SOLO BORDE PUNTEADO */
-.day-column.drag-over,
-div[class*="bg-white"].drag-over,
-.bg-white.border.border-gray-200.rounded-lg.flex.flex-col.min-h-\[70vh\].h-full.transition-all.duration-150.relative.drag-over {
-  border: 2px dashed #155dfc !important;
-  transition: all 0.2s ease;
-  box-sizing: border-box;
-}
-
-/* Selector más específico para sobrescribir Tailwind */
-div.bg-white.border.border-gray-200.rounded-lg.flex.flex-col.min-h-\[70vh\].h-full.transition-all.duration-150.relative.drag-over {
-  border: 2px dashed #155dfc !important;
-  border-color: #155dfc !important;
-}
-
-/* Regla de máxima especificidad para asegurar que funcione */
-html body div.bg-white.border.border-gray-200.rounded-lg.flex.flex-col.min-h-\[70vh\].h-full.transition-all.duration-150.relative.drag-over {
-  border: 2px dashed #155dfc !important;
-  border-color: #155dfc !important;
-}
-
-/* Borde sólido para rollover básico (no drag and drop) */
-.bg-white.border.border-gray-200.rounded-lg.flex.flex-col.min-h-\[70vh\].h-full.transition-all.duration-150.relative:hover {
-  border-color: var(--border-hover) !important;
-  border-style: solid !important;
-}
-
-/* Borde transparente por defecto para evitar saltos */
-div[class*="bg-white"] {
-  box-sizing: border-box;
-}
-
-/* Borde sutil por defecto para las columnas */
-.bg-white.border.border-gray-200.rounded-lg.flex.flex-col.min-h-\[70vh\].h-full.transition-all.duration-150.relative {
-  cursor: pointer;
-  transition: border-color 0.2s ease;
-  height: auto;
-  min-height: calc(100vh - 120px);
-  overflow: visible;
-  position: relative;
-  z-index: 1;
-  box-sizing: border-box;
-  border-color: #e5e7eb !important; /* Borde gris claro en reposo */
-  border-style: solid !important;
-}
-
-/* Efecto para elementos individuales durante drag - SIMPLIFICADO */
-.group.drag-over {
-  border-top: 3px solid #155dfc !important;
-  transition: all 0.2s ease;
-}
-
-/* Regla de máxima especificidad para tareas */
-html body .group.drag-over {
-  border-top: 3px solid #155dfc !important;
-}
-
-/* Regla adicional para asegurar visibilidad */
-.flex.min-h-[50px].sm\:min-h-\[55px\].px-2.py-1.group.drag-over {
-  border-top: 3px solid #155dfc !important;
-}
-
-/* Efecto para el elemento que se está arrastrando */
-.flex.min-h-[55px].px-2.py-1.group.dragging {
-  opacity: 0.5;
-  transform: rotate(2deg);
-  transition: all 0.2s ease;
-}
-
-/* Indicador de drop para la zona al final de la tabla */
-.flex.items-center.min-h-\[48px\].px-2.transition-all.duration-150.drag-over {
-  border-top: 3px solid #155dfc !important;
-  transition: all 0.2s ease;
-}
-
-/* Regla adicional para zona final */
-html body .flex.items-center.min-h-\[48px\].px-2.transition-all.duration-150.drag-over {
-  border-top: 3px solid #155dfc !important;
-}
-
-/* Regla simple para cualquier elemento con drag-over */
-.drag-over {
-  border-top: 3px solid #155dfc !important;
-}
-
-
-
-/* Indicador de drop para la zona al final de la tabla */
-.drop-indicator-line {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: #155dfc;
-  z-index: 1000;
-}
-
-/* Indicador de drop para la zona al final de la tabla */
-.flex.items-center.min-h-\[55px\].px-2.transition-all.duration-150.drop-indicator {
-  border-top: 2px solid var(--drag-drop-border) !important;
-  background: transparent !important;
-  border-right: none !important;
-  border-left: none !important;
-  border-bottom: none !important;
-  opacity: 0.8;
-  transition: opacity 0.2s ease;
-}
-
-/* Indicador de drop para tabla completa - solo para marcar el estado */
-.flex-1.flex.flex-col.relative.table-drop-zone {
-  position: relative;
-}
-
-/* Sobrescribir cualquier fondo azul de Tailwind en zonas de drop */
-.flex.items-center.min-h-\[55px\].px-2.transition-all.duration-150.bg-blue-100 {
-  background: transparent !important;
-}
-
-.flex.items-center.min-h-\[55px\].px-2.transition-all.duration-150.border-blue-400 {
-  border-color: transparent !important;
-  border-top-color: var(--drag-drop-border) !important;
-}
-
-/* Efectos de drag and drop unificados */
-.flex.min-h-[55px].px-2.py-1.group.dragging {
-  opacity: 0.5;
-  transform: rotate(2deg);
-  transition: all 0.2s ease;
-}
-
-/* Evitar que el círculo azul aparezca en el icono durante drag & drop */
-html body .flex.min-h-[55px].px-2.py-1.group.drag-over .task-dot,
-html body .flex.min-h-[55px].px-2.py-1.group.drag-over .task-dot *,
-html body .flex.min-h-[55px].px-2.py-1.group.drag-over .task-dot .material-symbols-outlined {
-  background: transparent !important;
-  border: none !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  outline: none !important;
-  width: auto !important;
-  height: auto !important;
-}
-
-/* Eliminar bordes grises por defecto durante drag - solo en elementos hijos */
-.flex.min-h-[55px].px-2.py-1.group.drag-over > *,
-.flex.min-h-[55px].px-2.py-1.group.drop-indicator > *,
-.flex.min-h-[55px].px-2.py-1.group.dragging > * {
-  border-color: transparent !important;
-}
-
-/* Sobrescribir bordes grises de Tailwind durante drag and drop */
-.flex.min-h-[55px].px-2.py-1.group.drag-over,
-.flex.min-h-[55px].px-2.py-1.group.drop-indicator,
-.flex.min-h-[55px].px-2.py-1.group.dragging {
-  border-color: transparent !important;
-}
-
-/* Eliminar bordes grises de las columnas durante drag */
-.bg-white.border.border-gray-200.rounded-lg.flex.flex-col.min-h-\[70vh\].h-full.transition-all.duration-150.relative.drag-over {
-  border-color: transparent !important;
-}
-
-/* Sobrescribir completamente cualquier borde gris de Tailwind */
-.flex.min-h-\[55px\].px-2.py-1.group.drag-over,
-.flex.min-h-\[55px\].px-2.py-1.group.drop-indicator,
-.flex.min-h-\[55px\].px-2.py-1.group.dragging {
-  border: none !important;
-  border-top: 2px solid var(--drag-drop-border) !important;
-}
-
-/* Asegurar que el borde azul sea visible */
-.flex.min-h-\[55px\].px-2.py-1.group.drag-over {
-  border-top: 2px solid var(--drag-drop-border) !important;
-  opacity: 0.6;
-  transition: opacity 0.2s ease;
-}
-
-.flex.min-h-\[55px\].px-2.py-1.group.drop-indicator {
-  border-top: 2px solid var(--drag-drop-border) !important;
-  opacity: 0.8;
-  transition: opacity 0.2s ease;
-}
-
-/* Mantener bordes de círculos de colores durante drag */
-.flex.min-h-[55px].px-2.py-1.group .task-color-dot,
-.flex.min-h-[55px].px-2.py-1.group .material-symbols-outlined {
-  border-color: inherit !important;
-}
-
-/* Excepción para círculos de colores - mantener sus bordes visibles */
-.flex.min-h-[55px].px-2.py-1.group .task-color-dot,
-.flex.min-h-[55px].px-2.py-1.group .task-color-dot[data-color="red"],
-.flex.min-h-[55px].px-2.py-1.group .task-color-dot[data-color="yellow"],
-.flex.min-h-[55px].px-2.py-1.group .task-color-dot[data-color="blue"],
-.flex.min-h-[55px].px-2.py-1.group .task-color-dot[data-color="green"],
-.flex.min-h-[55px].px-2.py-1.group .task-color-dot[data-color="gray"],
-.flex.min-h-[55px].px-2.py-1.group .task-color-dot[data-color="none"] {
-  border-color: inherit !important;
-}
-
-/* Regla más específica y directa para círculos de colores */
-.task-color-dot {
-  border: 1.5px solid #ffffff !important;
-}
-
-.task-color-dot[data-color="red"] { 
-  background: #F36B6B !important; 
-  border: 1.5px solid #ffffff !important; 
-}
-
-.task-color-dot[data-color="yellow"] { 
-  background: #FFD86B !important; 
-  border: 1.5px solid #ffffff !important; 
-}
-
-.task-color-dot[data-color="blue"] { 
-  background: #6B9AFF !important; 
-  border: 1.5px solid #ffffff !important; 
-}
-
-.task-color-dot[data-color="green"] { 
-  background: #7BE495 !important; 
-  border: 1.5px solid #ffffff !important; 
-}
-
-.task-color-dot[data-color="gray"] { 
-  background: #bbb !important; 
-  border: 1.5px solid #ffffff !important; 
-}
-
-.task-color-dot[data-color="none"] { 
-  background: transparent !important; 
-  border: 2px solid #ffffff !important; 
-}
-
-/* Reglas específicas para menú contextual */
-.task-context-menu .color-dot-option[data-color="red"] { 
-  background: #F36B6B !important; 
-  border: 1.5px solid #ffffff !important; 
-}
-
-.task-context-menu .color-dot-option[data-color="yellow"] { 
-  background: #FFD86B !important; 
-  border: 1.5px solid #ffffff !important; 
-}
-
-.task-context-menu .color-dot-option[data-color="blue"] { 
-  background: #6B9AFF !important; 
-  border: 1.5px solid #ffffff !important; 
-}
-
-.task-context-menu .color-dot-option[data-color="green"] { 
-  background: #7BE495 !important; 
-  border: 1.5px solid #ffffff !important; 
-}
-
-.task-context-menu .color-dot-option[data-color="gray"] { 
-  background: #bbb !important; 
-  border: 1.5px solid #ffffff !important; 
-}
-
-.task-context-menu .color-dot-option[data-color="none"] { 
-  background: transparent !important; 
-  border: 2px solid #ffffff !important; 
-}
-
-/* Reglas de máxima especificidad para sobrescribir cualquier conflicto */
-.flex.min-h-[55px].px-2.py-1.group .task-color-dot,
-.flex.min-h-[55px].px-2.py-1.group .task-color-dot[data-color="red"],
-.flex.min-h-[55px].px-2.py-1.group .task-color-dot[data-color="yellow"],
-.flex.min-h-[55px].px-2.py-1.group .task-color-dot[data-color="blue"],
-.flex.min-h-[55px].px-2.py-1.group .task-color-dot[data-color="green"],
-.flex.min-h-[55px].px-2.py-1.group .task-color-dot[data-color="gray"],
-.flex.min-h-[55px].px-2.py-1.group .task-color-dot[data-color="none"] {
-  border: 1.5px solid var(--border-primary) !important;
-}
-
-.flex.min-h-[55px].px-2.py-1.group .task-color-dot[data-color="none"] {
-  border: 2px solid var(--border-primary) !important;
-}
-
-/* Indicador visual cuando se puede hacer drop en una columna */
-.day-column.drop-zone,
-div[class*="bg-white"].drop-zone {
-  position: relative;
-}
-
-.day-column.drop-zone::after,
-div[class*="bg-white"].drop-zone::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border: 2px dashed var(--drag-drop-border);
-  border-radius: 8px;
-  pointer-events: none;
-  opacity: 0;
-  z-index: 10;
-}
-
-/* Efecto hover para áreas de drop */
-.day-column.drop-zone:hover::after,
-div[class*="bg-white"].drop-zone:hover::after {
-  opacity: 0;
-  border-style: solid;
-}
-
-/* REGLAS DE MÁXIMA ESPECIFICIDAD PARA CÍRCULOS DE COLORES */
-/* Estas reglas deben estar al final para tener máxima prioridad */
-html body .flex.min-h-\[55px\].px-2.py-1.group .task-color-dot,
-html body .flex.min-h-\[55px\].px-2.py-1.group .task-color-dot[data-color="red"],
-html body .flex.min-h-\[55px\].px-2.py-1.group .task-color-dot[data-color="yellow"],
-html body .flex.min-h-\[55px\].px-2.py-1.group .task-color-dot[data-color="blue"],
-html body .flex.min-h-\[55px\].px-2.py-1.group .task-color-dot[data-color="green"],
-html body .flex.min-h-\[55px\].px-2.py-1.group .task-color-dot[data-color="gray"],
-html body .flex.min-h-\[55px\].px-2.py-1.group .task-color-dot[data-color="none"] {
-  border: 1.5px solid #ffffff !important;
-  border-color: #ffffff !important;
-}
-
-html body .flex.min-h-\[55px\].px-2.py-1.group .task-color-dot[data-color="none"] {
-  border: 2px solid #ffffff !important;
-  border-color: #ffffff !important;
-}
-
-html body .task-context-menu .color-dot-option[data-color="red"],
-html body .task-context-menu .color-dot-option[data-color="yellow"],
-html body .task-context-menu .color-dot-option[data-color="blue"],
-html body .task-context-menu .color-dot-option[data-color="green"],
-html body .task-context-menu .color-dot-option[data-color="gray"],
-html body .task-context-menu .color-dot-option[data-color="none"] {
-  border: 1.5px solid var(--border-primary) !important;
-  border-color: var(--border-primary) !important;
-}
-
-html body .task-context-menu .color-dot-option[data-color="none"] {
-  border: 2px solid var(--border-primary) !important;
-  border-color: var(--border-primary) !important;
-} 
-
-/* REGLAS ESPECÍFICAS PARA CÍRCULOS DE COLORES GENERADOS POR ALPINE.JS */
-.w-4.h-4.rounded-full {
-  border: none !important;
-}
-
-.w-4.h-4.rounded-full.border.border-white {
-  border: none !important;
-}
-
-.w-4.h-4.rounded-full.border.border-gray-400 {
-  border: 2px solid var(--transparent-circle-border) !important;
-}
-
-/* Reglas específicas para círculos sin color */
-.w-4.h-4.rounded-full:not([style*="background"]) {
-  border: 2px solid var(--transparent-circle-border) !important;
-}
-
-/* Reglas para círculos con color */
-.w-4.h-4.rounded-full[style*="background"] {
-  border: none !important;
-} 
-
-/* Tema oscuro - bordes de círculos transparentes */
-[data-theme="dark"] .w-4.h-4.rounded-full.border.border-gray-400,
-[data-theme="dark"] .w-4.h-4.rounded-full:not([style*="background"]) {
-  border: 2px solid #111827 !important; /* Gris muy oscuro para dark theme */
-}
-
-/* Reglas más específicas para modo dark */
-html body[data-theme="dark"] .w-4.h-4.rounded-full.border.border-gray-400,
-html body[data-theme="dark"] .w-4.h-4.rounded-full:not([style*="background"]) {
-  border: 2px solid #111827 !important;
-}
-
-/* Reglas específicas para cualquier elemento con tema dark */
-*[data-theme="dark"] .w-4.h-4.rounded-full.border.border-gray-400,
-*[data-theme="dark"] .w-4.h-4.rounded-full:not([style*="background"]) {
-  border: 2px solid #111827 !important;
-} 
-
-/* Tema claro - bordes de círculos transparentes */
-[data-theme="light"] .w-4.h-4.rounded-full.border.border-gray-400,
-[data-theme="light"] .w-4.h-4.rounded-full:not([style*="background"]) {
-  border: 2px solid #e5e7eb !important; /* Gris claro para light theme */
-}
-
-/* Reglas más específicas para modo light */
-html body[data-theme="light"] .w-4.h-4.rounded-full.border.border-gray-400,
-html body[data-theme="light"] .w-4.h-4.rounded-full:not([style*="background"]) {
-  border: 2px solid #e5e7eb !important;
-} 
-
-/* Estilos para View Transitions API con fade */
-@keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes fade-out {
-  from { opacity: 1; }
-  to { opacity: 0; }
-}
-
-/* Configuración para View Transitions con fade */
-::view-transition-old(root) {
-  animation: fade-out 0.3s ease-in-out;
-}
-
-::view-transition-new(root) {
-  animation: fade-in 0.3s ease-in-out;
-}
-
-/* Fallback para navegadores que no soportan View Transitions */
-@supports not (view-transition-name: none) {
-  .theme-transition {
-    transition: all 0.3s ease-in-out;
-  }
-}
-
-/* Transición suave para cambios de tema */
-html {
-  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
-}
-
-body {
-  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
-}
-
-.weekdeck-wrapper {
-  transition: background-color 0.3s ease-in-out;
-}
-
-/* Estilos para notificaciones */
-.notification {
-  animation: slideIn 0.3s ease-out;
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes slideOut {
-  from {
-    transform: translateX(0);
-    opacity: 1;
-  }
-  to {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-}
-
-/* Nuevo sistema de notificaciones centradas */
-.notification-center {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10000;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-
-.notification-toast {
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 12px 20px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 14px;
-  font-weight: 500;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
-  min-width: 200px;
-  max-width: 400px;
-  animation: slideUpIn 0.3s ease-out;
-}
-
-.notification-toast.success {
-  /* border-left: 4px solid #10b981; */
-}
-
-.notification-toast.error {
-  /* border-left: 4px solid #ef4444; */
-}
-
-.notification-toast .material-symbols-outlined {
-  font-size: 20px;
-  flex-shrink: 0;
-}
-
-.notification-toast.success .material-symbols-outlined {
-  color: #10b981;
-}
-
-.notification-toast.error .material-symbols-outlined {
-  color: #ef4444;
-}
-
-@keyframes slideUpIn {
-  from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes slideUpOut {
-  from {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  to {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-}
-
-.notification-toast.hiding {
-  animation: slideUpOut 0.3s ease-in;
-} 
-
-/* Estilos para mejorar la experiencia táctil en móviles */
-@media (max-width: 1023px) {
-  .context-menu {
-    /* Aumentar el tamaño mínimo para facilitar el toque */
-    min-width: 200px;
-    /* Aumentar el padding para más área táctil */
-    padding: 8px 0 4px 0;
-    /* Mejorar la apariencia en móviles */
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    /* Asegurar que esté por encima de todo */
-    z-index: 10000;
-  }
-  
-  .context-menu-item {
-    /* Aumentar la altura mínima para facilitar el toque */
-    min-height: 48px;
-    /* Aumentar el padding para más área táctil */
-    padding: 12px 16px;
-    /* Mejorar la legibilidad en móviles */
-    font-size: 16px;
-  }
-  
-  .context-menu-item .material-symbols-outlined {
-    /* Aumentar el tamaño del icono en móviles */
-    font-size: 22px;
-    margin-right: 14px;
-  }
-  
-  /* Mejorar el área táctil de los botones que abren menús */
-  .header-menu-btn,
-  .flex.min-h-[55px].px-2.py-1.group button {
-    /* Aumentar el área táctil */
-    min-width: 44px;
-    min-height: 44px;
-    /* Centrar el contenido */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  /* Mejorar el área táctil del icono de color */
-  .task-dot {
-    /* Aumentar el área táctil */
-    min-width: 44px;
-    min-height: 44px;
-    /* Centrar el contenido */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .task-dot .material-symbols-outlined {
-    /* Aumentar el tamaño del icono */
-    font-size: 28px;
-  }
-} 
-
-/* Transiciones suaves para cambios de contenido interno */
-.context-menu {
-  transition: opacity 0.2s ease-in-out;
-}
-
-.context-menu-content {
-  transition: all 0.2s ease-in-out;
-}
-
-/* Estilos para elementos deshabilitados */
-.context-menu-item.disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.context-menu-item.disabled:hover {
-  background-color: transparent;
-}
-
-/* Animación de entrada para submenús */
-.context-menu.show {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.context-menu {
-  opacity: 0;
-  transform: scale(0.95);
-  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
-} 
-
-/* Estilos para evitar que el texto salte de línea cuando aparece el botón del menú */
-.flex.min-h-\[50px\].sm\:min-h-\[55px\].px-2.py-1.group {
-  position: relative;
-}
-
-/* Contenedor del texto con espacio reservado para el botón */
-.flex.min-h-\[50px\].sm\:min-h-\[55px\].px-2.py-1.group .flex-1.min-w-0 {
-  margin-right: 40px; /* Espacio reservado para el botón del menú */
-  min-width: 0;
-  flex: 1;
-}
-
-/* Botón del menú siempre presente pero invisible */
-.flex.min-h-\[50px\].sm\:min-h-\[55px\].px-2.py-1.group .relative.flex.items-center.ml-2.self-center {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.2s ease-in-out;
-}
-
-/* Estilo del botón del menú - sin fondo gris en hover */
-.flex.min-h-\[50px\].sm\:min-h-\[55px\].px-2.py-1.group .relative.flex.items-center.ml-2.self-center button {
-  background: transparent;
-  border: none;
-  padding: 4px;
-  border-radius: 50%;
-  transition: all 0.2s ease-in-out;
-}
-
-/* Hover del botón - solo cambia el color del icono */
-.flex.min-h-\[50px\].sm\:min-h-\[55px\].px-2.py-1.group .relative.flex.items-center.ml-2.self-center button:hover {
-  background: transparent;
-}
-
-/* Hover del icono - cambia a azul principal */
-.flex.min-h-\[50px\].sm\:min-h-\[55px\].px-2.py-1.group .relative.flex.items-center.ml-2.self-center button:hover .material-symbols-outlined {
-  color: #155dfc !important;
-}
-
-/* Mostrar botón en hover */
-.flex.min-h-\[50px\].sm\:min-h-\[55px\].px-2.py-1.group:hover .relative.flex.items-center.ml-2.self-center {
-  opacity: 1;
-}
-
-/* Asegurar que el texto no se desborde */
-.flex.min-h-\[50px\].sm\:min-h-\[55px\].px-2.py-1.group .flex-1.min-w-0 .break-words.whitespace-pre-line.text-base.sm\:text-lg.overflow-wrap-break-word {
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  word-break: break-word;
-  white-space: pre-line;
-  line-height: 1.4;
-  hyphens: auto;
-  max-width: 100%;
-  overflow: hidden;
-  display: block;
-  text-overflow: ellipsis;
-  min-height: 0;
-  flex-shrink: 1;
-}
-
-/* Asegurar que el contenedor del texto tenga el ancho correcto */
-.flex.min-h-\[50px\].sm\:min-h-\[55px\].px-2.py-1.group .flex-1.min-w-0 {
-  min-width: 0;
-  max-width: calc(100% - 80px); /* Dejar espacio para iconos y botones */
-  flex: 1 1 auto;
-  overflow: hidden;
-} 
-
-/* Estilos para móvil - campo de texto siempre visible */
-@media (max-width: 1023px) {
-  .add-task-input {
-    opacity: 1 !important;
-  }
-  
-  .flex.items-center.min-h-\[48px\].px-2.transition-all.duration-150 .material-symbols-outlined {
-    opacity: 1 !important;
-  }
-}
-
-/* Estilos para desktop - mantener comportamiento de hover */
-@media (min-width: 1024px) {
-  .add-task-input {
-    opacity: 0;
-  }
-  
-  .flex.items-center.min-h-\[48px\].px-2.transition-all.duration-150:hover .add-task-input {
-    opacity: 1;
-  }
-  
-  .flex.items-center.min-h-\[48px\].px-2.transition-all.duration-150 .material-symbols-outlined {
-    opacity: 0;
-  }
-  
-  .flex.items-center.min-h-\[48px\].px-2.transition-all.duration-150:hover .material-symbols-outlined {
-    opacity: 1;
-  }
-}
-
-/* Estilos para móvil - menús con scroll y respuesta al scroll de página */
-@media (max-width: 1023px) {
-  /* Menús centrados en móvil con scroll */
-  .context-menu {
-    max-height: 70vh !important;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-    -webkit-overflow-scrolling: touch !important;
-    scrollbar-width: thin !important;
-    scrollbar-color: rgba(0, 0, 0, 0.3) transparent !important;
-  }
-  
-  /* Estilizar scrollbar para webkit */
-  .context-menu::-webkit-scrollbar {
-    width: 6px !important;
-  }
-  
-  .context-menu::-webkit-scrollbar-track {
-    background: transparent !important;
-  }
-  
-  .context-menu::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.3) !important;
-    border-radius: 3px !important;
-  }
-  
-  .context-menu::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, 0.5) !important;
-  }
-  
-  /* Menús que responden al scroll de la página */
-  .context-menu {
-    position: fixed !important;
-    z-index: 10000 !important;
-    /* Mantener centrado pero permitir scroll */
-    transform: translate(-50%, -50%) !important;
-    /* Asegurar que no se salga de la pantalla */
-    max-width: 90vw !important;
-    min-width: 280px !important;
-  }
-  
-  /* Ajustar posición cuando hay scroll */
   .context-menu.scroll-adjusted {
     position: fixed !important;
-    /* La posición se ajustará dinámicamente con JavaScript */
   }
-  
-  /* Asegurar que los elementos del menú sean táctiles */
+
   .context-menu-item {
     min-height: 48px !important;
     padding: 12px 16px !important;
     font-size: 16px !important;
     touch-action: manipulation !important;
   }
-  
-  /* Mejorar el área táctil de los iconos */
+
   .context-menu-item .material-symbols-outlined {
     font-size: 24px !important;
     min-width: 24px !important;
     margin-right: 12px !important;
   }
-  
-  /* Separadores más visibles en móvil */
+
   .context-menu-separator {
     height: 1px !important;
     margin: 8px 0 !important;
     background-color: rgba(0, 0, 0, 0.1) !important;
   }
-}
 
-/* Estilos para móvil - botones de menú siempre visibles */
-@media (max-width: 1023px) {
-  /* Botones de menú siempre visibles en móvil */
   .flex.min-h-\[50px\].sm\:min-h-\[55px\].px-2.py-1.group .relative.flex.items-center.ml-2.self-center {
     opacity: 1 !important;
     display: flex !important;
   }
-  
-  /* Botones de menú en desktop - comportamiento hover */
-  @media (min-width: 1024px) {
-    .flex.min-h-\[50px\].sm\:min-h-\[55px\].px-2.py-1.group .relative.flex.items-center.ml-2.self-center {
-      opacity: 0;
-      display: none;
-    }
-    
-    .flex.min-h-\[50px\].sm\:min-h-\[55px\].px-2.py-1.group:hover .relative.flex.items-center.ml-2.self-center {
-      opacity: 1;
-      display: flex;
-    }
+}
+
+@media (min-width: 1024px) {
+  .flex.min-h-\[50px\].sm\:min-h-\[55px\].px-2.py-1.group .relative.flex.items-center.ml-2.self-center {
+    opacity: 0;
+    visibility: hidden;
+    display: flex !important;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+  }
+
+  .flex.min-h-\[50px\].sm\:min-h-\[55px\].px-2.py-1.group:hover .relative.flex.items-center.ml-2.self-center {
+    opacity: 1;
+    visibility: visible;
   }
 }
 
-/* Estilos para el botón Save del modal */
+/* ===== MODAL SAVE BUTTON STYLES ===== */
 .modal-content button.bg-black {
   background-color: #155dfc !important;
   color: white !important;
@@ -2202,7 +299,6 @@ body {
   background-color: #0f4cd4 !important;
 }
 
-/* Estilos con máxima especificidad para el botón Save */
 html body .modal-content button.bg-black.text-white {
   background-color: #155dfc !important;
   color: white !important;
@@ -2214,7 +310,6 @@ html body .modal-content button.bg-black.text-white:hover {
   background-color: #0f4cd4 !important;
 }
 
-/* Estilos con especificidad extrema para sobrescribir Tailwind */
 html body div.modal-content button.bg-black.text-white.rounded {
   background-color: #155dfc !important;
   color: white !important;
@@ -2224,4 +319,126 @@ html body div.modal-content button.bg-black.text-white.rounded {
 
 html body div.modal-content button.bg-black.text-white.rounded:hover {
   background-color: #0f4cd4 !important;
+}
+
+/* ===== DRAG AND DROP STYLES ===== */
+.drag-over {
+  position: relative;
+}
+
+.drag-over::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #155dfc;
+  z-index: 1000;
+}
+
+.drop-indicator-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #155dfc;
+  z-index: 1000;
+  display: block !important;
+}
+
+.dragging {
+  opacity: 0.5;
+  transform: rotate(5deg);
+}
+
+/* ===== MODAL SYSTEM - GLOBAL STYLES ===== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+}
+
+/* Modal animations */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes modalFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes modalSlideOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+.modal-enter {
+  animation: modalFadeIn 0.3s ease;
+}
+
+.modal-enter .modal-container {
+  animation: modalSlideIn 0.3s ease;
+}
+
+.modal-exit {
+  animation: modalFadeOut 0.2s ease;
+}
+
+.modal-exit .modal-container {
+  animation: modalSlideOut 0.2s ease;
+}
+
+@media (max-width: 768px) {
+  .modal-container {
+    max-width: 95vw;
+    max-height: 95vh;
+    margin: 1rem;
+  }
 }

@@ -8,6 +8,7 @@ class FocusModeManager {
     this.focusOverlay = null;
     this.currentTask = null;
     this.pomodoroTimer = new PomodoroTimer();
+    this.toast = null;
     
     this.init();
   }
@@ -15,38 +16,38 @@ class FocusModeManager {
   init() {
     console.log('🎯 FocusModeManager: Initializing...');
     this.createFocusOverlay();
+    this.setupFocusOverlayEvents();
+    this.createToast();
     this.setupKeyboardShortcuts();
   }
 
   // Create the focus mode overlay
   createFocusOverlay() {
     this.focusOverlay = document.createElement('div');
-    this.focusOverlay.className = 'focus-mode-overlay';
+    this.focusOverlay.className = 'focus-mode-overlay modal-overlay';
     this.focusOverlay.style.cssText = `
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: var(--bg-primary, #f5f5f5);
+      background: rgba(0, 0, 0, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       z-index: 10000;
       display: none;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       font-family: 'Space Mono', monospace;
-      transition: all 0.3s ease;
+      transition: opacity 0.3s ease, transform 0.3s ease;
     `;
 
     this.focusOverlay.innerHTML = `
-      <div class="focus-mode-container" style="
+      <div class="focus-mode-container modal-container" style="
         max-width: 800px;
         width: 90%;
         text-align: center;
         padding: 2rem;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         position: relative;
       ">
         <!-- Close button -->
@@ -93,7 +94,7 @@ class FocusModeManager {
             font-weight: 600;
             color: #333;
             margin-bottom: 0.5rem;
-          ">Select a task to focus on</div>
+          "></div>
           <div class="focus-task-desc" style="
             font-size: 1rem;
             color: #666;
@@ -105,13 +106,73 @@ class FocusModeManager {
         <div class="pomodoro-container" style="
           margin-bottom: 2rem;
         ">
-          <div class="pomodoro-display" style="
-            font-size: 4rem;
-            font-weight: 700;
-            color: var(--active-color, #155dfc);
+          <!-- Timer Display with Editable Fields -->
+          <div class="pomodoro-display-container" style="
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
             margin-bottom: 1rem;
             font-family: 'Space Mono', monospace;
-          ">25:00</div>
+          ">
+            <div class="time-field" style="text-align: center;">
+              <div style="font-size: 0.8rem; color: #666; margin-bottom: 0.5rem;">Horas</div>
+              <input type="number" class="time-input hours-input" value="0" min="0" max="23" style="
+                width: 120px;
+                font-size: 4rem;
+                font-weight: 700;
+                color: var(--active-color, #155dfc);
+                background: #f5f5f5;
+                border: none;
+                border-radius: 12px;
+                text-align: center;
+                font-family: 'Space Mono', monospace;
+                outline: none;
+                padding: 0.5rem 0.2rem;
+                transition: background-color 0.2s ease;
+              ">
+            </div>
+            <div style="display: flex; align-items: center; height: 100%; margin-top: 1.5rem;">
+              <span style="font-size: 4rem; font-weight: 700; color: var(--active-color, #155dfc); margin: 0 0.5rem;">:</span>
+            </div>
+            <div class="time-field" style="text-align: center;">
+              <div style="font-size: 0.8rem; color: #666; margin-bottom: 0.5rem;">Minutos</div>
+              <input type="number" class="time-input minutes-input" value="25" min="0" max="59" style="
+                width: 120px;
+                font-size: 4rem;
+                font-weight: 700;
+                color: var(--active-color, #155dfc);
+                background: #f5f5f5;
+                border: none;
+                border-radius: 12px;
+                text-align: center;
+                font-family: 'Space Mono', monospace;
+                outline: none;
+                padding: 0.5rem 0.2rem;
+                transition: background-color 0.2s ease;
+              ">
+            </div>
+            <div style="display: flex; align-items: center; height: 100%; margin-top: 1.5rem;">
+              <span style="font-size: 4rem; font-weight: 700; color: var(--active-color, #155dfc); margin: 0 0.5rem;">:</span>
+            </div>
+            <div class="time-field" style="text-align: center;">
+              <div style="font-size: 0.8rem; color: #666; margin-bottom: 0.5rem;">Segundos</div>
+              <input type="number" class="time-input seconds-input" value="0" min="0" max="59" style="
+                width: 120px;
+                font-size: 4rem;
+                font-weight: 700;
+                color: var(--active-color, #155dfc);
+                background: #f5f5f5;
+                border: none;
+                border-radius: 12px;
+                text-align: center;
+                font-family: 'Space Mono', monospace;
+                outline: none;
+                padding: 0.5rem 0.2rem;
+                transition: background-color 0.2s ease;
+              ">
+            </div>
+          </div>
           
           <div class="pomodoro-controls" style="
             display: flex;
@@ -120,162 +181,78 @@ class FocusModeManager {
             margin-bottom: 1rem;
           ">
             <button class="pomodoro-btn pomodoro-start" style="
-              padding: 0.75rem 1.5rem;
+              padding: 1rem;
               background: var(--active-color, #155dfc);
               color: white;
               border: none;
-              border-radius: 6px;
-              font-family: 'Space Mono', monospace;
-              font-weight: 600;
+              border-radius: 50%;
               cursor: pointer;
               transition: all 0.2s ease;
-            ">Start</button>
+              width: 60px;
+              height: 60px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            ">
+              <span class="material-symbols-outlined" style="font-size: 2rem;">play_arrow</span>
+            </button>
             
             <button class="pomodoro-btn pomodoro-pause" style="
-              padding: 0.75rem 1.5rem;
+              padding: 1rem;
               background: #ffc107;
               color: white;
               border: none;
-              border-radius: 6px;
-              font-family: 'Space Mono', monospace;
-              font-weight: 600;
+              border-radius: 50%;
               cursor: pointer;
               transition: all 0.2s ease;
+              width: 60px;
+              height: 60px;
               display: none;
-            ">Pause</button>
+              align-items: center;
+              justify-content: center;
+            ">
+              <span class="material-symbols-outlined" style="font-size: 2rem;">pause</span>
+            </button>
             
             <button class="pomodoro-btn pomodoro-reset" style="
-              padding: 0.75rem 1.5rem;
+              padding: 1rem;
               background: #6c757d;
               color: white;
               border: none;
-              border-radius: 6px;
-              font-family: 'Space Mono', monospace;
-              font-weight: 600;
+              border-radius: 50%;
               cursor: pointer;
               transition: all 0.2s ease;
-            ">Reset</button>
-          </div>
-          
-          <div class="pomodoro-settings" style="
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            align-items: center;
-            font-size: 0.9rem;
-            color: #666;
-          ">
-            <label style="display: flex; align-items: center; gap: 0.5rem;">
-              Work:
-              <input type="number" class="work-duration" value="25" min="1" max="60" style="
-                width: 60px;
-                padding: 0.25rem;
-                border: 1px solid #ddd;
-                border-radius: 4px;
-                text-align: center;
-                font-family: 'Space Mono', monospace;
-              "> min
-            </label>
+              width: 60px;
+              height: 60px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            ">
+              <span class="material-symbols-outlined" style="font-size: 2rem;">history</span>
+            </button>
             
-            <label style="display: flex; align-items: center; gap: 0.5rem;">
-              Break:
-              <input type="number" class="break-duration" value="5" min="1" max="30" style="
-                width: 60px;
-                padding: 0.25rem;
-                border: 1px solid #ddd;
-                border-radius: 4px;
-                text-align: center;
-                font-family: 'Space Mono', monospace;
-              "> min
-            </label>
+            <button class="pomodoro-btn pomodoro-end" style="
+              padding: 1rem;
+              background: #dc3545;
+              color: white;
+              border: none;
+              border-radius: 50%;
+              cursor: pointer;
+              transition: all 0.2s ease;
+              width: 60px;
+              height: 60px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            ">
+              <span class="material-symbols-outlined" style="font-size: 2rem;">stop_circle</span>
+            </button>
           </div>
         </div>
 
-        <!-- Task Selection -->
-        <div class="focus-task-selection" style="
-          margin-bottom: 2rem;
-        ">
-          <h3 style="
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-            color: #555;
-          ">Select Task to Focus On</h3>
-          
-          <div class="focus-task-list" style="
-            max-height: 200px;
-            overflow-y: auto;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            padding: 0.5rem;
-          ">
-            <!-- Tasks will be populated here -->
-          </div>
-        </div>
 
-        <!-- Focus Stats -->
-        <div class="focus-stats" style="
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-          gap: 1rem;
-          margin-bottom: 1rem;
-        ">
-          <div class="stat-item" style="
-            text-align: center;
-            padding: 1rem;
-            background: #f8f9fa;
-            border-radius: 6px;
-          ">
-            <div class="stat-number" style="
-              font-size: 1.5rem;
-              font-weight: 700;
-              color: var(--active-color, #155dfc);
-            ">0</div>
-            <div class="stat-label" style="
-              font-size: 0.8rem;
-              color: #666;
-              text-transform: uppercase;
-              letter-spacing: 1px;
-            ">Pomodoros</div>
-          </div>
-          
-          <div class="stat-item" style="
-            text-align: center;
-            padding: 1rem;
-            background: #f8f9fa;
-            border-radius: 6px;
-          ">
-            <div class="stat-number" style="
-              font-size: 1.5rem;
-              font-weight: 700;
-              color: var(--active-color, #155dfc);
-            ">0</div>
-            <div class="stat-label" style="
-              font-size: 0.8rem;
-              color: #666;
-              text-transform: uppercase;
-              letter-spacing: 1px;
-            ">Focus Time</div>
-          </div>
-          
-          <div class="stat-item" style="
-            text-align: center;
-            padding: 1rem;
-            background: #f8f9fa;
-            border-radius: 6px;
-          ">
-            <div class="stat-number" style="
-              font-size: 1.5rem;
-              font-weight: 700;
-              color: var(--active-color, #155dfc);
-            ">0</div>
-            <div class="stat-label" style="
-              font-size: 0.8rem;
-              color: #666;
-              text-transform: uppercase;
-              letter-spacing: 1px;
-            ">Tasks Done</div>
-          </div>
-        </div>
+
+
       </div>
     `;
 
@@ -285,34 +262,83 @@ class FocusModeManager {
 
   // Setup event listeners for focus overlay
   setupFocusOverlayEvents() {
-    // Close button
+    // Close button - only closes modal, doesn't exit focus mode
     const closeBtn = this.focusOverlay.querySelector('.focus-close-btn');
-    closeBtn.addEventListener('click', () => this.exitFocusMode());
+    if (closeBtn) {
+      closeBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.closeFocusModal();
+      });
+    }
 
     // Pomodoro controls
     const startBtn = this.focusOverlay.querySelector('.pomodoro-start');
     const pauseBtn = this.focusOverlay.querySelector('.pomodoro-pause');
     const resetBtn = this.focusOverlay.querySelector('.pomodoro-reset');
+    const endBtn = this.focusOverlay.querySelector('.pomodoro-end');
 
-    startBtn.addEventListener('click', () => this.pomodoroTimer.start());
+    startBtn.addEventListener('click', () => {
+      if (!this.currentTask) {
+        this.showNotification('Please select a task first', 'warning');
+        return;
+      }
+      this.pomodoroTimer.start();
+      // Close modal and show toast when timer starts
+      this.focusOverlay.style.display = 'none';
+      document.body.style.overflow = 'auto';
+      this.showToast();
+    });
     pauseBtn.addEventListener('click', () => this.pomodoroTimer.pause());
     resetBtn.addEventListener('click', () => this.pomodoroTimer.reset());
+    endBtn.addEventListener('click', () => this.exitFocusMode());
 
-    // Duration settings
-    const workDuration = this.focusOverlay.querySelector('.work-duration');
-    const breakDuration = this.focusOverlay.querySelector('.break-duration');
+    // Time input settings
+    const hoursInput = this.focusOverlay.querySelector('.hours-input');
+    const minutesInput = this.focusOverlay.querySelector('.minutes-input');
+    const secondsInput = this.focusOverlay.querySelector('.seconds-input');
 
-    workDuration.addEventListener('change', (e) => {
-      this.pomodoroTimer.setWorkDuration(parseInt(e.target.value));
+    // Update timer when time inputs change
+    const updateTimerFromInputs = () => {
+      const hours = parseInt(hoursInput.value) || 0;
+      const minutes = parseInt(minutesInput.value) || 0;
+      const seconds = parseInt(secondsInput.value) || 0;
+      const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+      this.pomodoroTimer.setWorkDurationInSeconds(Math.max(1, totalSeconds));
+    };
+
+    // Format and validate inputs
+    const formatInput = (input, max) => {
+      let value = parseInt(input.value) || 0;
+      value = Math.max(0, Math.min(max, value));
+      input.value = value.toString().padStart(2, '0');
+      return value;
+    };
+
+    hoursInput.addEventListener('input', () => {
+      formatInput(hoursInput, 23);
+      updateTimerFromInputs();
+    });
+    minutesInput.addEventListener('input', () => {
+      formatInput(minutesInput, 59);
+      updateTimerFromInputs();
+    });
+    secondsInput.addEventListener('input', () => {
+      formatInput(secondsInput, 59);
+      updateTimerFromInputs();
     });
 
-    breakDuration.addEventListener('change', (e) => {
-      this.pomodoroTimer.setBreakDuration(parseInt(e.target.value));
-    });
+    // Format inputs on blur to ensure proper display
+    hoursInput.addEventListener('blur', () => formatInput(hoursInput, 23));
+    minutesInput.addEventListener('blur', () => formatInput(minutesInput, 59));
+    secondsInput.addEventListener('blur', () => formatInput(secondsInput, 59));
 
     // Listen to pomodoro events
     document.addEventListener('pomodoroTick', (e) => {
       this.updatePomodoroDisplay(e.detail.timeLeft, e.detail.isBreak);
+      // Update toast if visible
+      if (this.toast && this.toast.style.display === 'block') {
+        this.updateToastContent();
+      }
     });
 
     document.addEventListener('pomodoroComplete', (e) => {
@@ -327,9 +353,9 @@ class FocusModeManager {
   // Setup keyboard shortcuts
   setupKeyboardShortcuts() {
     document.addEventListener('keydown', (e) => {
-      // Escape to exit focus mode
-      if (e.key === 'Escape' && this.isActive) {
-        this.exitFocusMode();
+      // Escape to close focus modal (not exit focus mode)
+      if (e.key === 'Escape' && this.isActive && this.focusOverlay.style.display === 'flex') {
+        this.closeFocusModal();
       }
       
       // F key to enter focus mode (when not in input)
@@ -355,27 +381,77 @@ class FocusModeManager {
     console.log('🎯 Entering focus mode...');
     
     this.isActive = true;
-    this.currentTask = task;
+    
+    // Use preselected task if available
+    if (this.selectedTask) {
+      this.currentTask = this.selectedTask;
+    } else {
+      this.currentTask = task;
+    }
     
     // Hide main interface
     document.body.style.overflow = 'hidden';
     
-    // Show focus overlay
+    // Show focus overlay with initial hidden state
     this.focusOverlay.style.display = 'flex';
+    this.focusOverlay.style.opacity = '0';
+    this.focusOverlay.style.transform = 'scale(0.95)';
     
     // Update task display
     this.updateCurrentTaskDisplay();
     
-    // Populate task list
-    this.populateTaskList();
+    // Trigger smooth entrance animation
+     requestAnimationFrame(() => {
+       this.focusOverlay.classList.add('show', 'modal-enter');
+       this.focusOverlay.style.opacity = '1';
+       this.focusOverlay.style.transform = 'scale(1)';
+     });
     
-    // Load focus stats
-    this.loadFocusStats();
+
     
     // Trigger focus mode event
     document.dispatchEvent(new CustomEvent('focusModeEntered', {
       detail: { task: this.currentTask }
     }));
+  }
+  
+  // Show focus modal (for reopening from toast)
+  showFocusModal() {
+    if (!this.isActive) return;
+    
+    // Show focus overlay with initial hidden state
+    this.focusOverlay.style.display = 'flex';
+    this.focusOverlay.style.opacity = '0';
+    this.focusOverlay.style.transform = 'scale(0.95)';
+    document.body.style.overflow = 'hidden';
+    
+    // Trigger smooth entrance animation
+    requestAnimationFrame(() => {
+      this.focusOverlay.classList.add('show', 'modal-enter');
+      this.focusOverlay.style.opacity = '1';
+      this.focusOverlay.style.transform = 'scale(1)';
+    });
+  }
+
+  // Close focus modal (without exiting focus mode)
+  closeFocusModal() {
+    if (!this.isActive) return;
+    
+    // Trigger exit animation
+    this.focusOverlay.classList.remove('show', 'modal-enter');
+    this.focusOverlay.classList.add('modal-exit');
+    
+    // Hide after animation (200ms to match CSS animation duration)
+    setTimeout(() => {
+      this.focusOverlay.style.display = 'none';
+      this.focusOverlay.classList.remove('modal-exit');
+      document.body.style.overflow = 'auto';
+      
+      // Show toast only if timer is running
+      if (this.pomodoroTimer.isRunning) {
+        this.showToast();
+      }
+    }, 200);
   }
 
   // Exit focus mode
@@ -389,14 +465,25 @@ class FocusModeManager {
       this.pomodoroTimer.pause();
     }
     
-    // Show main interface
-    document.body.style.overflow = 'auto';
+    // Hide toast
+    this.hideToast();
     
-    // Hide focus overlay
-    this.focusOverlay.style.display = 'none';
+    // Trigger exit animation
+    this.focusOverlay.classList.remove('show', 'modal-enter');
+    this.focusOverlay.classList.add('modal-exit');
     
-    // Save focus stats
-    this.saveFocusStats();
+    // Hide after animation (200ms to match CSS animation duration)
+    setTimeout(() => {
+      this.focusOverlay.style.display = 'none';
+      this.focusOverlay.classList.remove('modal-exit');
+      document.body.style.overflow = 'auto';
+    }, 200);
+    
+    // Clear selected task
+    this.selectedTask = null;
+    this.currentTask = null;
+    
+
     
     // Trigger focus mode event
     document.dispatchEvent(new CustomEvent('focusModeExited', {
@@ -408,108 +495,55 @@ class FocusModeManager {
   updateCurrentTaskDisplay() {
     const titleEl = this.focusOverlay.querySelector('.focus-task-title');
     const descEl = this.focusOverlay.querySelector('.focus-task-desc');
+    const taskContainer = this.focusOverlay.querySelector('.focus-current-task');
     
     if (this.currentTask) {
       titleEl.textContent = this.currentTask.title || 'Untitled Task';
       descEl.textContent = this.currentTask.desc || '';
       descEl.style.display = this.currentTask.desc ? 'block' : 'none';
+      
+      // Update task color if available
+      if (this.currentTask.color) {
+        const colorMap = {
+          'blue': '#155dfc',
+          'green': '#28a745',
+          'yellow': '#ffc107',
+          'red': '#dc3545',
+          'purple': '#6f42c1',
+          'orange': '#fd7e14'
+        };
+        const color = colorMap[this.currentTask.color] || '#155dfc';
+        taskContainer.style.borderLeftColor = color;
+      }
     } else {
       titleEl.textContent = 'Select a task to focus on';
       descEl.textContent = '';
       descEl.style.display = 'none';
+      taskContainer.style.borderLeftColor = '#155dfc';
     }
   }
 
-  // Populate task list for selection
-  populateTaskList() {
-    const taskList = this.focusOverlay.querySelector('.focus-task-list');
-    taskList.innerHTML = '';
-    
-    if (!window.weekdeckApp) return;
-    
-    const allTasks = [];
-    window.weekdeckApp.days.forEach(day => {
-      if (window.weekdeckApp.tasks[day]) {
-        window.weekdeckApp.tasks[day].forEach((task, idx) => {
-          if (!task.completed) {
-            allTasks.push({ ...task, day, idx });
-          }
-        });
-      }
-    });
-    
-    if (allTasks.length === 0) {
-      taskList.innerHTML = '<div style="padding: 1rem; color: #666; text-align: center;">No tasks available</div>';
-      return;
-    }
-    
-    allTasks.forEach(task => {
-      const taskEl = document.createElement('div');
-      taskEl.className = 'focus-task-item';
-      taskEl.style.cssText = `
-        padding: 0.75rem;
-        border-bottom: 1px solid #eee;
-        cursor: pointer;
-        transition: background 0.2s ease;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      `;
-      
-      taskEl.innerHTML = `
-        <div>
-          <div style="font-weight: 600; color: #333;">${task.title}</div>
-          <div style="font-size: 0.8rem; color: #666;">${task.day}</div>
-        </div>
-        <span class="material-symbols-outlined" style="color: var(--active-color, #155dfc);">play_arrow</span>
-      `;
-      
-      taskEl.addEventListener('mouseenter', () => {
-        taskEl.style.background = '#f8f9fa';
-      });
-      
-      taskEl.addEventListener('mouseleave', () => {
-        taskEl.style.background = 'transparent';
-      });
-      
-      taskEl.addEventListener('click', () => {
-        this.selectTask(task);
-      });
-      
-      taskList.appendChild(taskEl);
-    });
-  }
 
-  // Select a task for focus
-  selectTask(task) {
-    this.currentTask = task;
-    this.updateCurrentTaskDisplay();
-    
-    // Highlight selected task
-    const taskItems = this.focusOverlay.querySelectorAll('.focus-task-item');
-    taskItems.forEach(item => {
-      item.style.background = 'transparent';
-      item.style.borderLeft = 'none';
-    });
-    
-    const selectedItem = Array.from(taskItems).find(item => 
-      item.querySelector('div').textContent === task.title
-    );
-    
-    if (selectedItem) {
-      selectedItem.style.background = '#e3f2fd';
-      selectedItem.style.borderLeft = '4px solid var(--active-color, #155dfc)';
-    }
-  }
 
   // Update pomodoro display
   updatePomodoroDisplay(timeLeft, isBreak) {
-    const display = this.focusOverlay.querySelector('.pomodoro-display');
-    const minutes = Math.floor(timeLeft / 60);
+    const hoursInput = this.focusOverlay.querySelector('.hours-input');
+    const minutesInput = this.focusOverlay.querySelector('.minutes-input');
+    const secondsInput = this.focusOverlay.querySelector('.seconds-input');
+    
+    const hours = Math.floor(timeLeft / 3600);
+    const minutes = Math.floor((timeLeft % 3600) / 60);
     const seconds = timeLeft % 60;
     
-    display.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    display.style.color = isBreak ? '#28a745' : 'var(--active-color, #155dfc)';
+    if (hoursInput) hoursInput.value = hours.toString().padStart(2, '0');
+    if (minutesInput) minutesInput.value = minutes.toString().padStart(2, '0');
+    if (secondsInput) secondsInput.value = seconds.toString().padStart(2, '0');
+    
+    // Update input colors based on break/work state
+    const color = isBreak ? '#28a745' : 'var(--active-color, #155dfc)';
+    [hoursInput, minutesInput, secondsInput].forEach(input => {
+      if (input) input.style.color = color;
+    });
   }
 
   // Update pomodoro controls
@@ -532,15 +566,12 @@ class FocusModeManager {
       this.showNotification('Break time is over! Ready to focus?', 'info');
     } else {
       this.showNotification('Pomodoro completed! Time for a break.', 'success');
-      this.incrementFocusStats('pomodoros');
       
       // Mark current task as completed if selected
       if (this.currentTask && window.weekdeckApp) {
         const task = window.weekdeckApp.tasks[this.currentTask.day][this.currentTask.idx];
         if (task && !task.completed) {
           window.weekdeckApp.toggleComplete(this.currentTask.day, this.currentTask.idx);
-          this.incrementFocusStats('tasksCompleted');
-          this.populateTaskList(); // Refresh task list
         }
       }
     }
@@ -549,36 +580,79 @@ class FocusModeManager {
     this.playNotificationSound();
   }
 
-  // Load focus statistics
-  loadFocusStats() {
-    const stats = JSON.parse(localStorage.getItem('weekdeck-focus-stats') || '{}');
-    const today = new Date().toDateString();
-    const todayStats = stats[today] || { pomodoros: 0, focusTime: 0, tasksCompleted: 0 };
+
+
+  // Create toast notification element
+  createToast() {
+    this.toast = document.createElement('div');
+    this.toast.className = 'focus-toast';
+    this.toast.style.cssText = `
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(0, 0, 0, 0.9);
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.9rem;
+      z-index: 10001;
+      transition: transform 0.3s ease;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      backdrop-filter: blur(10px);
+      cursor: pointer;
+      display: none;
+      min-width: 280px;
+      text-align: center;
+    `;
     
-    const statItems = this.focusOverlay.querySelectorAll('.stat-number');
-    statItems[0].textContent = todayStats.pomodoros;
-    statItems[1].textContent = Math.round(todayStats.focusTime / 60) + 'm';
-    statItems[2].textContent = todayStats.tasksCompleted;
+    // Add click handler to reopen modal
+    this.toast.addEventListener('click', () => {
+      this.showFocusModal();
+    });
+    
+    document.body.appendChild(this.toast);
   }
 
-  // Save focus statistics
-  saveFocusStats() {
-    // Stats are saved in real-time via incrementFocusStats
+  // Show toast with task and timer info
+  showToast() {
+    if (!this.toast || !this.selectedTask) return;
+    
+    this.toast.style.display = 'block';
+    this.updateToastContent();
+    
+    // Smooth slide-in animation from bottom
+    requestAnimationFrame(() => {
+      this.toast.style.transform = 'translateX(-50%) translateY(0)';
+    });
   }
-
-  // Increment focus statistics
-  incrementFocusStats(type, value = 1) {
-    const stats = JSON.parse(localStorage.getItem('weekdeck-focus-stats') || '{}');
-    const today = new Date().toDateString();
+  
+  // Hide toast
+  hideToast() {
+    if (!this.toast) return;
     
-    if (!stats[today]) {
-      stats[today] = { pomodoros: 0, focusTime: 0, tasksCompleted: 0 };
-    }
+    this.toast.style.transform = 'translateX(-50%) translateY(100px)';
+    setTimeout(() => {
+      this.toast.style.display = 'none';
+    }, 300);
+  }
+  
+  // Update toast content with current timer
+  updateToastContent() {
+    if (!this.toast || !this.selectedTask) return;
     
-    stats[today][type] = (stats[today][type] || 0) + value;
-    localStorage.setItem('weekdeck-focus-stats', JSON.stringify(stats));
+    const timeLeft = this.pomodoroTimer.getTimeLeft();
+    const hours = Math.floor(timeLeft / 3600);
+    const minutes = Math.floor((timeLeft % 3600) / 60);
+    const seconds = timeLeft % 60;
+    const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     
-    this.loadFocusStats(); // Refresh display
+    this.toast.innerHTML = `
+      <div style="font-weight: bold; margin-bottom: 4px;">${this.selectedTask.title}</div>
+      <div style="font-size: 1.2em; color: #4ade80;">${timeString}</div>
+      <div style="font-size: 0.8em; opacity: 0.8; margin-top: 4px;">Click to open Focus Mode</div>
+    `;
   }
 
   // Show notification
@@ -696,6 +770,16 @@ class PomodoroTimer {
     }
   }
 
+  setWorkDurationInSeconds(seconds) {
+    this.workDuration = seconds;
+    if (!this.isBreak && !this.isRunning) {
+      this.timeLeft = this.workDuration;
+      document.dispatchEvent(new CustomEvent('pomodoroTick', {
+        detail: { timeLeft: this.timeLeft, isBreak: this.isBreak }
+      }));
+    }
+  }
+
   setBreakDuration(minutes) {
     this.breakDuration = minutes * 60;
     if (this.isBreak && !this.isRunning) {
@@ -704,6 +788,10 @@ class PomodoroTimer {
         detail: { timeLeft: this.timeLeft, isBreak: this.isBreak }
       }));
     }
+  }
+  
+  getTimeLeft() {
+    return this.timeLeft;
   }
 }
 

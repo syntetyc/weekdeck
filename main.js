@@ -312,6 +312,18 @@ function weekdeckApp() {
             this.exportToPDF();
           }
         },
+        { separator: true },
+        {
+          text: 'Cloud Sync',
+          icon: 'cloud_sync',
+          action: () => {
+            if (window.cloudSyncManager) {
+              window.cloudSyncManager.showSyncMenu();
+            }
+          },
+          iconClass: 'text-green-600'
+        },
+        { separator: true },
         {
           text: this.weekendHidden ? 'Show weekend' : 'Hide weekend',
           icon: 'event_busy',
@@ -761,6 +773,12 @@ function weekdeckApp() {
           action: () => this.toggleComplete(day, idx)
         },
         {
+          text: 'Focus Mode',
+          icon: 'center_focus_strong',
+          action: () => this.startFocusMode(day, idx),
+          iconClass: 'text-blue-600'
+        },
+        {
           text: 'Move to',
           icon: 'swap_horiz',
           action: () => this.showMoveToSubmenu(event, day, idx),
@@ -861,6 +879,12 @@ function weekdeckApp() {
           text: task.completed ? 'Mark as incomplete' : 'Mark as complete',
           icon: task.completed ? 'radio_button_unchecked' : 'check_circle',
           action: () => this.toggleComplete(day, idx)
+        },
+        {
+          text: 'Focus Mode',
+          icon: 'center_focus_strong',
+          action: () => this.startFocusMode(day, idx),
+          iconClass: 'text-blue-600'
         },
         {
           text: 'Move to',
@@ -1753,34 +1777,31 @@ function weekdeckApp() {
       event.preventDefault();
       event.dataTransfer.dropEffect = 'move';
       
-      console.log('onTableDragOver called for day:', day);
-      
       if (!this.dragData || this.dragData.fromDay === day) {
-        console.log('Returning early - no dragData or same day');
         return;
       }
       
-      // Verificar si estamos sobre un elemento específico
+      // Verificar si estamos sobre un elemento específico (tarea o zona de drop final)
       const targetElement = event.target.closest('.group');
-      if (targetElement) {
-        console.log('Returning early - over specific element');
-        return;
+      const dropZone = event.target.closest('.flex.items-center.min-h-\\[48px\\].px-2.transition-all.duration-150');
+      
+      if (targetElement || dropZone) {
+        return; // Dejar que los otros manejadores se encarguen
       }
       
-      console.log('Over table area, not over specific element');
-      
-      // Si estamos sobre la tabla pero no sobre un elemento específico, activar el indicador
+      // Solo activar si estamos directamente sobre el contenedor de la tabla
       const tableContainer = event.target.closest('.flex-1.flex.flex-col.relative');
-      console.log('Table container found:', tableContainer);
-      if (tableContainer) {
-        tableContainer.classList.add('table-drag-over');
-        console.log('Added table-drag-over class');
+      if (tableContainer && (event.target === tableContainer || tableContainer.contains(event.target))) {
+        // Limpiar primero todos los indicadores de otras tablas
+        document.querySelectorAll('.drop-indicator-line').forEach(indicator => {
+          indicator.style.display = 'none';
+        });
         
-        // Verificar si existe el último elemento
         const allGroups = tableContainer.querySelectorAll('.group');
         const lastElement = allGroups[allGroups.length - 1];
+        
         if (lastElement) {
-          // Crear un elemento indicador de drop
+          // Solo crear indicador si hay tareas en la columna
           let dropIndicator = lastElement.querySelector('.drop-indicator-line');
           if (!dropIndicator) {
             dropIndicator = document.createElement('div');
@@ -1806,13 +1827,9 @@ function weekdeckApp() {
       const relatedTarget = event.relatedTarget;
       const tableContainer = event.target.closest('.flex-1.flex.flex-col.relative');
       
-      console.log('onTableDragLeave called for day:', day);
-      
-      if (!relatedTarget || !tableContainer.contains(relatedTarget)) {
+      // Limpiar los indicadores solo si realmente salimos de la tabla
+      if (!relatedTarget || !tableContainer || !tableContainer.contains(relatedTarget)) {
         if (tableContainer) {
-          tableContainer.classList.remove('table-drag-over');
-          
-          // Limpiar los estilos del último elemento
           const allGroups = tableContainer.querySelectorAll('.group');
           const lastElement = allGroups[allGroups.length - 1];
           if (lastElement) {
@@ -1860,27 +1877,16 @@ function weekdeckApp() {
       this.dragOverColumn = null;
       this.isDragging = false;
       
-      // Limpieza simple
-      const elements = document.querySelectorAll('.dragging, .drag-over, .drop-zone');
+      // Limpiar todas las clases de drag
+      const elements = document.querySelectorAll('.dragging, .drag-over, .drop-zone, .table-drag-over');
       elements.forEach(el => {
-        el.classList.remove('dragging', 'drag-over', 'drop-zone');
-      });
-      
-      // Limpiar específicamente la zona de drop al final
-      const dropZones = document.querySelectorAll('.flex.items-center.min-h-\\[48px\\].px-2.transition-all.duration-150.drag-over');
-      dropZones.forEach(el => {
-        el.classList.remove('drag-over');
-      });
-      
-      // Limpiar la zona de drop de tabla completa
-      const tableDragOver = document.querySelectorAll('.table-drag-over');
-      tableDragOver.forEach(el => {
-        el.classList.remove('table-drag-over');
+        el.classList.remove('dragging', 'drag-over', 'drop-zone', 'table-drag-over');
       });
       
       // Limpiar todos los indicadores de drop line
       document.querySelectorAll('.drop-indicator-line').forEach(indicator => {
         indicator.style.display = 'none';
+        indicator.remove(); // Remover completamente el elemento
       });
     },
     // --- CLICK EN ZONA LIBRE ---
@@ -1991,6 +1997,29 @@ function weekdeckApp() {
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         .replace(/\*(.*?)\*/g, '<em>$1</em>')
         .replace(/__(.*?)__/g, '<u>$1</u>');
+    },
+
+    // Iniciar Focus Mode para una tarea específica
+    startFocusMode(day, idx) {
+      const task = this.tasks[day][idx];
+      if (!task) return;
+      
+      // Cerrar el menú contextual
+      window.contextMenuManager.closeAll();
+      
+      // Verificar si el focus mode manager existe
+      if (window.focusModeManager) {
+        // Preseleccionar la tarea y abrir el modal
+        window.focusModeManager.selectedTask = {
+          title: task.title,
+          day: day,
+          index: idx,
+          color: task.color || 'blue'
+        };
+        window.focusModeManager.enterFocusMode();
+      } else {
+        this.showErrorNotification('Focus Mode not available');
+      }
     }
   }
 }
