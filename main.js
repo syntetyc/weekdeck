@@ -312,28 +312,6 @@ function weekdeckApp() {
             this.exportToPDF();
           }
         },
-        { separator: true },
-        {
-          text: 'Focus Mode',
-          icon: 'center_focus_strong',
-          action: () => {
-            if (window.focusModeManager) {
-              window.focusModeManager.enterFocusMode();
-            }
-          },
-          iconClass: 'text-blue-600'
-        },
-        {
-          text: 'Cloud Sync',
-          icon: 'cloud_sync',
-          action: () => {
-            if (window.cloudSyncManager) {
-              window.cloudSyncManager.showSyncMenu();
-            }
-          },
-          iconClass: 'text-green-600'
-        },
-        { separator: true },
         {
           text: this.weekendHidden ? 'Show weekend' : 'Hide weekend',
           icon: 'event_busy',
