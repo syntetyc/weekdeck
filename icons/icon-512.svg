@@ -1,0 +1,55 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="64" fill="#155dfc"/>
+  <rect x="64" y="64" width="384" height="384" rx="32" fill="white"/>
+  
+  <!-- Week grid representation -->
+  <g fill="#155dfc">
+    <!-- Header row -->
+    <rect x="96" y="96" width="42" height="20" rx="4"/>
+    <rect x="150" y="96" width="42" height="20" rx="4"/>
+    <rect x="204" y="96" width="42" height="20" rx="4"/>
+    <rect x="258" y="96" width="42" height="20" rx="4"/>
+    <rect x="312" y="96" width="42" height="20" rx="4"/>
+    <rect x="366" y="96" width="42" height="20" rx="4"/>
+    <rect x="420" y="96" width="42" height="20" rx="4"/>
+    
+    <!-- Task items -->
+    <!-- Monday -->
+    <rect x="96" y="130" width="42" height="16" rx="8" fill="#6B9AFF"/>
+    <rect x="96" y="154" width="42" height="16" rx="8" fill="#FFD86B"/>
+    <rect x="96" y="178" width="42" height="16" rx="8" fill="#7BE495"/>
+    
+    <!-- Tuesday -->
+    <rect x="150" y="130" width="42" height="16" rx="8" fill="#F36B6B"/>
+    <rect x="150" y="154" width="42" height="16" rx="8" fill="#6B9AFF"/>
+    <rect x="150" y="178" width="42" height="16" rx="8" fill="#FFD86B"/>
+    <rect x="150" y="202" width="42" height="16" rx="8" fill="#7BE495"/>
+    
+    <!-- Wednesday -->
+    <rect x="204" y="130" width="42" height="16" rx="8" fill="#FFD86B"/>
+    <rect x="204" y="154" width="42" height="16" rx="8" fill="#F36B6B"/>
+    
+    <!-- Thursday -->
+    <rect x="258" y="130" width="42" height="16" rx="8" fill="#7BE495"/>
+    <rect x="258" y="154" width="42" height="16" rx="8" fill="#6B9AFF"/>
+    <rect x="258" y="178" width="42" height="16" rx="8" fill="#FFD86B"/>
+    <rect x="258" y="202" width="42" height="16" rx="8" fill="#F36B6B"/>
+    <rect x="258" y="226" width="42" height="16" rx="8" fill="#7BE495"/>
+    
+    <!-- Friday -->
+    <rect x="312" y="130" width="42" height="16" rx="8" fill="#6B9AFF"/>
+    <rect x="312" y="154" width="42" height="16" rx="8" fill="#FFD86B"/>
+    <rect x="312" y="178" width="42" height="16" rx="8" fill="#7BE495"/>
+    
+    <!-- Saturday -->
+    <rect x="366" y="130" width="42" height="16" rx="8" fill="#F36B6B"/>
+    <rect x="366" y="154" width="42" height="16" rx="8" fill="#6B9AFF"/>
+    
+    <!-- Sunday -->
+    <rect x="420" y="130" width="42" height="16" rx="8" fill="#7BE495"/>
+  </g>
+  
+  <!-- WeekDeck logo text -->
+  <text x="256" y="360" text-anchor="middle" fill="#155dfc" font-family="monospace" font-size="48" font-weight="bold">WeekDeck</text>
+  <text x="256" y="390" text-anchor="middle" fill="#666" font-family="monospace" font-size="20">Visual Week Planner</text>
+</svg>

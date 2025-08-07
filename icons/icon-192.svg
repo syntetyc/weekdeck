@@ -1,0 +1,38 @@
+<svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="192" height="192" rx="24" fill="#155dfc"/>
+  <rect x="24" y="24" width="144" height="144" rx="12" fill="white"/>
+  
+  <!-- Week grid representation -->
+  <g fill="#155dfc">
+    <!-- Header row -->
+    <rect x="36" y="36" width="16" height="8" rx="2"/>
+    <rect x="56" y="36" width="16" height="8" rx="2"/>
+    <rect x="76" y="36" width="16" height="8" rx="2"/>
+    <rect x="96" y="36" width="16" height="8" rx="2"/>
+    <rect x="116" y="36" width="16" height="8" rx="2"/>
+    <rect x="136" y="36" width="16" height="8" rx="2"/>
+    
+    <!-- Task items -->
+    <rect x="36" y="52" width="16" height="6" rx="3" fill="#6B9AFF"/>
+    <rect x="36" y="62" width="16" height="6" rx="3" fill="#FFD86B"/>
+    
+    <rect x="56" y="52" width="16" height="6" rx="3" fill="#7BE495"/>
+    <rect x="56" y="62" width="16" height="6" rx="3" fill="#F36B6B"/>
+    <rect x="56" y="72" width="16" height="6" rx="3" fill="#6B9AFF"/>
+    
+    <rect x="76" y="52" width="16" height="6" rx="3" fill="#FFD86B"/>
+    
+    <rect x="96" y="52" width="16" height="6" rx="3" fill="#7BE495"/>
+    <rect x="96" y="62" width="16" height="6" rx="3" fill="#F36B6B"/>
+    <rect x="96" y="72" width="16" height="6" rx="3" fill="#6B9AFF"/>
+    <rect x="96" y="82" width="16" height="6" rx="3" fill="#FFD86B"/>
+    
+    <rect x="116" y="52" width="16" height="6" rx="3" fill="#7BE495"/>
+    <rect x="116" y="62" width="16" height="6" rx="3" fill="#F36B6B"/>
+    
+    <rect x="136" y="52" width="16" height="6" rx="3" fill="#6B9AFF"/>
+  </g>
+  
+  <!-- WeekDeck logo text -->
+  <text x="96" y="140" text-anchor="middle" fill="#155dfc" font-family="monospace" font-size="16" font-weight="bold">WD</text>
+</svg>

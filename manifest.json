@@ -1,0 +1,51 @@
+{
+  "name": "WeekDeck - Visual Week Planner",
+  "short_name": "WeekDeck",
+  "description": "Simple visual week planner for organizing tasks with drag & drop functionality",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F2F2F2",
+  "theme_color": "#000000",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["productivity", "utilities"],
+  "icons": [
+    {
+      "src": "logo/wd-box-black.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo/wd-main-black.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "imgs/share-img-weekdeck.jpg",
+      "sizes": "1200x630",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "New Week",
+      "short_name": "New Week",
+      "description": "Start a new week planning",
+      "url": "/?action=new",
+      "icons": [
+        {
+          "src": "logo/wd-box-black.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false
+}

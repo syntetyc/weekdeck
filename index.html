@@ -19,6 +19,10 @@
   <meta property="og:url" content="https://weekdeck.com">
   <meta property="og:site_name" content="WeekDeck">
   <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="https://weekdeck.com/imgs/share-img-weekdeck.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="WeekDeck - Minimal & Private Week Planning">
 
   <!-- Twitter Card Meta Tags -->
   <meta name="twitter:card" content="summary_large_image">
@@ -36,6 +40,9 @@
   <meta name="apple-mobile-web-app-title" content="WeekDeck">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
 
   <!-- Structured Data -->
   <script type="application/ld+json">
@@ -68,7 +75,7 @@
   }
   </script>
 
-  <!-- Google Analytics-->
+  <!-- Google Analytics
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-3G2F75B20M"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -76,10 +83,11 @@
     gtag('js', new Date());
 
     gtag('config', 'G-3G2F75B20M');
-  </script> 
+  </script> -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="logo/favicon.svg">
   <!-- TailwindCSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Alpine.js -->
@@ -150,6 +158,14 @@
           title="Settings"
           data-context-menu="settings-menu">
           <span class="material-symbols-outlined text-2xl sm:text-3xl">settings</span>
+        </button>
+        
+        <!-- Botón de modo focus -->
+        <button 
+          @click="window.focusModeManager?.enterFocusMode()" 
+          class="text-white hover:text-[#155dfc] transition-colors duration-200 p-1.5 sm:p-2 rounded"
+          title="Focus Mode (F)">
+          <span class="material-symbols-outlined text-2xl sm:text-3xl">center_focus_strong</span>
         </button>
         
         <!-- Botón de información -->
@@ -425,7 +441,23 @@
   
   <script src="theme-manager.js"></script>
   <script src="context-menu.js"></script>
-
+  <script src="cloud-sync.js"></script>
+  <script src="focus-mode.js"></script>
   <script src="main.js"></script>
+  
+  <!-- PWA Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then((registration) => {
+            console.log('✅ SW registered: ', registration);
+          })
+          .catch((registrationError) => {
+            console.log('❌ SW registration failed: ', registrationError);
+          });
+      });
+    }
+  </script>
 </body>
-</html> 
+</html>
