@@ -329,8 +329,26 @@ class CloudSyncManager {
   showSyncMenu() {
     const menuItems = [];
     
-    if (!this.isGoogleDriveConnected) {
-      // User not signed in
+    // Check if Google Client ID is properly configured
+    const isClientIdConfigured = this.googleConfig.clientId && 
+      !this.googleConfig.clientId.includes('placeholder') && 
+      !this.googleConfig.clientId.includes('1234567890');
+    
+    if (!isClientIdConfigured) {
+      // Client ID not configured
+      menuItems.push(
+        { text: '⚠️ Google Drive Setup Required', action: null, disabled: true },
+        { separator: true },
+        { text: '📋 Setup needed:', action: null, disabled: true },
+        { text: '• Create Google Cloud project', action: null, disabled: true },
+        { text: '• Enable Google Drive API', action: null, disabled: true },
+        { text: '• Configure OAuth client ID', action: null, disabled: true },
+        { text: '• Update clientId in cloud-sync.js', action: null, disabled: true },
+        { separator: true },
+        { text: '📖 View Instructions', action: () => this.showSetupInstructions() }
+      );
+    } else if (!this.isGoogleDriveConnected) {
+      // User not signed in but client ID is configured
       menuItems.push(
         { text: '🔐 Sign in with Google', action: () => this.signInWithGoogle() },
         { separator: true },
@@ -370,6 +388,53 @@ class CloudSyncManager {
     } else {
       console.warn('Context menu manager not available');
     }
+  }
+  
+  // Show setup instructions
+  showSetupInstructions() {
+    const instructions = `
+🔧 Google Drive Setup Instructions
+
+To enable Google Drive synchronization, follow these steps:
+
+1. 📋 Create Google Cloud Project:
+   • Go to console.cloud.google.com
+   • Create a new project or select existing one
+   • Note your project ID
+
+2. 🔌 Enable Google Drive API:
+   • In the Google Cloud Console
+   • Go to "APIs & Services" > "Library"
+   • Search for "Google Drive API"
+   • Click "Enable"
+
+3. 🔑 Create OAuth 2.0 Credentials:
+   • Go to "APIs & Services" > "Credentials"
+   • Click "Create Credentials" > "OAuth client ID"
+   • Choose "Web application"
+   • Add your domain to "Authorized JavaScript origins"
+   • Copy the Client ID
+
+4. ⚙️ Update Configuration:
+   • Open cloud-sync.js file
+   • Replace the placeholder clientId with your real Client ID
+   • Save the file
+
+5. 🚀 Test the Integration:
+   • Refresh your website
+   • Try "Sign in with Google" option
+
+⚠️ Important Notes:
+• This setup requires developer access to Google Cloud Console
+• The Client ID must match your domain
+• Users will be able to sync with their own Google Drive accounts
+• No server-side setup required - everything runs in the browser
+
+📚 For detailed instructions, visit:
+https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid
+    `;
+    
+    alert(instructions);
   }
   
 
